@@ -6,20 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./CSS/styles.css">
     <link rel="icon" type="image/icon" href="./images/favicon.png">
+    <link rel="stylesheet" href="">
     <title>Cloudroom | Assignments</title>
+
+    <!-- Codemirror links/scripts -->
+    <script src="./JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="./JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.css">
+    <script src="./JS/AssignmentsJS/codemirror-5.65.3/mode/python/python.js"></script>
+    <link rel="stylesheet" href="./JS/AssignmentsJS/codemirror-5.65.3/theme/yonce.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="page-container">
-        <h1>Cloudroom</h1>
-        <ul>
-            <li><a href="./index.html">Home</a></li>
-            <li><a href="./login.html">Login</a></li>
-            <li><a href="./signup.html">Sign up</a></li>
-            <li><a href="./dashboard.html">Dashboard</a></li>
-            <li>Assignments</li>
-            <li><a href="./user-profile.html">User Profile</a></li>
-            <li><a href="./user-drive.html">User Drive</a></li>
-        </ul>
+        <div class="nav"><h1>Cloudroom</h1>
+            <ul>
+                <li><a href="./index.html">Home</a></li>
+                <li><a href="./login.html">Login</a></li>
+                <li><a href="./signup.html">Sign up</a></li>
+                <li><a href="./dashboard.html">Dashboard</a></li>
+                <li>Assignments</li>
+                <li><a href="./user-profile.html">User Profile</a></li>
+                <li><a href="./user-drive.html">User Drive</a></li>
+            </ul>
+        </div>
+        <div class="code-area">
+            <textarea id="editor">
+def HelloWorld(): 
+    print("Hello World")
+            </textarea>
+            <button id="submit-assignment">Submit</button>
+        </div>
     </div>
+
+    <!-- CodeMirror Integration -->
+    <script>
+        var editor = CodeMirror.fromTextArea
+        (document.getElementById('editor'), {
+            mode: {
+                name: "python",
+                version: 5,
+                singleLineStringErrors: false
+            },
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            theme: "yonce"
+        });
+    </script>
 </body>
 </html>
