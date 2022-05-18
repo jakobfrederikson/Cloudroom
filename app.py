@@ -32,7 +32,7 @@ def classroom_assignments(class_id):
     return render_template('classroom_assignments.html')
 
 # Assignment Page - You are taken here after clicking on an assignment in the assignment list
-@app.route('classroom/<class_id>/<assignment_id>')
+@app.route('/classroom/<class_id>/<assignment_id>')
 def assignment_page(class_id, assignment_id):
     return render_template('assignment_page.html')
 
