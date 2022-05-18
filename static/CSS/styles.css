@@ -1,0 +1,42 @@
+.page-container {
+    font-family: 'Open Sans', sans-serif;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    width: 99vw;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Navigation bar */
+.nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.nav-bar ul {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    padding: 0;
+}
+
+.assignment-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 30px;
+    padding: 0;
+    width: 100vw;
+    gap: 30px;
+}
+
+.assignment-details {
+    width: 49vw;
+}
+
+.code-area {
+    flex: auto;
+}
