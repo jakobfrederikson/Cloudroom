@@ -41,6 +41,10 @@ def assignment_page(class_id, assignment_id):
 def user_profile(user):
     return render_template('user-profile.html', name=user)
 
+# Admin Page - Some pages aren't accessible unless through admin privleges yet
+@app.route('/admin')
+def admin_page():
+    return render_template('admin_page.html')
 
 if __name__ == '__main__':
     app.debug = True
