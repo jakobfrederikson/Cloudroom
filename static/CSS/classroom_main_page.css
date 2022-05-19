@@ -5,3 +5,10 @@
 .navbar-white-text {
     color: white;
 }
+
+@media (min-width: 1200px)
+{
+    .move-inwards {
+        margin-right: 30px;
+    }
+}
