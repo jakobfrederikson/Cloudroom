@@ -1,5 +1,9 @@
 from flask import Flask, render_template
+
 app = Flask(__name__)
+
+# Lets us refresh the web page to reload a template after we've changed the code
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Home page
 @app.route('/')
