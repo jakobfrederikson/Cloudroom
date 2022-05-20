@@ -10,12 +10,13 @@
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
     crossorigin="anonymous">
     <link rel="stylesheet" href="../static/CSS/classroom_main_page.css">
+    <link rel="icon" type="image/icon" href="../static/images/favicon.png">
     <title>Classroom Name | Cloudroom</title>
 </head>
 <body>
 
     <!-- NAV BAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark cloudrooom-green">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark cloudrooom-green">
         <div class="container-fluid move-inwards">
           <a class="navbar-brand" href="">Cloudroom</a>
           <button class="navbar-toggler"
@@ -43,21 +44,42 @@
                       <li><hr class="dropdown-divider"></li>
                       <li><a class="dropdown-item" href="">Something else here</a></li>
                     </ul>
-                  </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Logout</a>
-              </li>
+                  </li>        
               <li class="nav-item">
                 <a class="nav-link" href="">Link</a>
               </li>
-              
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Logout</a>
+              </li>
             </ul>
           </div>
         </div>
-      </nav>
+      </nav>   
 
-      <!-- PAGE CONTENT -->
-      <h1>{{ class_id }} Python 203</h1>
+      <div class="container-fluid cloudroom-container">
+        <div class="row h-100">
+          <div class="col-10" style="text-align: justify;">
+            <div class="display-4">
+              {{ classroom_name }} Python 203
+            </div>
+            <div class="all-classroom-posts">
+              <div class="class-post">
+                <h3>Welcome to Python 203!</h3>
+                <img src="../static/images/python_203_image.avif" class="img-fluid" alt="Image of a laptop screen showing code in the python programming language.">
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
+              </div>
+            </div> 
+          </div>
+
+          <!-- SIDE NAV -->
+          <div class="col-2 cloudrooom-green">
+            <h4>sidebar</h4>
+            <a href="">test</a>
+          </div>
+        </div>
+      </div>  
 
     <!-- JavaScript Bundle with Popper -->
     <script 
