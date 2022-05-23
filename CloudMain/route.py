@@ -1,7 +1,9 @@
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template
+from CloudMain import models
 from CloudMain.models import Account
-from CloudMain.forms import CreateAccount, LoginForm
+from CloudMain.models import Classroom
+from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required
 
@@ -62,6 +64,14 @@ def dashboard_page(user):
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>')
 def classroom_main_page(class_id):
+    form = Create_Classroom()
+    if form.validate_on_submit():
+        classroom_to_create = Classroom(classroom_name = form.classroom_name.data,
+                                        classroom_subject = form.classroom_subject.data,
+                                        classroom_room_number = form.classroom_room_number.data,
+                                        classroom_picture = form.classroom_picture.data)
+        db.session.add(classroom_to_create)
+        db.session.commit()
     return render_template('classroom_main_page.html')
 
 # Classroom Assignments - Displays all assignments

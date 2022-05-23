@@ -30,3 +30,12 @@ class Account(db.Model, UserMixin):
 
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
+
+
+# Classroom model, added by Jakob
+class Classroom(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    classroom_name = db.Column(db.String(length=30), nullable=False)
+    classroom_subject = db.Column(db.String(length=40), nullable=True)
+    classroom_room_number= db.Column(db.String(length=5), nullable=True)
+    classroom_picture = db.Column(db.String(length=20), nullable=False)
