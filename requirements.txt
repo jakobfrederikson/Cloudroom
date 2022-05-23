@@ -3,8 +3,8 @@
 
 # Flask Framework
 Flask==2.1.2
-flask_sqlalchemy==2.5.1
-flask-wtf==1.0.1
-flask-bcrypt==1.0.1
-flask-login==0.6.1
+Flask-SQLAlchemy==2.5.1
+Flask-WTF==1.0.1
+Flask-Bcrypt==1.0.1
+Flask-Login==0.6.1
 email_validator
