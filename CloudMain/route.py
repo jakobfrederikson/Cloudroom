@@ -70,6 +70,8 @@ def classroom_main_page(class_id):
                                         classroom_subject = form.classroom_subject.data,
                                         classroom_room_number = form.classroom_room_number.data,
                                         classroom_picture = form.classroom_picture.data)
+        db.session.add(classroom_to_create)
+        db.session.commit()
     return render_template('classroom_main_page.html')
 
 # Classroom Assignments - Displays all assignments
