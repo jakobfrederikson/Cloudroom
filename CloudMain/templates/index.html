@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/index.css') }}">
+{% endblock %}
+
+{% block title %}
+  Cloudroom
+{% endblock %}
+
+{% block content %}
+<!--    Content   -->
+    <div class="container-fluid" id="content">
+      <div class="row">
+        <div class="col align-self-start">
+          <div class="row">
+            <img class="img-fluid" src="{{url_for('static',filename = 'images/home1.jpg')}}" id="img1">
+          </div>
+          <div class="row">
+            <p class="text1">
+              A one-stop hub for any schoolwork to be done; it
+              eliminates the hassle of going through google drive
+              or searching through folders on you PC. Cloudroom
+              can personalise your class experience by adding an
+              inbuilt tool/feature to enhance the learning process
+              of students.
+            </p>
+          </div>
+        </div>
+        <div class="col align-self-center">
+          <div class="row">
+            <p class="text2">
+              Cloudroom currently focuses on letting programming
+              students complete their work fast and efficiently.
+            </p>
+          </div>
+          <div class="row">
+            <img class="img-fluid" src="{{url_for('static',filename = 'images/home2.jpg')}}" id="img2">
+          </div>
+        </div>
+        <div class="col-5">
+          <p class="text3">
+            Cloudroom will streamline sharing files between the
+            teachers and students. this is an online learning environment
+            for teachers and students.
+          </p>
+          <div class="col">
+            <img class="img-fluid" src="{{url_for('static',filename = 'images/home3.jpg')}}" id="img3">
+            <a href="{{ url_for('sign_up') }}"><button type="button" class="signup">Sign Up</button></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid" id="content2">
+      <div class="row">
+        <h1 class="display-3 text-center">Glide through your school work with Cloudroom.</h1>
+        <i class="fa fa-cloud text-center" style="font-size:120px; color:#0FA958" id="logo2"></i>
+        <div class="d-grid gap-2 col-5 mx-auto">
+          <button class="btn btn-success" type="button" style="color:white" id="signup">Sign up</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <p class="text_account text-center">Already have an account?</p>
+        <div class="d-grid gap-2 col-6 mx-auto">
+          <button class="btn_enter_cloudroom btn btn-success" type="button" style="color:white" id="signin">Enter Cloudroom</button>
+        </div>
+      </div>
+      <div class="row">
+        <h1 class="h2_title display-4 text-center">State of the art tools</h1>
+        <img class="img-fluid" src="{{url_for('static',filename = 'images/home4.jpg')}}">
+        <p class="decs_2 text-center">Cloudroom currently focuses on letting programming students
+        complete their work fast and effciently.</p>
+      </div>
+    </div>
+{% endblock %}
