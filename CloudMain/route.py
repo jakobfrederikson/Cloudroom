@@ -22,7 +22,7 @@ def login_page():
                 attempted_password=form.password.data):
             login_user(attempted_user)
             flash(f'Success! You are logged in as: {attempted_user.first_name} {attempted_user.last_name}',category='success')
-            return redirect(url_for('home_page'))
+            return redirect(url_for('dashboard_page', user = attempted_user.first_name))
         else:
             flash('Username and password are not match! Please try again',category='danger')
     return render_template("login.html", form=form)
@@ -44,7 +44,7 @@ def sign_up():
         login_user(user_to_create)
         flash(f'Account created successfully! You are now log in as {user_to_create.first_name} '
               f'{user_to_create.last_name}', category='success')
-        return redirect(url_for('home_page'))
+        return redirect(url_for('dashboard_page', user = user_to_create.first_name))
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a user: {err_msg}', err_msg)

@@ -1,5 +1,5 @@
 body {
-  background-color: #05396B;
+    background-color: #05396B;
 }
 
 #content2{
@@ -8,7 +8,6 @@ body {
 
 #navbar{
     background-color: #0FA958;
-    margin-bottom: 200px;
 }
 
 .nav-link{
@@ -31,13 +30,13 @@ body {
 }
 
 #content{
+    margin-top: 5%;
     padding-right: 100px;
     padding-left: 100px;
 }
 
 #img1 {
     padding:0;
-    margin-top: 35%;
     border-radius: 12px;
     border: 9px solid white;
 }
@@ -45,7 +44,6 @@ body {
 .text2{
     font-weight: 600;
     color: white;
-    padding-top: 40%;
 }
 
 #img2{
