@@ -64,15 +64,7 @@ def dashboard_page(user):
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>')
 def classroom_main_page(class_id):
-    form = Create_Classroom()
-    if form.validate_on_submit():
-        classroom_to_create = Classroom(classroom_name = form.classroom_name.data,
-                                        classroom_subject = form.classroom_subject.data,
-                                        classroom_room_number = form.classroom_room_number.data,
-                                        classroom_picture = form.classroom_picture.data)
-        db.session.add(classroom_to_create)
-        db.session.commit()
-    return render_template('classroom_main_page.html')
+    return render_template('classroom_main_page.html', class_id=class_id)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/assignments')
@@ -105,6 +97,18 @@ def user_drive(user):
     return render_template('user_drive.html', name=user)
 
 # Admin Page - Some pages aren't accessible unless through admin privleges yet
-@app.route('/admin')
+@app.route('/admin', methods=['POST', 'GET'])
 def admin_page():
-    return render_template('admin_page.html')
+    form = Create_Classroom()
+    if form.validate_on_submit():
+        classroom_to_create = Classroom(classroom_name = form.classroom_name.data,
+                                        classroom_subject = form.classroom_subject.data,
+                                        classroom_room_number = form.classroom_room_number.data,
+                                        classroom_picture = form.classroom_picture.data)
+        db.session.add(classroom_to_create)
+        db.session.commit()
+        flash(f'Classroom created successfully! Clasroom {classroom_to_create.classroom_name} has been created.', category='success')
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
+    return render_template('admin_page.html', form=form)
