@@ -18,7 +18,7 @@
   <body>
 
 <!--   Nav bar   -->
-    <nav class="navbar fixed-top navbar-expand-sm" id="navbar">
+    <nav class="navbar sticky-top navbar-expand-sm" id="navbar">
       <a class="navbar-brand" href="{{ url_for('home_page') }}">
         <i class="fa fa-cloud" style="font-size:50px; color:white" id="logo"></i>Cloudroom</a>
       <button type="button" data-bs-toggle="collapse"
@@ -67,7 +67,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <div class="container alert alert-warning alert-dismissible fade show" role="alert">
             <strong>{{ message }}</strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
