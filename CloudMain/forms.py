@@ -29,8 +29,8 @@ class LoginForm(FlaskForm):
 # This is the form used by a teacher/admin to create a classroom. The subject and room_number are not mandatory options for now.
 class Create_Classroom(FlaskForm):
     classroom_name = StringField(label="Classroom Name", validators=[Length(max=40), DataRequired()])
-    classroom_subject = StringField(label="Classroom Subject", vlaidators=[Length(max=40)])
-    classroom_room_number = StringField(label="Room Number", vlaidators=[Length(max=10)])
+    classroom_subject = StringField(label="Classroom Subject", validators=[Length(max=40), DataRequired()])
+    classroom_room_number = StringField(label="Room Number", validators=[Length(max=10), DataRequired()])
     classroom_picture = RadioField(label="Classroom Picture",
-    choices=[('imgaes/classroom_pic1.jpg', 'Technology')], validators=[DataRequired()])
+    choices=[('images/classroom_pic1.png', 'Technology')], validators=[DataRequired()])
     submit = SubmitField(label='Create Classroom')
