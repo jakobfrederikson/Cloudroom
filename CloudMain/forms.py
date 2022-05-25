@@ -32,5 +32,5 @@ class Create_Classroom(FlaskForm):
     classroom_subject = StringField(label="Classroom Subject", validators=[Length(max=40), DataRequired()])
     classroom_room_number = StringField(label="Room Number", validators=[Length(max=10), DataRequired()])
     classroom_picture = RadioField(label="Classroom Picture",
-    choices=[('images/classroom_pic1.png', 'Technology')], validators=[DataRequired()])
+    choices=[('images/classroom_pic1.png', 'Technology'), ('images/profile1.jpg', 'Ghost')], validators=[DataRequired()])
     submit = SubmitField(label='Create Classroom')

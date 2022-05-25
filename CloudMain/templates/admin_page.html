@@ -44,69 +44,106 @@
                 <h3>Jakob</h3>
                 <div class="col-sm">
                     <button type="button" onclick="window.location.href='/classroom/placeholder{{class_id}}'">Classroom Main Page</button>
-                </div>
-                <div class="col-sm">
                     <button type="button" onclick="window.location.href='/classroom/placeholder{{class_id}}/assignments'">Assignment List</button>
-                </div>
-                <div class="col-sm">
                     <button type="button" onclick="window.location.href='/classroom/placeholder{{class_id}}/assignments/placeholder{{assignment_id}}'">Assignment Home Page</button>
-                </div>
-                <div class="col-sm">
                     <button type="button" onclick="window.location.href='/classroom/placeholder{{class_id}}/assignments/placeholder{{assignment_id}}/1{{page_num}}'">Assignment Begin (Question/Answer Section)</button>
-                </div>
-                <div class="col-sm">
                     <button type="button" onclick="window.location.href='/profile/placeholder{{name}}/drive'">Student Grades</button>
-                </div>
             </div>
 
-            <div class="col">
+            <div class="col-sm justify-content-evenly">
                 <h3>Utility functions</h3>
-                <div class="col-sm">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create classroom [stores to database]</button>
 
-                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel">Create a classroom</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                              <form method="POST" class="form-create_classroom">
-                                  {{ form.hidden_tag() }}
-
-                                  {{ form.classroom_name.label() }}
-                                  {{ form.classroom_name(class="form-control", placeholder="Classroom Name") }}
-
-                                  {{ form.classroom_subject.label() }}
-                                  {{ form.classroom_subject(class="form-control", placeholder="Classroom Subject") }}
-
-                                  {{ form.classroom_room_number.label() }}
-                                  {{ form.classroom_room_number(class="form-control", placeholder="Room Number") }}
-
-                                  <div class="row">
-                                      {% for subfield in form.classroom_picture %}
-                                      <div class="col">
-                                        <div class="form-check">
-                                                <img class="img-fluid img-thumbnail d-flex justify-content-center"
-                                                src="{{url_for('static', filename = subfield.data )}}">
-                                               {{ subfield }}{{ subfield.label }}</label>
-                                            </label>
+                    <div class="classroom-creation">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createClassroomsModal">Create classroom [stores to database]</button>
+                        <div class="modal fade" id="createClassroomsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Create a classroom</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <form method="POST" class="form-create_classroom">
+                                      {{ form.hidden_tag() }}
+                                      {{ form.classroom_name.label() }}
+                                      {{ form.classroom_name(class="form-control", placeholder="Classroom Name") }}
+                                      {{ form.classroom_subject.label() }}
+                                      {{ form.classroom_subject(class="form-control", placeholder="Classroom Subject") }}
+                                      {{ form.classroom_room_number.label() }}
+                                      {{ form.classroom_room_number(class="form-control", placeholder="Room Number") }}
+                                      <div class="row">
+                                          {% for subfield in form.classroom_picture %}
+                                          <div class="col">
+                                            <div class="form-check">
+                                                    <img class="img-fluid img-thumbnail d-flex justify-content-center"
+                                                    src="{{url_for('static', filename = subfield.data )}}">
+                                                   {{ subfield }}{{ subfield.label }}</label>
+                                                </label>
+                                              </div>
                                           </div>
+                                          {% endfor %}
                                       </div>
-                                      {% endfor %}
-                                  </div>                                  
-                              
+                        
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                  {{ form.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                              </div>
                             </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              {{ form.submit(class="btn btn-primary") }}
-                            </div>
-                        </form>
                           </div>
-                        </div>
-                      </div>
-                </div>
+                    </div>
+
+                    <div class="show-all-classrooms">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#showClassroomsModal">Show all classrooms in DB</button>
+                        <div class="modal fade" id="showClassroomsModal" tabindex="-1" aria-labelledby="showClassroomsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="showClassroomsModalLabel">All Classrooms in the database</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="test">  
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">id</th>
+                                                    <th scope="col">Classroom Name</th>
+                                                    <th scope="col">Classroom Subject</th>
+                                                    <th scope="col">Room Number</th>
+                                                    <th scope="col">Image</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for class in classrooms %}
+                                                <tr>
+                                                    <th scope="row">{{ class.id }}</th>
+                                                    <td>{{ class.classroom_name }}</td>
+                                                    <td>{{ class.classroom_subject }}</td>
+                                                    <td>{{ class.classroom_room_number }}</td>
+                                                    <td><img class="img-fluid img-thumbnail d-flex justify-content-center"
+                                                        src="{{url_for('static', filename = class.classroom_picture )}}"></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>                                        
+                                    </div>
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                    
+                    <div class="show-all-users">
+                        <button class="btn btn-secondary">Show all users in DB</button>
+                    </div>
             </div>
         </div>
     </div>
