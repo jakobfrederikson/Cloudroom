@@ -142,7 +142,55 @@
                     </div>
                     
                     <div class="show-all-users">
-                        <button class="btn btn-secondary">Show all users in DB</button>
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#showAccountsModal">Show all users in DB</button>
+                        <div class="modal fade" id="showAccountsModal" tabindex="-1" aria-labelledby="showAccountsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="showAccountsModalLabel">All Classrooms in the database</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="test">  
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">id</th>
+                                                    <th scope="col">First Name</th>
+                                                    <th scope="col">Last Name</th>
+                                                    <th scope="col">Gender</th>
+                                                    <th scope="col">School</th>
+                                                    <th scope="col">Nickname</th>
+                                                    <th scope="col">Email</th>
+                                                    <th scope="col">Picture</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for account in accounts %}
+                                                <tr>
+                                                    <th scope="row">{{ account.id }}</th>
+                                                    <td>{{ account.first_name }}</td>
+                                                    <td>{{ account.last_name }}</td>
+                                                    <td>{{ account.gender }}</td>
+                                                    <td>{{ account.school }}</td>
+                                                    <td>{{ account.nickname }}</td>
+                                                    <td>{{ account.email }}</td>
+                                                    <td><img class="img-fluid img-thumbnail d-flex justify-content-center"
+                                                        src="{{url_for('static', filename = account.profile_pic )}}"></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>                                        
+                                    </div>
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                     </div>
             </div>
         </div>
