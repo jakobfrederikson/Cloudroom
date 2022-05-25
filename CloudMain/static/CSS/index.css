@@ -19,10 +19,15 @@ body {
     font-size: 36px;
     margin-left: 40px;
     color: white;
+    margin-left:90px;
 }
 
 #navbar-nav{
     margin-right: 8%
+}
+
+.list_mobile{
+    display:none;
 }
 
 #dropMenu{
@@ -174,7 +179,6 @@ body {
 
     .navbar-brand{
         font-size: 28px;
-        margin-left: 10px;
     }
 }
 

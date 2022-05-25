@@ -18,9 +18,10 @@
   <body>
 
 <!--   Nav bar   -->
-    <nav class="navbar sticky-top navbar-expand-sm" id="navbar">
-      <a class="navbar-brand" href="{{ url_for('home_page') }}">
-        <i class="fa fa-cloud" style="font-size:50px; color:white" id="logo"></i>Cloudroom</a>
+    <nav class="navbar sticky-top navbar-expand-lg" id="navbar">
+      <a class="navbar-brand" href="{{ url_for('home_page') }}" style="">
+        <i class="fa fa-cloud" style="font-size:50px; color:white" id="logo"></i>Cloudroom
+      </a>
       <button type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarNav" class="navbar-toggler"
               aria-controls="navbarNav" aria-expanded="false"
@@ -34,38 +35,75 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto" id="navbar-nav">
-
           {% if current_user.is_authenticated %}
-            <li class="nav-item">
+            <li class="nav-item list_desktop">
               <a class="nav-link" href="{{ url_for('log_out') }}" >
                 Log-out
               </a>
             </li>
           {% else %}
-            <li class="nav-item">
+            <li class="nav-item list_desktop">
               <a class="nav-link" href="{{ url_for('login_page') }}" >
                 Sign in
               </a>
             </li>
           {% endif %}
 
-          <li class="nav-item">
+          <li class="nav-item list_desktop">
             <a href="#" class="nav-link">
               Cloudroom Tools
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item list_desktop">
             <a href="#" class="nav-link">
               About
             </a>
           </li>
-          <li class="nav-item">
-            <a href="/admin">
+          <li class="nav-item list_desktop">
+            <a href="/admin" class="nav-link">
               Admin Page
             </a>
           </li>
         </ul>
-      </div>
+<!--mobile version dashboard       -->
+        <li class="nav-item list_mobile">
+          <a href="#" class="nav-link">
+            <img src="../static/images/dashboard_icon.png" class="mobile_icons" alt="">
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <li class="nav-item list_mobile">
+          <a href="#" class="nav-link">
+            <img src="../static/images/ph_hard-drives-fill.png" class="mobile_icons" alt="">
+            <p>Drive</p>
+          </a>
+        </li>
+        <li class="nav-item list_mobile">
+          <a href="#" class="nav-link">
+            <img src="../static/images/grades_icon.png" class="mobile_icons">
+            <p>Grades</p>
+          </a>
+        </li>
+        <li class="nav-item list_mobile">
+          <a href="#" class="nav-link">
+            <img src="../static/images/Your profile.png" class="mobile_icons" alt="">
+            <p>View</p>
+          </a>
+        </li>
+        {% if current_user.is_authenticated %}
+          <li class="nav-item list_mobile ">
+            <a class="nav-link" href="{{ url_for('log_out') }}" >
+              <p>Log-out</p>
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item list_mobile">
+            <a class="nav-link" href="{{ url_for('login_page') }}" >
+              <p>Sign in</p>
+            </a>
+          </li>
+        {% endif %}
+        </div>
       </div>
     </nav>
 

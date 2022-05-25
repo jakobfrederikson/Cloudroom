@@ -9,6 +9,14 @@ body{
     background-color: #0FA958;
 }
 
+.list_mobile{
+    display:none;
+}
+
+.list_mobile p{
+    margin:0;
+}
+
 .nav-link{
     color: white;
 }
@@ -18,6 +26,7 @@ body{
     font-size: 36px;
     margin-left: 40px;
     color: white;
+    margin-left:90px;
 }
 
 #navbar-nav{
@@ -104,4 +113,82 @@ h1{
 .btn{
     margin-top: 70px;
     margin-bottom: 70px;
+}
+
+.img-border{
+  border-top-style: solid;
+  border-right-style: none;
+  border-bottom-style: none;
+  border-left-style: none;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: #5CDB94;
+  border-width: 1px;
+}
+
+.cloudroom_classnum{
+    width: 600px;
+}
+
+/*Dashboard CSS */
+.cloudroom_classnum{
+    margin-left:120px;
+}
+
+.dashboard_header_content{
+    margin-left:90px;
+}
+
+/* mobile*/
+@media (max-width: 1000px)
+{
+    .cloudroom_classnum {
+     margin-left:60px;
+
+    }
+    .dashboard_header_content{
+        margin-left:60px;
+    }
+
+    .dashboard_main_content{
+        display:inline;
+    }
+    .navbar-brand{
+        margin-left:60px;
+    }
+
+    .list_mobile{
+        display:block;
+    }
+
+    .mobile_icons{
+        display:none
+    }
+
+    .list_desktop{
+        display:none;
+    }
+
+    .side-nav {
+        display: none;
+    }
+}
+
+@media (max-width: 990px){
+    .mobile_icons{
+        display:inline;
+    }
+}
+
+@media (max-width: 620px){
+    .cloudroom_classnum {
+     display:block;
+     margin-left:10px;
+
+    }
+
+    .dashboard_header_content{
+
+        margin-left:10px;
+    }
 }
