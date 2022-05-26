@@ -102,6 +102,7 @@ def user_drive(user):
 def admin_page():
     form = Create_Classroom()
     classrooms = Classroom.query.all()
+    test_class = Classroom.query.filter_by(id=1).first()
     accounts = Account.query.all()
     if form.validate_on_submit():
         classroom_to_create = Classroom(classroom_name = form.classroom_name.data,
@@ -114,7 +115,7 @@ def admin_page():
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
-    return render_template('admin_page.html', form=form, classrooms=classrooms, accounts=accounts)
+    return render_template('admin_page.html', form=form, classrooms=classrooms, accounts=accounts, test_class=test_class)
 
 @app.route('/editprofile', methods=['POST', 'GET'])
 def edit_profile():
