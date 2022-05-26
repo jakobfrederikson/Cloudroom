@@ -192,3 +192,39 @@ h1{
         margin-left:10px;
     }
 }
+
+/*Profile CSS*/
+.profile_form{
+    padding-top: 90px;
+    padding-bottom: 90px;
+    margin-top:60px;
+    width: 47%;
+}
+.profile_back{
+    position:absolute;
+    margin-top: 3%;
+    margin-left: -28%;
+}
+
+.edit_profile_form{
+    width:50%;
+}
+
+/* tablet*/
+@media (max-width: 1000px)
+{
+    .profile_form{
+        width: 90%;
+    }
+    .edit_profile_form{
+        width:100%;
+    }
+}
+
+/* mobile*/
+@media (max-width: 760px)
+{
+    .profile_form{
+        width: 100%;
+    }
+}

@@ -1,82 +1,80 @@
 {% extends 'base.html' %}
-    {% block title %}
-      Sign In
-    {% endblock %}
-    {% block style %}
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
-    {% endblock %}
-    {% block content %}
-
-    <body class="text-center">
-<!--side bar-->
-    <div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green" style="background: #0FA958">
-        <div class="img-border"></div>
-        <div class="user-section">
-            <a href="#" class="text-reset text-decoration-none"><p class="fw-bold text-sm-end" style="color:#20CED9; margin-right: 40px; margin-bottom:0;">Edit Profile</p></a>
-          <img src="{{url_for('static',filename = current_user.profile_pic)}}" class="img-fluid user-image rounded-circle" style="object-fit: cover; width: 150px; height: 150px;" alt="Squid game avatar from Unsplash">
-          <br>
-          <p class="text-center text-md fw-bold"id="username" style="color:white">{{current_user.first_name }} {{current_user.last_name}}</p>
-        </div>
-        <div class="img-border"></div>
-        <br>
-        <div class="nav-icons">
-          <div class="nav-button">
-            <img src="../static/images/dashboard_icon.png" alt="">
-            <p style="color:white">View Dashboard</p>
-          </div>
-             <br>
-          <div class="nav-button">
+{% block title %}
+Dashboard
+{% endblock %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+{% endblock %}
+{% block content %}
+<body class="text-center">
+   <!--side bar-->
+   <div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green" style="background: #0FA958">
+      <div class="img-border"></div>
+      <div class="user-section">
+         <a href="{{url_for('user_profile', user = current_user.first_name)}}" class="text-reset text-decoration-none">
+            <p class="fw-bold text-sm-end" style="color:#20CED9; margin-right: 40px; margin-bottom:0;">Edit Profile</p>
+         </a>
+         <img src="{{url_for('static',filename = current_user.profile_pic)}}" class="img-fluid user-image rounded-circle" style="object-fit: cover; width: 150px; height: 150px;" alt="Squid game avatar from Unsplash">
+         <br>
+         <p class="text-center text-md fw-bold"id="username" style="color:white">{{current_user.first_name }} {{current_user.last_name}}</p>
+      </div>
+      <div class="img-border"></div>
+      <br>
+      <div class="nav-icons">
+         <div class="nav-button">
+            <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="text-reset text-decoration-none">
+               <img src="../static/images/dashboard_icon.png" alt="">
+               <p style="color:white">View Dashboard</p>
+            </a>
+         </div>
+         <br>
+         <div class="nav-button">
             <img src="../static/images/ph_hard-drives-fill.png" alt="">
             <p style="color:white">View Drive</p>
-          </div>
-             <br>
-          <div class="nav-button">
+         </div>
+         <br>
+         <div class="nav-button">
             <img src="../static/images/grades_icon.png" alt="">
             <p style="color:white">View Grades</p>
-          </div>
-        </div>
-    </div>
-<!--content title and join button-->
-    <div class="container-fluid dashboard_header_content">
-      <div class="row justify-content-between">
-        <div class="col-4">
-          <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms</h1>
-        </div>
-
-        <div class="col-4">
-            <a href="#" class="text-reset text-decoration-none">
-                <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
-                    <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom</h1>
-            </a>
-        </div>
+         </div>
       </div>
-    </div>
-<!--main content-->
-    <div class="container-fluid dashboard_main_content">
-        <div class="row row-cols-sm-2 row-cols-md-4">
-            <div class="col cloudroom_classnum" style="">
-                <br>
-              <p class="text-start" style="color:#05396B">Python 101</p>
-              <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
-                <div class="col-md-auto">
-                    <br>
-                    <img class="img-fluid" src="{{url_for('static',filename = 'images/home4.jpg')}}"style="width:270px; padding-bottom:30px;" >
-                </div>
-                <div class="col-md">
-                    <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling</p>
-                    <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code</p>
-                    <div class="d-grid gap-2 mx-auto">
-                      <button class="btn btn-light" type="button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">Join</button>
-                    </div>
-                </div>
-              </div>
+   </div>
+   <!--content title and join button-->
+   <div class="container-fluid dashboard_header_content">
+      <div class="row justify-content-between">
+         <div class="col-4">
+            <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms</h1>
+         </div>
+         <div class="col-4">
+            <a href="#" class="text-reset text-decoration-none">
+               <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
+                  <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom
+               </h1>
+            </a>
+         </div>
+      </div>
+   </div>
+   <!--main content-->
+   <div class="container-fluid dashboard_main_content">
+      <div class="row row-cols-sm-2 row-cols-md-4">
+         <div class="col cloudroom_classnum" style="">
+            <br>
+            <p class="text-start" style="color:#05396B">Python 101</p>
+            <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
+               <div class="col-md-auto">
+                  <br>
+                  <img class="img-fluid" src="{{url_for('static',filename = 'images/home4.jpg')}}"style="width:270px; padding-bottom:30px;" >
+               </div>
+               <div class="col-md">
+                  <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling</p>
+                  <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code</p>
+                  <div class="d-grid gap-2 mx-auto">
+                     <button class="btn btn-light" type="button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">Join</button>
+                  </div>
+               </div>
             </div>
-        </div>
-    </div>
-
-    </body>
-
-
+         </div>
+      </div>
+   </div>
+</body>
 {% endblock %}
-
-
