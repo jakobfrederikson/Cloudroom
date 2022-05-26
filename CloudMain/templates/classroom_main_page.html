@@ -1,3 +1,5 @@
+{% extends 'base.html'%}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,11 +62,11 @@
         <div class="row h-100">
           <div class="col-sm-10" style="text-align: justify;">
             <div class="display-4">
-              {{ classroom_name }} Python 203
+              {{ classroom.classroom_name }}
             </div>
             <div class="all-classroom-posts">
               <div class="class-post">
-                <h3>Welcome to Python 203!</h3>
+                <h3>Welcome to {{ classroom.classroom_subject }}!</h3>
                 <img src="../static/images/python_203_image.avif" class="img-fluid" alt="Image of a laptop screen showing code in the python programming language.">
                 <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
                 <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
