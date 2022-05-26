@@ -62,9 +62,10 @@ def dashboard_page(user):
     return render_template('dashboard.html')
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
-@app.route('/classroom/<class_id>')
+@app.route('/classroom/id=<class_id>')
 def classroom_main_page(class_id):
-    return render_template('classroom_main_page.html', class_id=class_id)
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    return render_template('classroom_main_page.html', classroom=classroom)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/assignments')
