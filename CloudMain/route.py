@@ -1,11 +1,11 @@
 from CloudMain import app, flash, url_for, redirect
-from flask import render_template
+from flask import render_template, request
 from CloudMain import models
 from CloudMain.models import Account
 from CloudMain.models import Classroom
-from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom
+from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo
 from CloudMain import db
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 
 @app.route('/')
 @app.route('/index')
@@ -84,7 +84,7 @@ def classroom_assignment_content(class_id, assignment_id, page_num):
 # User Profile - Display the users information here
 @app.route('/profile/<user>')
 def user_profile(user):
-    return render_template('user_profile.html', name=user)
+    return render_template('user_profile.html',name=user)
 
 # Student Grades - View the average grades of all their courses so far
 @app.route('/profile/<user>/grades')
@@ -113,4 +113,25 @@ def admin_page():
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
-    return render_template('admin_page.html', form=form, classrooms=classrooms, accounts=accounts)
+    return render_template('admin_page.html', form=form)
+
+@app.route('/editprofile', methods=['POST', 'GET'])
+def edit_profile():
+    form = UpdateProfileInfo()
+    if form.validate_on_submit():
+        user_info = Account.query.filter_by(email=current_user.email).first()
+        user_info.first_name = form.first_name.data
+        user_info.last_name = form.last_name.data
+        user_info.school = form.school.data
+        user_info.gender = form.gender.data
+        user_info.nickname = form.nickname.data
+        user_info.profile_pic = form.profile_pic.data
+        db.session.add(user_info)
+        db.session.commit()
+        login_user(user_info)
+        return redirect(url_for('user_profile', user = current_user.first_name))
+
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(f'There was an error updating user: {err_msg}', err_msg)
+    return render_template("editprofile.html", form=form)

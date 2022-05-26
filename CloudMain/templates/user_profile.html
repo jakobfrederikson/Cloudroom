@@ -1,30 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/CSS/styles.css">
-    <link rel="icon" type="image/icon" href="../static/images/favicon.png">
-    <title>User Name | Cloudroom</title>
-</head>
-<body>
-    <div class="page-container">
-        <div class="nav-bar">
-            <h1>Cloudroom</h1>
-            <!-- NAV BAR -->
-            <!-- Some list items are temporary, such as User Profile showing up on the home page. -->
-            <ul>
-                <li><a href="../">Home</a></li>
-                <li><a href="../login.html">Login</a></li>
-                <li><a href="../signup">Sign up</a></li>
-                <li><a href="../dashboard.html">Dashboard</a></li>
-                <li><a href="../assignments.html">Assignments</a></li>
-                <li>User Profile</li>
-                <li><a href="../user-drive.html">User Drive</a></li>
-            </ul>
-        </div>
-        <h1>This is the profile for {{name}}</h1>
-    </div>
+{% extends 'base.html' %}
+{% block title %}
+Profile
+{% endblock %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+{% endblock %}
+{% block content %}
+<body class="text-center">
+   <div class="container" style="color: white;">
+      <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="profile_back">
+      <img src="../static/images/backarrow.png" alt="sss"></a>
+      <div class="container-fluid profile_form" style="background: #05396B">
+         <div class="col">
+            <a href="{{url_for('edit_profile', user = current_user.first_name)}}"
+               class="text-reset text-decoration-none" >
+               <p class="fw-bold text-sm-center fs-6" style="color:#20CED9; margin-left:40%;">Edit Profile</p>
+            </a>
+         </div>
+         <div class="row justify-content-center">
+            <img src="{{url_for('static',filename = current_user.profile_pic)}}"
+               class="img-fluid user-image rounded-circle" style="object-fit: cover; width: 300px; height: 280px;"
+               alt="Profile pic">
+         </div>
+         <br><br>
+         <div class="row justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">NICKNAME:</p>
+            </div>
+            <div class="col-5">
+               <p class="text-sm-start" >{{current_user.nickname}}</p>
+            </div>
+         </div>
+         <div class="row justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">NAME:</p>
+            </div>
+            <div class="col-5">
+               <p class="text-sm-start">{{current_user.first_name }} {{current_user.last_name}}</p>
+            </div>
+         </div>
+         <div class="row justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">SCHOOL:</p>
+            </div>
+            <div class="col-5">
+               <p class="text-sm-start">{{current_user.school}}</p>
+            </div>
+         </div>
+         <div class="row justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">GENDER:</p>
+            </div>
+            <div class="col-5">
+               <p class="text-sm-start">{{current_user.gender}}</p>
+            </div>
+         </div>
+         <br><br>
+         <div class="row justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">EMAIL:</p>
+            </div>
+            <div class="col-5">
+               <p class="text-sm-start email_address">{{current_user.email}}</p>
+            </div>
+         </div>
+         <br><br>
+         <div class="row d-flex justify-content-evenly">
+            <p class="text-center fw-bold">Change Password</p>
+         </div>
+      </div>
+   </div>
 </body>
-</html>
+{% endblock %}
