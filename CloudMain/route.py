@@ -113,7 +113,7 @@ def admin_page():
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
-    return render_template('admin_page.html', form=form)
+    return render_template('admin_page.html', form=form, classrooms=classrooms, accounts=accounts)
 
 @app.route('/editprofile', methods=['POST', 'GET'])
 def edit_profile():
