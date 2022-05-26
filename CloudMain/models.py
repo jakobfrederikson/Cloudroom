@@ -40,5 +40,4 @@ class Classroom(db.Model):
     classroom_subject = db.Column(db.String(length=40), nullable=False)
     classroom_room_number = db.Column(db.String(length=5), nullable=False)
     classroom_picture = db.Column(db.String(length=20), nullable=False)
-    classroom_members = db.Column(db.PickleType)
     
