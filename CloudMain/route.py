@@ -1,9 +1,12 @@
+import flask_bcrypt
+
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request
 from CloudMain import models
 from CloudMain.models import Account
 from CloudMain.models import Classroom
-from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo
+from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -17,11 +20,10 @@ def login_page():
     form = LoginForm()
     if form.validate_on_submit():
         attempted_user = Account.query.filter_by(email=form.email.data).first()
-        print(attempted_user)
         if attempted_user and attempted_user.check_password_correction(
                 attempted_password=form.password.data):
             login_user(attempted_user)
-            flash(f'Success! You are logged in as: {attempted_user.first_name} {attempted_user.last_name}',category='success')
+            # flash(f'Success! You are logged in as: {attempted_user.first_name} {attempted_user.last_name}',category='success')
             return redirect(url_for('dashboard_page', user = attempted_user.first_name))
         else:
             flash('Username and password are not match! Please try again',category='danger')
@@ -83,9 +85,60 @@ def classroom_assignment_content(class_id, assignment_id, page_num):
     return render_template('classroom_assignment_content.html')
 
 # User Profile - Display the users information here
-@app.route('/profile/<user>')
+@app.route('/profile/<user>', methods=['POST', 'GET'])
 def user_profile(user):
-    return render_template('user_profile.html',name=user)
+    form_nickname = UpdateNickname()
+    form_name = UpdateName()
+    form_school = UpdateSchool()
+    form_gender = UpdateGender()
+    form_profile_pic = UpdateProfilePic()
+    form_password = UpdatePassword()
+
+    user_info = Account.query.filter_by(email=current_user.email).first()
+
+    if form_nickname.validate_on_submit():
+        user_info.nickname = form_nickname.nickname.data
+        db.session.add(user_info)
+        db.session.commit()
+        return redirect(url_for('user_profile', user = current_user.first_name))
+
+    if form_name.validate_on_submit():
+        user_info.first_name = form_name.first_name.data
+        user_info.last_name = form_name.last_name.data
+        db.session.add(user_info)
+        db.session.commit()
+        return redirect(url_for('user_profile', user=current_user.first_name))
+
+    if form_school.validate_on_submit():
+        user_info.school = form_school.school.data
+        db.session.add(user_info)
+        db.session.commit()
+        return redirect(url_for('user_profile', user=current_user.first_name))
+
+    if form_gender.validate_on_submit():
+        user_info.gender = form_gender.gender.data
+        db.session.add(user_info)
+        db.session.commit()
+        return redirect(url_for('user_profile', user=current_user.first_name))
+
+    if form_profile_pic.validate_on_submit():
+        user_info.profile_pic = form_profile_pic.profile_pic.data
+        db.session.add(user_info)
+        db.session.commit()
+        return redirect(url_for('user_profile', user=current_user.first_name))
+
+    if form_password.validate_on_submit():
+        new_pass = form_password.password_hash.data
+        user_info.password = new_pass
+        db.session.add(user_info)
+        db.session.commit()
+        return redirect(url_for('user_profile', user=current_user.first_name))
+    if form_password.errors != {}:
+        for err_msg in form_password.errors.values():
+            flash(f'There was an error with creating a user: {err_msg}', err_msg)
+    return render_template('user_profile.html', name=user, form_nickname=form_nickname, form_fname_lname=form_name,
+                           form_school=form_school, form_gender=form_gender, form_profile_pic=form_profile_pic,
+                           form_password=form_password)
 
 # Student Grades - View the average grades of all their courses so far
 @app.route('/profile/<user>/grades', methods=['GET'])
