@@ -11,7 +11,7 @@
     crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/classroom_main_page.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/temporary_nav_bar.css')">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/temporary_nav_bar.css') }}">
     <link rel="icon" type="image/icon" href="../static/images/favicon.png">
     <title>{{ classroom.classroom_name }} | Cloudroom</title>
 </head>
@@ -77,9 +77,12 @@
           </div>
 
           <!-- SIDE NAV -->
-          <div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green">
+          <div class="col-sm-2 side-nav cloudrooom-green">
             <div class="user-section">
-              <img src="../static/images/squid_game_avatar.png" class="img-fluid user-image" alt="Squid game avatar from Unsplash">
+              <div class="thumbnail">
+                <img src="{{url_for('static',filename = current_user.profile_pic)}}" 
+                     alt="Squid game avatar from Unsplash">
+              </div>
               <h5 id="username">{{ current_user.first_name }} {{ current_user.last_name }}</h5>
             </div>
             <div class="nav-icons">

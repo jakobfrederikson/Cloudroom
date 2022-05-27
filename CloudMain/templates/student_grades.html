@@ -61,7 +61,7 @@
 
       <!-- CONTENT -->
       <div class="container-fluid grades-container h-100">
-          <div class="row">
+          <div class="row h-100">
               <div class="col-sm-10">
                   <h1>Your Grades (Fake Data)</h1>
                     <table class="table table-bordered">
@@ -94,11 +94,14 @@
 
                 <!-- SIDE NAV -->
                 <div class="col-sm-2">
-                    <div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green">
+                    <div class="col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green">
                         <div class="user-section">
-                            <img src="{{url_for('static',filename = current_user.profile_pic)}}" class="img-fluid user-image" alt="Squid game avatar from Unsplash">
+                            <div class="thumbnail">
+                              <img src="{{url_for('static',filename = current_user.profile_pic)}}" 
+                                   alt="Squid game avatar from Unsplash">
+                            </div>
                             <h5 id="username">{{ current_user.first_name }} {{ current_user.last_name }}</h5>
-                        </div>
+                          </div>
                         <div class="nav-icons">
                             <div class="nav-button">
                                 <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="text-reset text-decoration-none nav-button">
