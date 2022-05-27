@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField,RadioField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 
-
+#Creating accounts form
 class CreateAccount(FlaskForm):
     first_name = StringField(label="First name", validators=[Length(min=2,max=30), DataRequired()])
     last_name = StringField(label="Last name", validators=[Length(min=2,max=30), DataRequired()])
@@ -19,7 +19,7 @@ class CreateAccount(FlaskForm):
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
     submit = SubmitField(label='Create Account')
 
-
+#Login form
 class LoginForm(FlaskForm):
     email = StringField(label="Email Address:", validators=[DataRequired()])
     password = PasswordField(label="Password:", validators=[DataRequired()])
@@ -48,3 +48,33 @@ class Create_Classroom(FlaskForm):
     classroom_picture = RadioField(label="Classroom Picture",
     choices=[('images/classroom_pic1.png', 'Technology'), ('images/profile1.jpg', 'Ghost')], validators=[DataRequired()])
     submit = SubmitField(label='Create Classroom')
+
+# Update user details forms
+class UpdateNickname(FlaskForm):
+    nickname = StringField(label="Nickname", validators=[Length(min=2,max=30), DataRequired()])
+    submit = SubmitField(label='Save Changes')
+
+class UpdateName(FlaskForm):
+    first_name = StringField(label="First name", validators=[Length(min=2,max=30), DataRequired()])
+    last_name = StringField(label="Last name", validators=[Length(min=2,max=30), DataRequired()])
+    submit = SubmitField(label='Save Changes')
+
+class UpdateGender(FlaskForm):
+    gender = SelectField(label="Select your Gender", choices=[('Male'), ('Female'), ('Other')])
+    submit = SubmitField(label='Save Changes')
+
+class UpdateSchool(FlaskForm):
+    school = SelectField(label="Select your School",
+                         choices=[('Yoobee College'), ('Victoria University'), ('Massey University')])
+    submit = SubmitField(label='Save Changes')
+
+class UpdateProfilePic(FlaskForm):
+    profile_pic = RadioField(label="Profile Picture",
+        choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
+        ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
+    submit = SubmitField(label='Save Changes')
+
+class UpdatePassword(FlaskForm):
+    password_hash = PasswordField(label="Password", validators=[Length(min=8), DataRequired()])
+    verify_password = PasswordField(label="Confirm Password", validators=[EqualTo('password_hash'), DataRequired()])
+    submit = SubmitField(label='Save Changes')
