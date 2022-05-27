@@ -9,9 +9,11 @@
     rel="stylesheet" 
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
     crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/CSS/classroom_main_page.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/classroom_main_page.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/temporary_nav_bar.css')">
     <link rel="icon" type="image/icon" href="../static/images/favicon.png">
-    <title>Classroom Name | Cloudroom</title>
+    <title>{{ classroom.classroom_name }} | Cloudroom</title>
 </head>
 <body>
 
@@ -56,6 +58,7 @@
         </div>
       </nav>   
 
+      <!-- CONTENT -->
       <div class="container-fluid cloudroom-container">
         <div class="row h-100">
           <div class="col-sm-10" style="text-align: justify;">
@@ -81,19 +84,25 @@
             </div>
             <div class="nav-icons">
               <div class="nav-button">
-                <a href="{{url_for('dashboard_page', user = current_user.first_name)}}">
+                <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="text-reset text-decoration-none nav-button">
                   <img src="../static/images/dashboard_icon.png" alt="Your dashboard icon">
                   <p>View Dashboard</p>
                 </a>
               </div>
               <div class="nav-button">
-                <a href="">
+                <a href="" class="text-reset text-decoration-none nav-button">
                   <img src="../static/images/drive_icon.png" alt="Your storage drive icon">
                   <p>View Drive</p>
                 </a>
               </div>
               <div class="nav-button">
-                <a href="">
+                <a href="" class="text-reset text-decoration-none nav-button">
+                  <img src="../static/images/members_icon.png" alt="All classroom members">
+                  <p>Classroom members</p>
+                </a>
+              </div>
+              <div class="nav-button">
+                <a href="{{url_for('student_grades', user = current_user.first_name)}}" class="text-reset text-decoration-none nav-button">
                   <img src="../static/images/grades_icon.png" alt="Your grades icon">
                   <p>View Grades</p>
                 </a>

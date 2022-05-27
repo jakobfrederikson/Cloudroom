@@ -88,9 +88,10 @@ def user_profile(user):
     return render_template('user_profile.html',name=user)
 
 # Student Grades - View the average grades of all their courses so far
-@app.route('/profile/<user>/grades')
+@app.route('/profile/<user>/grades', methods=['GET'])
 def student_grades(user):
-    return render_template('student_grades.html', name=user)
+    classrooms = Classroom.query.all()
+    return render_template('student_grades.html', name=user, classrooms=classrooms)
 
 # Student Drive - View all their saved notes or files
 @app.route('/profile/<user>/drive')
@@ -102,7 +103,9 @@ def user_drive(user):
 def admin_page():
     form = Create_Classroom()
     classrooms = Classroom.query.all()
-    test_class = Classroom.query.filter_by(id=1).first()
+    test_class = Classroom.query.filter_by(id=1).first() # We can't currently link a student to a 
+                                                         # classroom, so I'm just sending a fake 
+                                                         # classroom through to gather it's data
     accounts = Account.query.all()
     if form.validate_on_submit():
         classroom_to_create = Classroom(classroom_name = form.classroom_name.data,

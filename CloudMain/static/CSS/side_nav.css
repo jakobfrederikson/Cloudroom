@@ -1,0 +1,51 @@
+.side-nav {
+    margin-top: 1px;
+    position: fixed;
+    flex: 1 1 auto;
+    padding: 0%;
+}
+
+.user-section {
+    border-top: 1px white;
+    border-bottom: 1px white;
+    border-style: solid none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.user-image {
+    margin: 10px 0;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    object-position: 50% 10%;
+    border-radius: 50%;
+}
+
+.nav-icons {
+    margin: 50px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* 992px is when the nav-bar turns into a hamburger menu */
+@media (max-width: 992px)
+{
+    .side-nav {
+        display: none;
+    }
+}
