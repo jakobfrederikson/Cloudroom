@@ -1,29 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/CSS/styles.css">
-    <link rel="icon" type="image/icon" href="../static/images/favicon.png">
-    <title>Your Drive | Cloudroom</title>
-</head>
-<body>
-    <div class="page-container">
-            <div class="nav-bar">
-                <h1>Cloudroom</h1>
-                <!-- NAV BAR -->
-                <!-- Some list items are temporary, such as User Profile showing up on the home page. -->
-                <ul>
-                    <li><a href="./index.html">Home</a></li>
-                    <li><a href="./login.html">Login</a></li>
-                    <li><a href="./signup.html">Sign up</a></li>
-                    <li><a href="./dashboard.html">Dashboard</a></li>
-                    <li><a href="./assignments.html">Assignments</a></li>
-                    <li><a href="./user-profile.html">User Profile</a></li>
-                    <li>User Drive</li>
-                </ul>
-            </div>
+{% extends 'base.html' %}
+    {% block title %}
+      Sign In
+    {% endblock %}
+    {% block style %}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+    {% endblock %}
+    {% block content %}
+
+    <div class="center">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <button>Submit</button>
+        </form>
     </div>
-</body>
-</html>
+
+    <div>
+        {% for file in files %}
+        <li>
+          {{ file.filename }} | <a href="{{url_for('user_drive', user = current_user.first_name,id=file.id)}}">Download</a>
+        </li>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+

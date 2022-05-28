@@ -1,14 +1,12 @@
-import flask_bcrypt
-
 from CloudMain import app, flash, url_for, redirect
-from flask import render_template, request
-from CloudMain import models
-from CloudMain.models import Account
-from CloudMain.models import Classroom
+from flask import render_template, request, send_file
+from CloudMain.models import Account,Classroom, Upload_File
 from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
+from io import BytesIO
+
 
 @app.route('/')
 @app.route('/index')
@@ -147,9 +145,24 @@ def student_grades(user):
     return render_template('student_grades.html', name=user, classrooms=classrooms)
 
 # Student Drive - View all their saved notes or files
-@app.route('/profile/<user>/drive')
-def user_drive(user):
-    return render_template('user_drive.html', name=user)
+@app.route('/profile/<user>/<id>/drive', methods=['POST', 'GET'])
+def user_drive(user,id):
+    files = Upload_File().query.all()
+    if request.method == "POST":
+        if request.files['file'].filename == '':
+            flash(f'Error you must select a file',category='danger')
+        else:
+            file = request.files['file']
+            upload = Upload_File(filename=file.filename, data=file.read())
+            db.session.add(upload)
+            db.session.commit()
+            flash(f'File(s) has been successfully uploaded!')
+            return redirect(url_for('user_drive', user=current_user.first_name))
+    elif request.method == "GET" and id != '000':
+        files = Upload_File().query.filter_by(id=id).first()
+        return send_file(BytesIO(files.data), as_attachment=True, attachment_filename=files.filename)
+
+    return render_template('user_drive.html', name=user, files=files)
 
 # Admin Page - Some pages aren't accessible unless through admin privleges yet
 @app.route('/admin', methods=['POST', 'GET'])
