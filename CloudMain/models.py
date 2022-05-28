@@ -40,4 +40,10 @@ class Classroom(db.Model):
     classroom_subject = db.Column(db.String(length=40), nullable=False)
     classroom_room_number = db.Column(db.String(length=5), nullable=False)
     classroom_picture = db.Column(db.String(length=20), nullable=False)
-    
+
+class Upload_File(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    filename = db.Column(db.String, nullable=False)
+    data = db.Column(db.LargeBinary(length=(2 ** 32) - 1), nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+
