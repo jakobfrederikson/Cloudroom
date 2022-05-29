@@ -18,7 +18,7 @@ class Account(db.Model, UserMixin):
     email = db.Column(db.String(length=20), nullable=False, unique=True)
     password_hash = db.Column(db.String(length=12), nullable=False)
     profile_pic = db.Column(db.String(length=20), nullable=False)
-
+    items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
 
     @property
     def password(self):
@@ -41,9 +41,10 @@ class Classroom(db.Model):
     classroom_room_number = db.Column(db.String(length=5), nullable=False)
     classroom_picture = db.Column(db.String(length=20), nullable=False)
 
+
 class Upload_File(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     filename = db.Column(db.String, nullable=False)
     data = db.Column(db.LargeBinary(length=(2 ** 32) - 1), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.now())
-
+    owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
