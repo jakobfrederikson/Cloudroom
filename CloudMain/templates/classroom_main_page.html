@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/temporary_nav_bar.css') }}">
     <link rel="icon" type="image/icon" href="../static/images/favicon.png">
-    <title>{{ classroom.classroom_name }} | Cloudroom</title>
+    <title>{{ classroom.classroom_subject }} | Cloudroom</title>
 </head>
 <body>
 
@@ -87,7 +87,7 @@
             </div>
             <div class="nav-icons">
               <div class="nav-button">
-                <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="text-reset text-decoration-none nav-button">
+                <a href="{{ url_for('dashboard_page', user = current_user.first_name) }}" class="text-reset text-decoration-none nav-button">
                   <img src="../static/images/dashboard_icon.png" alt="Your dashboard icon">
                   <p>View Dashboard</p>
                 </a>
@@ -99,13 +99,13 @@
                 </a>
               </div>
               <div class="nav-button">
-                <a href="" class="text-reset text-decoration-none nav-button">
+                <a href="{{ url_for('view_classroom_members', class_id = classroom.id) }}" class="text-reset text-decoration-none nav-button">
                   <img src="../static/images/members_icon.png" alt="All classroom members">
                   <p>Classroom members</p>
                 </a>
               </div>
               <div class="nav-button">
-                <a href="{{url_for('student_grades', user = current_user.first_name)}}" class="text-reset text-decoration-none nav-button">
+                <a href="{{ url_for('student_grades', user = current_user.first_name) }}" class="text-reset text-decoration-none nav-button">
                   <img src="../static/images/grades_icon.png" alt="Your grades icon">
                   <p>View Grades</p>
                 </a>
