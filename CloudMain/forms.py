@@ -78,3 +78,6 @@ class UpdatePassword(FlaskForm):
     password_hash = PasswordField(label="Password", validators=[Length(min=8), DataRequired()])
     verify_password = PasswordField(label="Confirm Password", validators=[EqualTo('password_hash'), DataRequired()])
     submit = SubmitField(label='Save Changes')
+
+class Delete_File(FlaskForm):
+    submit = SubmitField(label='Delete File')

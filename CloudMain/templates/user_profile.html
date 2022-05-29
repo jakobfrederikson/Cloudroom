@@ -51,7 +51,7 @@ Profile
                <p class="text-sm-center" >{{current_user.nickname}}</p>
             </div>
             <div class="col-1">
-               <button type="button" class="btn btn-sm btn-primary" style="margin:0;" id="show_btn1">Change</button>
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn1">Change</button>
             </div>
          </div>
          <form method="POST" class="form-register" style="color:white">
@@ -72,7 +72,7 @@ Profile
                <p class="text-sm-center">{{current_user.first_name }} {{current_user.last_name}}</p>
             </div>
             <div class="col-1">
-               <button type="button" class="btn btn-sm btn-primary" style="margin:0;" id="show_btn2">Change</button>
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn2">Change</button>
             </div>
          </div>
          <form method="POST" class="form-profile" style="color:white">
@@ -95,7 +95,7 @@ Profile
                <p class="text-sm-center">{{current_user.school}}</p>
             </div>
             <div class="col-1">
-               <button type="button" class="btn btn-sm btn-primary" style="margin:0;" id="show_btn3">Change</button>
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn3">Change</button>
             </div>
          </div>
          <form method="POST" class="form-profile" style="color:white">
@@ -116,7 +116,7 @@ Profile
                <p class="text-sm-center">{{current_user.gender}}</p>
             </div>
             <div class="col-1">
-               <button type="button" class="btn btn-sm btn-primary" style="margin:0;" id="show_btn4">Change</button>
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn4">Change</button>
             </div>
          </div>
          <br><br>
@@ -161,51 +161,51 @@ Profile
    <script>
       <!-- nickname-->
           document.getElementById("hide_btn1").addEventListener("click", function() {
-             document.getElementById("form1").style.display = "none";
+             document.getElementById("form1_profile").style.display = "none";
           });
           document.getElementById("show_btn1").addEventListener("click", function() {
-             document.getElementById("form1").style.display = "inline";
+             document.getElementById("form1_profile").style.display = "inline";
           });
       <!--    f_name l_name-->
           document.getElementById("hide_btn2").addEventListener("click", function() {
-             document.getElementById("form2").style.display = "none";
+             document.getElementById("form2_profile").style.display = "none";
           });
           document.getElementById("show_btn2").addEventListener("click", function() {
-             document.getElementById("form2").style.display = "inline";
+             document.getElementById("form2_profile").style.display = "inline";
           });
       <!--    school-->
           document.getElementById("hide_btn3").addEventListener("click", function() {
-             document.getElementById("form3").style.display = "none";
+             document.getElementById("form3_profile").style.display = "none";
           });
           document.getElementById("show_btn3").addEventListener("click", function() {
-             document.getElementById("form3").style.display = "inline";
+             document.getElementById("form3_profile").style.display = "inline";
           });
       <!--    gender-->
           document.getElementById("hide_btn4").addEventListener("click", function() {
-             document.getElementById("form4").style.display = "none";
+             document.getElementById("form4_profile").style.display = "none";
           });
           document.getElementById("show_btn4").addEventListener("click", function() {
-             document.getElementById("form4").style.display = "inline";
+             document.getElementById("form4_profile").style.display = "inline";
           });
       <!--    profile-->
           document.getElementById("hide_btn5").addEventListener("click", function() {
-             document.getElementById("form5").style.display = "none";
+             document.getElementById("form5_profile").style.display = "none";
              document.getElementById("profile_picture").style.display = "inline";
              document.getElementById("show_btn5").style.display = "inline";
           });
           document.getElementById("show_btn5").addEventListener("click", function() {
-             document.getElementById("form5").style.display = "inline";
+             document.getElementById("form5_profile").style.display = "inline";
              document.getElementById("profile_picture").style.display = "none";
              document.getElementById("show_btn5").style.display = "none";
           });
       <!--    password-->
           document.getElementById("hide_btn6").addEventListener("click", function() {
-             document.getElementById("form6").style.display = "none";
+             document.getElementById("form6_profile").style.display = "none";
              document.getElementById("show_btn6").style.display = "inline";
              document.getElementById("show_btn6").style.display = "inline";
           });
           document.getElementById("show_btn6").addEventListener("click", function() {
-             document.getElementById("form6").style.display = "inline";
+             document.getElementById("form6_profile").style.display = "inline";
              document.getElementById("show_btn6").style.display = "none";
              document.getElementById("show_btn6").style.display = "none";
           });
