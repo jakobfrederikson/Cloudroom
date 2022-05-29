@@ -2,7 +2,7 @@ from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Upload_File
 from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
-    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
@@ -146,23 +146,37 @@ def student_grades(user):
 
 # Student Drive - View all their saved notes or files
 @app.route('/profile/<user>/<id>/drive', methods=['POST', 'GET'])
-def user_drive(user,id):
-    files = Upload_File().query.all()
+def user_drive(user, id):
+    files = Upload_File().query.filter_by(owner=current_user.id)
+    delete_form = Delete_File()
+
     if request.method == "POST":
+        delete_item = request.form.get('remove_item')
+        d_file_obj = Upload_File().query.filter_by(filename=delete_item).first()
+        if d_file_obj:
+            Upload_File().query.filter_by(id = d_file_obj.id).delete()
+            flash(f'{d_file_obj.filename} has been deleted')
+            db.session.commit()
+            return redirect(url_for('user_drive', user=current_user.first_name, id='000'))
+
         if request.files['file'].filename == '':
             flash(f'Error you must select a file',category='danger')
+            delete_file = request.form.get('delete_file')
+            print(delete_file)
+
         else:
             file = request.files['file']
-            upload = Upload_File(filename=file.filename, data=file.read())
+            upload = Upload_File(filename=file.filename, data=file.read(), owner=current_user.id)
             db.session.add(upload)
             db.session.commit()
             flash(f'File(s) has been successfully uploaded!')
-            return redirect(url_for('user_drive', user=current_user.first_name))
+            return redirect(url_for('user_drive', user=current_user.first_name, id='000'))
+
     elif request.method == "GET" and id != '000':
         files = Upload_File().query.filter_by(id=id).first()
         return send_file(BytesIO(files.data), as_attachment=True, attachment_filename=files.filename)
 
-    return render_template('user_drive.html', name=user, files=files)
+    return render_template('user_drive.html', name=user, files=files, delete_form=delete_form)
 
 # Admin Page - Some pages aren't accessible unless through admin privleges yet
 @app.route('/admin', methods=['POST', 'GET'])

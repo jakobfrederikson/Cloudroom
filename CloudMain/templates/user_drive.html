@@ -10,17 +10,16 @@
     <div class="center">
         <form method="POST" enctype="multipart/form-data">
             <input type="file" name="file">
-            <button>Submit</button>
+            <button>Upload</button>
         </form>
     </div>
-
     <div>
         {% for file in files %}
+        {% include 'includes/upload_file_modal.html' %}
         <li>
-          {{ file.filename }} | <a href="{{url_for('user_drive', user = current_user.first_name,id=file.id)}}">Download</a>
+          {{ file.filename }} | <a href="#" data-bs-toggle="modal" data-bs-target="#Modal-Download-{{ file.id }}">Download</a>
         </li>
         {% endfor %}
     </div>
 
 {% endblock %}
-
