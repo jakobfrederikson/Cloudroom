@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Grades | Cloudroom</title>
+    <title>{{ classroom.classroom_subject }} Members | Cloudroom</title>
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
     rel="stylesheet" 
@@ -13,7 +13,7 @@
     crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/temporary_nav_bar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/student_grades.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/view_classroom_members.css') }}">
     <link rel="icon" href="{{ url_for('static',filename='images/favicon.png') }}">
 </head>
 
@@ -60,39 +60,48 @@
       </nav>
 
       <!-- CONTENT -->
-      <div class="container-fluid grades-container h-100">
+      <div class="container-fluid members-container h-100">
           <div class="row h-100">
               <div class="col-sm-10">
-                <div class="fs-6">
-                    <a href="javascript:history.back()">Back to Classroom</a>
-                </div>
-                  <h1>Your Grades (Fake Data)</h1>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th scope="col">Class ID</th>
-                                <th scope="col">Course Name</th>
-                                <th scope="col">Term 1</th>
-                                <th scope="col">Term 2</th>
-                                <th scope="col">Term 3</th>
-                                <th scope="col">Term 4</th>
-                                <th scope="col">Average</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for class in classrooms %}
-                            <tr>
-                                <th scope="row">{{ class.id }}</th>
-                                <td>{{ class.classroom_subject }}</td>
-                                <td>A+</td>
-                                <td>A+</td>
-                                <td>A+</td>
-                                <td>A+</td>
-                                <td>A+</td>
-                            </tr>
+                  <div class="fs-6">
+                      <a href="javascript:history.back()">Back to Classroom</a>
+                  </div>
+                    <h1>{{ classroom.classroom_subject }} Members</h1>
+                    <div class="display-6">All students</div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col fw-bold">
+                                    Picture
+                                </div>
+                                <div class="col fw-bold">
+                                    Name
+                                </div>
+                                <div class="col fw-bold">
+                                    Nickname
+                                </div>
+                                <div class="col fw-bold">
+                                    Gender
+                                </div>
+                                <div class="col fw-bold">
+                                    School
+                                </div>
+                                <div class="col fw-bold">
+                                    Email
+                                </div>
+                            </div>
+                            {% for account in accounts %}
+                            <div class="row">
+                                <div class="col"><img width=200 class="img-thumbnail" src="{{ url_for('static',filename = account.profile_pic )}}" alt="Class member's profile picture"></div>
+                                <div class="col">{{ account.first_name }} {{ account.last_name }}</div>
+                                <div class="col">{{ account.nickname }}</div>
+                                <div class="col">{{ account.gender }}</div>
+                                <div class="col">{{ account.school }}</div>
+                                <div class="col">{{ account.email }}</div>
+                            </div>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
               </div>
 
                 <!-- SIDE NAV -->

@@ -1,3 +1,4 @@
+from ast import AsyncFunctionDef
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Upload_File
@@ -62,7 +63,7 @@ def dashboard_page(user):
     return render_template('dashboard.html')
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
-@app.route('/classroom/id=<class_id>')
+@app.route('/classroom/<class_id>')
 def classroom_main_page(class_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
     return render_template('classroom_main_page.html', classroom=classroom)
@@ -206,3 +207,10 @@ def edit_profile():
         for err_msg in form.errors.values():
             flash(f'There was an error updating user: {err_msg}', err_msg)
     return render_template("editprofile.html", form=form)
+
+@app.route('/classroom/<class_id>/members', methods=['POST', 'GET'])
+def view_classroom_members(class_id):
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    accounts = Account.query.all()
+    return render_template('view_classroom_members.html', classroom=classroom, accounts=accounts)
+    
