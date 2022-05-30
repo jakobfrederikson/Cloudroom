@@ -6,6 +6,7 @@ Profile
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
 {% endblock %}
 {% block content %}
+
 <body class="text-center">
    <div class="container" style="color: white;">
       <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="profile_back">
