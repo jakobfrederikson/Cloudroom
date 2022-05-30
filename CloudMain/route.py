@@ -195,8 +195,7 @@ def admin_page():
     #                                                      # classroom, so I'm just sending a fake 
     #                                                      # classroom through to gather it's data
     # accounts = Account.query.all()
-    if paper_form.validate_on_submit():
-        print(paper_form.data)
+    if paper_form.validate_on_submit() and paper_form.submit.data:
         paper_to_create = Paper(paper_name = paper_form.paper_name.data,
                                 paper_room_number = paper_form.paper_room_number.data,
                                 paper_picture = paper_form.paper_picture.data,
@@ -206,13 +205,13 @@ def admin_page():
         flash(f'Paper created successfully! Paper {paper_to_create.paper_name} has been created.', category='success')
         return redirect(url_for('home_page'))
     if paper_form.errors != {}:
-        print(paper_form.data)
+        for err in paper_form.errors:
+            print(f"ERROR: {err}")
         for err_msg in paper_form.errors.values():     
-            print(request.form.get('classroom_select') + " <--- request.form.get")  
             flash(f'There was an error with creating a Paper: {err_msg}', err_msg)
             return redirect(url_for('home_page'))
 
-    if classroom_form.validate_on_submit():
+    if classroom_form.validate_on_submit() and classroom_form.submit.data:
         classroom_to_create = Classroom(classroom_name = classroom_form.classroom_name.data)
         db.session.add(classroom_to_create)
         db.session.commit()
