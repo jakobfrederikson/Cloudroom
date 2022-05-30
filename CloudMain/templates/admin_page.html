@@ -43,56 +43,95 @@
             <div class="col">
                 <h3>Jakob</h3>
                 <div class="col-sm">
-                    <button type="button" onclick="window.location.href='/classroom/{{ test_class.id }}'">Classroom Main Page</button>
-                    <button type="button" onclick="window.location.href='/classroom/{{ classrooms.class_id }}/assignments'">Assignment List</button>
-                    <button type="button" onclick="window.location.href='/classroom/{{ classrooms[0].class_id}}/assignments/placeholder{{assignment_id}}'">Assignment Home Page</button>
-                    <button type="button" onclick="window.location.href='/classroom/{{ classrooms[0].class_id}}/assignments/placeholder{{assignment_id}}/1{{page_num}}'">Assignment Begin (Question/Answer Section)</button>
-                    <button type="button" onclick="window.location.href='/profile/{{ accounts[1].first_name }}/grades'">Student Grades</button>
+                    <!-- <button type="button" onclick="window.location.href='/classroom/ test_class.id '">Classroom Main Page</button>
+                    <button type="button" onclick="window.location.href='/classroom/ classrooms.class_id /assignments'">Assignment List</button>
+                    <button type="button" onclick="window.location.href='/classroom/ classrooms[0].class_id/assignments/placeholder{{assignment_id}}'">Assignment Home Page</button>
+                    <button type="button" onclick="window.location.href='/classroom/ classrooms[0].class_id/assignments/placeholder{{assignment_id}}/1{{page_num}}'">Assignment Begin (Question/Answer Section)</button>
+                    <button type="button" onclick="window.location.href='/profile/ accounts[1].first_name /grades'">Student Grades</button> -->
             </div>
 
             <div class="col-sm justify-content-evenly">
                 <h3>Utility functions</h3>
 
+                    <!-- Create a classroom -->
                     <div class="classroom-creation">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createClassroomsModal">Create classroom [stores to database]</button>
-                        <div class="modal fade" id="createClassroomsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#createClassroomsModal">Create classroom [stores to database]</button>
+                        <div class="modal fade" id="createClassroomsModal" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="exampleModalLabel">Create a classroom</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Create a classroom</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" class="form-create_classroom">
+                                            {{ classroom_form.hidden_tag() }}
+                                            {{ classroom_form.classroom_name.label() }}
+                                            {{ classroom_form.classroom_name(class="form-control", placeholder="Classroom Name") }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        {{ classroom_form.submit(class="btn btn-primary") }}
+                                    </div>
+                                    </form>
                                 </div>
-                                <div class="modal-body">
-                                  <form method="POST" class="form-create_classroom">
-                                      {{ form.hidden_tag() }}
-                                      {{ form.classroom_name.label() }}
-                                      {{ form.classroom_name(class="form-control", placeholder="Classroom Name") }}
-                                      {{ form.classroom_subject.label() }}
-                                      {{ form.classroom_subject(class="form-control", placeholder="Classroom Subject") }}
-                                      {{ form.classroom_room_number.label() }}
-                                      {{ form.classroom_room_number(class="form-control", placeholder="Room Number") }}
-                                      <div class="row">
-                                          {% for subfield in form.classroom_picture %}
-                                          <div class="col">
-                                            <div class="form-check">
-                                                    <img class="img-fluid img-thumbnail d-flex justify-content-center"
-                                                    src="{{url_for('static', filename = subfield.data )}}">
-                                                   {{ subfield }}{{ subfield.label }}</label>
-                                                </label>
-                                              </div>
-                                          </div>
-                                          {% endfor %}
-                                      </div>
-                        
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                  {{ form.submit(class="btn btn-primary") }}
-                                </div>
-                            </form>
-                              </div>
                             </div>
-                          </div>
+                        </div>
+                    </div>
+
+                    <!-- Create a paper -->
+                    <div class="paper-creation">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#createPaperModal">Create paper [stores to database]</button>
+                        <div class="modal fade" id="createPaperModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Create a paper</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" class="form-create_paper">
+                                            {{ paper_form.hidden_tag() }}
+                                            {{ paper_form.paper_name.label() }}
+                                            {{ paper_form.paper_name(class="form-control", placeholder="Paper Name") }}
+                                            {{ paper_form.paper_room_number.label() }}
+                                            {{ paper_form.paper_room_number(class="form-control", placeholder="Paper Name") }}
+                                            <div class="row">
+                                                {% for pic in paper_form.paper_picture %}
+                                                <div class="col">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label" for="flexRadioDefault1">
+                                                            <img class="img-fluid img-thumbnail d-flex justify-content-center"
+                                                                src="{{ url_for('static', filename = pic.data) }}">
+                                                            {{ pic }} {{ pic.label }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                            <select name="classroom_select" class="form-select" aria-label="Default select example">
+                                                <option selected>Select a classroom</option>
+                                                {% for class in classrooms %}
+                                                <option value="{{ class.id }}">{{ class.classroom_name }}</option>
+                                                {% endfor %}
+                                              </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        {{ paper_form.submit(class="btn btn-primary") }}
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="show-all-classrooms">
@@ -117,7 +156,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for class in classrooms %}
+                                                <!-- {% for class in classrooms %}
                                                 <tr>
                                                     <th scope="row">{{ class.id }}</th>
                                                     <td>{{ class.classroom_name }}</td>
@@ -126,7 +165,7 @@
                                                     <td><img class="img-fluid img-thumbnail d-flex justify-content-center"
                                                         src="{{url_for('static', filename = class.classroom_picture )}}"></td>
                                                 </tr>
-                                                {% endfor %}
+                                                {% endfor %} -->
                                             </tbody>
                                         </table>                                        
                                     </div>                                   
@@ -163,7 +202,7 @@
                                                     <th scope="col">Picture</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <!-- <tbody>
                                                 {% for account in accounts %}
                                                 <tr>
                                                     <th scope="row">{{ account.id }}</th>
@@ -177,7 +216,7 @@
                                                         src="{{url_for('static', filename = account.profile_pic )}}"></td>
                                                 </tr>
                                                 {% endfor %}
-                                            </tbody>
+                                            </tbody> -->
                                         </table>                                        
                                     </div>
                                     

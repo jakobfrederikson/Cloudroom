@@ -43,11 +43,17 @@ class UpdateProfileInfo(FlaskForm):
 # This is the form used by a teacher/admin to create a classroom.
 class Create_Classroom(FlaskForm):
     classroom_name = StringField(label="Classroom Name", validators=[Length(max=40), DataRequired()])
-    classroom_subject = StringField(label="Classroom Subject", validators=[Length(max=40), DataRequired()])
-    classroom_room_number = StringField(label="Room Number", validators=[Length(max=10), DataRequired()])
-    classroom_picture = RadioField(label="Classroom Picture",
-    choices=[('images/classroom_pic1.png', 'Technology'), ('images/profile1.jpg', 'Ghost')], validators=[DataRequired()])
     submit = SubmitField(label='Create Classroom')
+
+# Create_Classroom - by Jakob
+# This is the form used by a teacher/admin to create a classroom.
+class Create_Paper(FlaskForm):
+    paper_name = StringField(label="Paper Name", validators=[Length(max=40), DataRequired()])
+    paper_room_number = StringField(label="Paper Room Number", validators=[Length(max=5), DataRequired()])
+    paper_picture = RadioField(label="Profile Picture",
+        choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
+        ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
+    submit = SubmitField(label='Create Paper')
 
 # Update user details forms
 class UpdateNickname(FlaskForm):

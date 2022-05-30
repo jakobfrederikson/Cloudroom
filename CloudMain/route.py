@@ -1,8 +1,8 @@
 from ast import AsyncFunctionDef
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Upload_File
-from CloudMain.forms import CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
+from CloudMain.models import Account,Classroom, Paper, Upload_File
+from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
@@ -182,24 +182,50 @@ def user_drive(user, id):
 # Admin Page - Some pages aren't accessible unless through admin privleges yet
 @app.route('/admin', methods=['POST', 'GET'])
 def admin_page():
-    form = Create_Classroom()
-    classrooms = Classroom.query.all()
-    test_class = Classroom.query.filter_by(id=1).first() # We can't currently link a student to a 
-                                                         # classroom, so I'm just sending a fake 
-                                                         # classroom through to gather it's data
-    accounts = Account.query.all()
-    if form.validate_on_submit():
-        classroom_to_create = Classroom(classroom_name = form.classroom_name.data,
-                                        classroom_subject = form.classroom_subject.data,
-                                        classroom_room_number = form.classroom_room_number.data,
-                                        classroom_picture = form.classroom_picture.data)
+    classroom_form = Create_Classroom()
+    paper_form = Create_Paper()
+    if Classroom.query.all():
+        classrooms = Classroom.query.all()
+    else:
+        classroom_to_create = Classroom(classroom_name = "Software Engineering")
+        db.session.add(classroom_to_create)
+        db.session.commit()
+        classrooms = Classroom.query.all()
+    # test_class = Classroom.query.filter_by(id=1).first() # We can't currently link a student to a 
+    #                                                      # classroom, so I'm just sending a fake 
+    #                                                      # classroom through to gather it's data
+    # accounts = Account.query.all()
+    if paper_form.validate_on_submit():
+        print(paper_form.data)
+        paper_to_create = Paper(paper_name = paper_form.paper_name.data,
+                                paper_room_number = paper_form.paper_room_number.data,
+                                paper_picture = paper_form.paper_picture.data,
+                                id_classroom = request.form.get('classroom_select'))
+        db.session.add(paper_to_create)
+        db.session.commit()      
+        flash(f'Paper created successfully! Paper {paper_to_create.paper_name} has been created.', category='success')
+        return redirect(url_for('home_page'))
+    if paper_form.errors != {}:
+        print(paper_form.data)
+        for err_msg in paper_form.errors.values():     
+            print(request.form.get('classroom_select') + " <--- request.form.get")  
+            flash(f'There was an error with creating a Paper: {err_msg}', err_msg)
+            return redirect(url_for('home_page'))
+
+    if classroom_form.validate_on_submit():
+        classroom_to_create = Classroom(classroom_name = classroom_form.classroom_name.data)
         db.session.add(classroom_to_create)
         db.session.commit()
         flash(f'Classroom created successfully! Clasroom {classroom_to_create.classroom_name} has been created.', category='success')
-    if form.errors != {}:
-        for err_msg in form.errors.values():
+        return redirect(url_for('home_page'))
+    if classroom_form.errors != {}:
+        for err_msg in classroom_form.errors.values():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
-    return render_template('admin_page.html', form=form, classrooms=classrooms, accounts=accounts, test_class=test_class)
+            return redirect(url_for('home_page'))       
+
+    return render_template('admin_page.html', classroom_form=classroom_form, 
+                                            paper_form=paper_form,
+                                            classrooms=classrooms)
 
 @app.route('/editprofile', methods=['POST', 'GET'])
 def edit_profile():
