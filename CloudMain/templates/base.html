@@ -65,38 +65,38 @@
                </li>
             </ul>
             <!--mobile version dashboard       -->
-            <li class="nav-item list_mobile">
+            <li class="nav-item list_mobile text-center">
                <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="nav-link">
-                  <img src="../static/images/dashboard_icon.png" class="mobile_icons" alt="">
+                  <img src="{{url_for('static',filename = 'images/dashboard_icon.png')}}" class="mobile_icons" alt="">
                   <p>Dashboard</p>
                </a>
             </li>
-            <li class="nav-item list_mobile">
+            <li class="nav-item list_mobile text-center">
                <a href="{{url_for('user_drive', user = current_user.first_name ,id='000')}}" class="nav-link" >
-                  <img src="../static/images/ph_hard-drives-fill.png" class="mobile_icons" alt="">
+                  <img src="{{url_for('static',filename = 'images/ph_hard-drives-fill.png')}}" class="mobile_icons" alt="">
                   <p>Drive</p>
                </a>
             </li>
-            <li class="nav-item list_mobile">
+            <li class="nav-item list_mobile text-center">
                <a href="#" class="nav-link">
-                  <img src="../static/images/grades_icon.png" class="mobile_icons">
+                  <img src="{{url_for('static',filename = 'images/grades_icon.png')}}" class="mobile_icons">
                   <p>Grades</p>
                </a>
             </li>
-            <li class="nav-item list_mobile">
+            <li class="nav-item list_mobile text-center">
                <a href="{{url_for('user_profile', user = current_user.first_name)}}" class="nav-link">
-                  <img src="../static/images/Your profile.png" class="mobile_icons" alt="">
+                  <img src="{{url_for('static',filename = 'images/Your profile.png')}}" class="mobile_icons" alt="">
                   <p>View</p>
                </a>
             </li>
             {% if current_user.is_authenticated %}
-            <li class="nav-item list_mobile ">
+            <li class="nav-item list_mobile text-center">
                <a class="nav-link" href="{{ url_for('log_out') }}" >
                   <p>Log-out</p>
                </a>
             </li>
             {% else %}
-            <li class="nav-item list_mobile">
+            <li class="nav-item list_mobile text-center">
                <a class="nav-link" href="{{ url_for('login_page') }}" >
                   <p>Sign in</p>
                </a>
