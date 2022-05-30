@@ -64,10 +64,9 @@
           <div class="row h-100">
               <div class="col-sm-10">
                   <div class="fs-6">
-                      <a href="javascript:history.back()">Back to Classroom</a>
+                      <a href="javascript:history.back()">Back</a>
                   </div>
-                    <h1>{{ classroom.classroom_subject }} Members</h1>
-                    <div class="display-6">All students</div>
+                    <h1>{{ paper.paper_name }} Members</h1>
                     <div class="row">
                         <div class="col">
                             <div class="row">
@@ -90,14 +89,14 @@
                                     Email
                                 </div>
                             </div>
-                            {% for account in accounts %}
+                            {% for member in members %}
                             <div class="row">
-                                <div class="col"><img width=200 class="img-thumbnail" src="{{ url_for('static',filename = account.profile_pic )}}" alt="Class member's profile picture"></div>
-                                <div class="col">{{ account.first_name }} {{ account.last_name }}</div>
-                                <div class="col">{{ account.nickname }}</div>
-                                <div class="col">{{ account.gender }}</div>
-                                <div class="col">{{ account.school }}</div>
-                                <div class="col">{{ account.email }}</div>
+                                <div class="col"><img width=200 class="img-thumbnail" src="{{ url_for('static',filename = member.profile_pic )}}" alt="Class member's profile picture"></div>
+                                <div class="col">{{ member.first_name }} {{ member.last_name }}</div>
+                                <div class="col">{{ member.nickname }}</div>
+                                <div class="col">{{ member.gender }}</div>
+                                <div class="col">{{ member.school }}</div>
+                                <div class="col">{{ member.email }}</div>
                             </div>
                             {% endfor %}
                         </div>
