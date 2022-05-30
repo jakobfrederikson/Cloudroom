@@ -32,14 +32,40 @@ class Account(db.Model, UserMixin):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
 
-# Classroom model, added by Jakob
+# Jakob
+# Classroom model - holds papers (e.g. Classroom: Software Engineering, Paper: Python 203),
+#                   which hold the student, teacher and assignment ID's.
 class Classroom(db.Model):
     __tablename__ = 'classroom'
-    id = db.Column(db.Integer(), primary_key=True, nullable=False)
+    id = db.Column(db.Integer(), primary_key=True)
     classroom_name = db.Column(db.String(length=30), nullable=False)
-    classroom_subject = db.Column(db.String(length=40), nullable=False)
-    classroom_room_number = db.Column(db.String(length=5), nullable=False)
-    classroom_picture = db.Column(db.String(length=20), nullable=False)
+    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=True)
+
+    def __repr__(self):
+        return f'Classroom {self.classroom_name}'
+
+
+# Jakob
+# Paper model - holds information about its teacher, students and assignments.
+class Paper(db.Model):
+    __tablename__ = 'paper'
+    id = db.Column(db.Integer(), primary_key=True)
+    paper_name = db.Column(db.String(length=30), nullable=False)
+    paper_picture = db.Column(db.String(length=20), nullable=False)
+    paper_room_number = db.Column(db.String(length=20), nullable=False)
+    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
+    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=True)
+    # id_teacher = db.Column(db.Integer(), db.ForeignKey('account.id'))
+    # id_assignment = db.Column(db.Integer(), db.ForeignKey('assignment.id')) - We are not using this key yet, it's for future use.
+
+
+# Jakob
+# Assignment Model - This is here for future use.
+# class Assignment(db.Model):
+#     __tablename__ = 'assignmnet'
+#     id = db.Column(db.Integer(), primary_key=True, nullable=False)
+#     paper_parent = db.Column(db.Integer(), db.ForeignKey('paper.id'))
+#     assignment_name = db.Column(db.String(length=30), nullable=False)
 
 
 class Upload_File(db.Model):
