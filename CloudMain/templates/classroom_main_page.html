@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/temporary_nav_bar.css') }}">
     <link rel="icon" type="image/icon" href="../static/images/favicon.png">
-    <title>{{ classroom.classroom_subject }} | Cloudroom</title>
+    <title>{{ paper.paper_name }} | Cloudroom</title>
 </head>
 <body>
 
@@ -67,8 +67,8 @@
             </div>
             <div class="all-classroom-posts">
               <div class="class-post">
-                <h3>Welcome to {{ classroom.classroom_subject }}!</h3>
-                <img src="../static/{{ classroom.classroom_picture }}" class="img-fluid" alt="Image of a laptop screen showing code in the python programming language.">
+                <h3>Welcome to {{ paper.paper_name }}!</h3>
+                <img src="{{ url_for('static',filename = paper.paper_picture )}}" class="img-fluid" alt="Image of a laptop screen showing code in the python programming language.">
                 <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
                 <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
                 <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
@@ -77,7 +77,7 @@
           </div>
 
           <!-- SIDE NAV -->
-          <div class="col-sm-2 side-nav cloudrooom-green">
+          <div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green position-fixed">
             <div class="user-section">
               <div class="thumbnail">
                 <img src="{{url_for('static',filename = current_user.profile_pic)}}" 
@@ -88,25 +88,25 @@
             <div class="nav-icons">
               <div class="nav-button">
                 <a href="{{ url_for('dashboard_page', user = current_user.first_name) }}" class="text-reset text-decoration-none nav-button">
-                  <img src="../static/images/dashboard_icon.png" alt="Your dashboard icon">
+                  <img src="{{url_for('static',filename = 'images/dashboard_icon.png')}}" alt="Your dashboard icon">
                   <p>View Dashboard</p>
                 </a>
               </div>
               <div class="nav-button">
                 <a href="" class="text-reset text-decoration-none nav-button">
-                  <img src="../static/images/drive_icon.png" alt="Your storage drive icon">
+                  <img src="{{url_for('static',filename = 'images/ph_hard-drives-fill.png')}}" alt="Your storage drive icon">
                   <p>View Drive</p>
                 </a>
               </div>
               <div class="nav-button">
-                <a href="{{ url_for('view_classroom_members', class_id = classroom.id) }}" class="text-reset text-decoration-none nav-button">
-                  <img src="../static/images/members_icon.png" alt="All classroom members">
+                <a href="{{ url_for('view_classroom_members', class_id = classroom.id, paper_id = paper.id) }}" class="text-reset text-decoration-none nav-button">
+                  <img src="{{url_for('static',filename = 'images/members_icon.png')}}" alt="All classroom members">
                   <p>Classroom members</p>
                 </a>
               </div>
               <div class="nav-button">
                 <a href="{{ url_for('student_grades', user = current_user.first_name) }}" class="text-reset text-decoration-none nav-button">
-                  <img src="../static/images/grades_icon.png" alt="Your grades icon">
+                  <img src="{{url_for('static',filename = 'images/grades_icon.png')}}" alt="Your grades icon">
                   <p>View Grades</p>
                 </a>
               </div>

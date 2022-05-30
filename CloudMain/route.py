@@ -63,23 +63,25 @@ def dashboard_page(user):
     return render_template('dashboard.html')
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
-@app.route('/classroom/<class_id>')
-def classroom_main_page(class_id):
+@app.route('/classroom/<class_id>/<paper_id>')
+def classroom_main_page(class_id, paper_id):
+    paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-    return render_template('classroom_main_page.html', classroom=classroom)
+    print(f"Paper: {paper}\nClassroom: {classroom}")
+    return render_template('classroom_main_page.html', classroom=classroom, paper=paper)
 
 # Classroom Assignments - Displays all assignments
-@app.route('/classroom/<class_id>/assignments')
+@app.route('/classroom/<class_id>/<paper_id>/assignments')
 def classroom_assignments_list(class_id):
     return render_template('classroom_assignments_list.html')
 
 # Assignment Page - View the details of a specific assignment
-@app.route('/classroom/<class_id>/assignments/<assignment_id>')
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
 def classroom_assignment_details(class_id, assignment_id):
     return render_template('classroom_assignment_details.html')
 
 # Assignment Begin - This is when the student has started the assignment.
-@app.route('/classroom/<class_id>/assignments/<assignment_id>/<page_num>')
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
 def classroom_assignment_content(class_id, assignment_id, page_num):
     return render_template('classroom_assignment_content.html')
 
@@ -189,14 +191,17 @@ def admin_page():
     # Data
     if Classroom.query.all():
         classrooms = Classroom.query.all()
+        test_class = Classroom.query.filter_by(id=1).first()
     else:
         classroom_to_create = Classroom(classroom_name = "Software Engineering")
         db.session.add(classroom_to_create)
         db.session.commit()
         classrooms = Classroom.query.all()
+        test_class = Classroom.query.filter_by(id=1).first()
 
     if Paper.query.all():
         papers = Paper.query.all()
+        test_paper = Paper.query.filter_by(id=1).first()
     else:
         paper_to_create = Paper(paper_name = "Python 203",
                                 paper_picture = "images/python_203_image.avif",
@@ -206,9 +211,11 @@ def admin_page():
         db.session.add(paper_to_create)
         db.session.commit()
         papers = Paper.query.all()
+        test_paper = Paper.query.filter_by(id=1).first()
     
     accounts = Account.query.all()
 
+    # Form submissions
     if paper_form.submit_paper.data and paper_form.validate():
         paper_to_create = Paper(paper_name = paper_form.paper_name.data,
                                 paper_room_number = paper_form.paper_room_number.data,
@@ -241,7 +248,10 @@ def admin_page():
                                             paper_form=paper_form,
                                             classrooms=classrooms,
                                             accounts=accounts,
-                                            papers=papers)
+                                            papers=papers,
+                                            test_class=test_class,
+                                            test_paper=test_paper)
+
 
 @app.route('/editprofile', methods=['POST', 'GET'])
 def edit_profile():
@@ -264,9 +274,27 @@ def edit_profile():
             flash(f'There was an error updating user: {err_msg}', err_msg)
     return render_template("editprofile.html", form=form)
 
-@app.route('/classroom/<class_id>/members', methods=['POST', 'GET'])
-def view_classroom_members(class_id):
+@app.route('/classroom/<class_id>/<paper_id>/members', methods=['POST', 'GET'])
+def view_classroom_members(class_id, paper_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
+    paper = Paper.query.filter_by(id=paper_id).first()
+    papers = Paper.query.all()
     accounts = Account.query.all()
-    return render_template('view_classroom_members.html', classroom=classroom, accounts=accounts)
+
     
+    # Gathering only the students in the class.
+    members_list = []
+    for p in papers:
+        print(p.id)
+        if int(p.id) == int(paper_id):
+            for acc in accounts:
+                if p.id_student == acc.id:
+                    members_list.append(acc)
+
+    return render_template('view_classroom_members.html', 
+                            classroom=classroom, 
+                            accounts=accounts,
+                            paper=paper,
+                            members=members_list)
+
+# TODO: create an "add member to paper"
