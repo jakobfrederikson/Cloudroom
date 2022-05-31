@@ -144,8 +144,14 @@ def user_profile(user):
 # Student Grades - View the average grades of all their courses so far
 @app.route('/profile/<user>/grades', methods=['GET'])
 def student_grades(user):
-    classrooms = Classroom.query.all()
-    return render_template('student_grades.html', name=user, classrooms=classrooms)
+    # Get every paper the student is apart of
+    papers = Paper.query.all()
+    student = Account.query.filter_by(first_name=user).first()
+    user_papers = []
+    for paper in papers:
+        if paper.id_student == student.id:
+            user_papers.append(paper)
+    return render_template('student_grades.html', name=user, papers=user_papers, student=student)
 
 # Student Drive - View all their saved notes or files
 @app.route('/profile/<user>/<id>/drive', methods=['POST', 'GET'])
