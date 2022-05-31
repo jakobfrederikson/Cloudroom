@@ -7,7 +7,7 @@
     {% endblock %}
     {% block content %}
 
-    <div class="container-md" >
+    <div class="container-md register_form_container" >
         <form method="POST" class="form-register" style="color:white">
             {{ form.hidden_tag() }}
             <div class="form1 col-md" id="form1">
@@ -30,7 +30,7 @@
             </div>
             <h1 class="display-6 text-center">Select Profile Picture</h1>
             <div class="form3">
-                <div class="rows ">
+                <div class="rows">
                     {% for subfield in form.profile_pic %}
                       <div class="columns">
                         <label class="custom_radio ">

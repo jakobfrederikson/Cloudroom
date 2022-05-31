@@ -57,7 +57,7 @@ body{
   transform: rotate(45deg) translate(-8px, -8px);
 }
 
-.container-md{
+.register_form_container{
     padding: 60px;
     background: #05396B;
     margin-top:170px;
@@ -135,6 +135,18 @@ h1{
     margin-left:90px;
 }
 
+/* Sign in CSS */
+.signin_form_container{
+    padding: 20px;
+    background: #05396B;
+    margin-top:100px;
+    width: 40%;
+    margin-bottom: 100px;
+    padding:0;
+}
+.signin_btn{
+    margin-bottom:0;
+}
 /* Drive CSS */
 .download_page{
     background:white;

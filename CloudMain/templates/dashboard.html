@@ -8,42 +8,55 @@ Dashboard | Cloudroom
 {% block content %}
 {% include 'base_sidenav.html' %}
 <body class="text-center">
- <!--content title and join button-->
-   <div class="container-fluid dashboard_header_content">
-      <div class="row justify-content-between">
-         <div class="col-4">
-            <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms</h1>
-         </div>
-         <div class="col-4">
-            <a href="#" class="text-reset text-decoration-none">
-               <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
-                  <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom
-               </h1>
-            </a>
-         </div>
+  <!--content title and join button-->
+  <div class="container-fluid dashboard_header_content">
+    <div class="row justify-content-between">
+      <div class="col-4">
+        <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms
+        </h1>
       </div>
-   </div>
-   <!--main content-->
-   <div class="container-fluid dashboard_main_content">
-      <div class="row row-cols-sm-2 row-cols-md-4">
-         <div class="col cloudroom_classnum" style="">
-            <br>
-            <p class="text-start" style="color:#05396B">Python 101</p>
-            <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
-               <div class="col-md-auto">
-                  <br>
-                  <img class="img-fluid" src="{{url_for('static',filename = 'images/home4.jpg')}}"style="width:270px; padding-bottom:30px;" >
-               </div>
-               <div class="col-md">
-                  <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling</p>
-                  <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code</p>
-                  <div class="d-grid gap-2 mx-auto">
-                     <button class="btn btn-light" type="button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">Join</button>
-                  </div>
-               </div>
-            </div>
-         </div>
+      <div class="col-4">
+        <a href="#" class="text-reset text-decoration-none">
+          <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
+            <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom
+          </h1>
+        </a>
       </div>
-   </div>
+    </div>
+  </div>
+  <!--main content-->
+  <div class="container-fluid dashboard_main_content">
+    <div class="row row-cols-sm-2 row-cols-md-4">
+       {% for class in classroom %}
+         {% for paper in papers %}
+            {%if paper.id_student == current_user.id%}
+               <div class="col cloudroom_classnum" style="">
+                 <br>
+                 <p class="text-start" style="color:#05396B">{{class.classroom_name}}
+                 </p>
+                 <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
+                   <div class="col-md-auto">
+                     <br>
+                     <img class="img-fluid" src="{{url_for('static', filename = paper.paper_picture )}}"style="width:270px; padding-bottom:30px;" >
+                   </div>
+                   <div class="col-md">
+                     <p class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
+                     </p>
+                     <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling
+                     </p>
+                     <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
+                     </p>
+                     <div class="d-grid gap-2 mx-auto">
+                       <button class="btn btn-light" type="button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">Join
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+            {%endif%}
+         {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
 </body>
 {% endblock %}
