@@ -67,8 +67,22 @@ def dashboard_page(user):
 def classroom_main_page(class_id, paper_id):
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-    print(f"Paper: {paper}\nClassroom: {classroom}")
-    return render_template('classroom_main_page.html', classroom=classroom, paper=paper)
+
+
+    # Gathering all members in this paper.
+    papers = Paper.query.all()
+    accounts = Account.query.all()
+    members_list = []
+    for p in papers:
+        print(p.id)
+        if int(p.id) == int(paper_id):
+            for acc in accounts:
+                if p.id_student == acc.id:
+                    members_list.append(acc)
+
+    return render_template('classroom_main_page.html', classroom=classroom,
+                                                     paper=paper,
+                                                     members=members_list)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/<paper_id>/assignments')
@@ -279,28 +293,5 @@ def edit_profile():
         for err_msg in form.errors.values():
             flash(f'There was an error updating user: {err_msg}', err_msg)
     return render_template("editprofile.html", form=form)
-
-@app.route('/classroom/<class_id>/<paper_id>/members', methods=['POST', 'GET'])
-def view_classroom_members(class_id, paper_id):
-    classroom = Classroom.query.filter_by(id=class_id).first()
-    paper = Paper.query.filter_by(id=paper_id).first()
-    papers = Paper.query.all()
-    accounts = Account.query.all()
-
-    
-    # Gathering only the students in the class.
-    members_list = []
-    for p in papers:
-        print(p.id)
-        if int(p.id) == int(paper_id):
-            for acc in accounts:
-                if p.id_student == acc.id:
-                    members_list.append(acc)
-
-    return render_template('view_classroom_members.html', 
-                            classroom=classroom, 
-                            accounts=accounts,
-                            paper=paper,
-                            members=members_list)
 
 # TODO: create an "add member to paper"
