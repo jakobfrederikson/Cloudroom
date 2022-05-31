@@ -60,7 +60,10 @@ def log_out():
 # Dashboard Page - Shows all classrooms that the user is currently apart of
 @app.route('/dashboard/<user>')
 def dashboard_page(user):
-    return render_template('dashboard.html')
+    # paper = Paper.query.filter_by(id_student=current_user.id).first()
+    papers = Paper.query.all()
+    classroom = Classroom.query.all()
+    return render_template('dashboard.html',papers=papers,classroom=classroom)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>')
@@ -164,6 +167,7 @@ def user_drive(user, id):
         d_file_obj = Upload_File().query.filter_by(filename=delete_item).first()
         if d_file_obj:
             Upload_File().query.filter_by(id = d_file_obj.id).delete()
+            print(redirect(request.path),"hello from jay")
             flash(f'{d_file_obj.filename} has been deleted')
             db.session.commit()
             return redirect(url_for('user_drive', user=current_user.first_name, id='000'))
@@ -171,7 +175,7 @@ def user_drive(user, id):
         if request.files['file'].filename == '':
             flash(f'Error you must select a file',category='danger')
             delete_file = request.form.get('delete_file')
-            print(delete_file)
+
 
         else:
             file = request.files['file']

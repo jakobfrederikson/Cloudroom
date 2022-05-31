@@ -12,16 +12,14 @@
         Would you like to download this file?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <a href="{{url_for('user_drive', user = current_user.first_name,id=file.id)}}">
-          <button type="button" class="btn btn-primary">Download</button>
-        </a>
         <form method="POST">
           {{ delete_form.hidden_tag() }}
             <input id="remove_item" name="remove_item" type="hidden" value="{{file.filename}}">
-              {{ delete_form.submit(class="btn btn-lg btn-block btn-danger") }}
+              {{ delete_form.submit(class="btn btn-block btn-danger") }}
         </form>
-
+        <a href="{{url_for('user_drive', user = current_user.first_name,id=file.id)}}">
+          <button type="button" class="btn btn-primary">Download</button>
+        </a>
       </div>
     </div>
   </div>
