@@ -28,12 +28,14 @@
      </div>
      {% if "drive" not in request.path %}
      {% if "dashboard" not in request.path %}
+     {% if "grades" not in request.path %}
      <div class="nav-button">
       <a href="{{ url_for('view_classroom_members', class_id = classroom.id, paper_id = paper.id) }}" class="text-reset text-decoration-none nav-button">
         <img src="{{url_for('static',filename = 'images/members_icon.png')}}" alt="All classroom members">
         <p>Classroom members</p>
       </a>
      </div>
+     {% endif %}
      {% endif %}
      {% endif %}
      <div class="nav-button">
