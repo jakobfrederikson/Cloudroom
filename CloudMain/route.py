@@ -207,6 +207,7 @@ def admin_page():
     # Forms
     classroom_form = Create_Classroom()
     paper_form = Create_Paper()
+    add_user_to_paper = Create_Paper()
 
     # Data
     if Classroom.query.all():
@@ -262,10 +263,26 @@ def admin_page():
     if classroom_form.errors != {}:
         for err_msg in classroom_form.errors.values():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
-            return redirect(url_for('home_page'))       
+            return redirect(url_for('home_page'))     
+
+    # if add_user_to_paper.submit_paper.data and add_user_to_paper.validate():
+    #     paper_to_create = Paper.query.filter_by(id=request.form.get('paper_select'))
+    #     student = Account.query.filter_by(id=request.form.get('student2_select'))
+    #     paper_to_create.id_student = student.id
+    #     db.session.add(paper_to_create)
+    #     db.session.commit()      
+    #     flash(f'Student added successfully! Student "{student.fist_name}" has been added.', category='success')
+    #     return redirect(url_for('home_page'))
+    # if paper_form.errors != {}:
+    #     for err in paper_form.errors:
+    #         print(f"ERROR: {err}")
+    #     for err_msg in paper_form.errors.values():     
+    #         flash(f'There was an error with adding a student: {err_msg}', err_msg)
+    #         return redirect(url_for('home_page'))  
 
     return render_template('admin_page.html', classroom_form=classroom_form, 
                                             paper_form=paper_form,
+                                            add_user_to_paper=add_user_to_paper,
                                             classrooms=classrooms,
                                             accounts=accounts,
                                             papers=papers,

@@ -45,7 +45,9 @@
             <div class="col">
                 <h3>Jakob</h3>
                 <div class="col-sm">
-                    <button type="button" onclick="window.location.href='/classroom/{{ test_class.id }}/{{ test_paper.id }}'">Classroom Main Page</button>
+                    <button type="button"
+                        onclick="window.location.href='/classroom/{{ test_class.id }}/{{ test_paper.id }}'">Classroom
+                        Main Page</button>
                     <!-- <button type="button" onclick="window.location.href='/classroom/ classrooms.class_id /assignments'">Assignment List</button>
                     <button type="button" onclick="window.location.href='/classroom/ classrooms[0].class_id/assignments/placeholder{{assignment_id}}'">Assignment Home Page</button>
                     <button type="button" onclick="window.location.href='/classroom/ classrooms[0].class_id/assignments/placeholder{{assignment_id}}/1{{page_num}}'">Assignment Begin (Question/Answer Section)</button>
@@ -130,7 +132,8 @@
                                                 aria-label="Default select example">
                                                 <option selected>Select a student</option>
                                                 {% for student in accounts %}
-                                                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                                                <option value="{{ student.id }}">{{ student.first_name }}
+                                                    {{ student.last_name }}</option>
                                                 {% endfor %}
                                             </select>
                                     </div>
@@ -144,6 +147,47 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Add a user to a paper -->
+                    <!-- <div class="add-user-to-paper">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#addUserModal">Add a user to a paper [stores to database]</button>
+                        <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Add user to a paper</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" class="form-add_user_to_paper">
+                                            <select name="paper_select" class="form-select"
+                                                aria-label="Default select example">
+                                                <option selected>Select a paper</option>
+                                                {% for paper in papers %}
+                                                <option value="{{ paper.id }}">{{ paper.paper_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <select name="student2_select" class="form-select"
+                                                aria-label="Default select example">
+                                                <option selected>Select a student</option>
+                                                {% for student in accounts %}
+                                                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        {{ add_user_to_paper.submit_paper(class="btn btn-primary") }}
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
 
                     <div class="show-all-classrooms">
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
@@ -188,8 +232,8 @@
                     </div>
 
                     <div class="show-all-papers">
-                        <button class="btn btn-secondary" data-bs-toggle="modal"
-                            data-bs-target="#showPapersModal">Show all papers in DB</button>
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#showPapersModal">Show
+                            all papers in DB</button>
                         <div class="modal fade" id="showPapersModal" tabindex="-1"
                             aria-labelledby="showPapersModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
@@ -209,7 +253,7 @@
                                                         <th scope="col">Room Number</th>
                                                         <th scope="col">Classroom ID</th>
                                                         <th scope="col">Student ID</th>
-                                                        <th scope="col">Picture</th>                                                   
+                                                        <th scope="col">Picture</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -219,7 +263,7 @@
                                                         <td>{{ paper.paper_name }}</td>
                                                         <td>{{ paper.paper_room_number }}</td>
                                                         <td>{{ paper.id_classroom }}</td>
-                                                        <td>{{ paper.id_student }}</td>                                                      
+                                                        <td>{{ paper.id_student }}</td>
                                                         <td><img class="img-fluid img-thumbnail d-flex justify-content-center"
                                                                 src="{{url_for('static', filename = paper.paper_picture )}}">
                                                         </td>
@@ -242,69 +286,67 @@
             </div>
         </div>
 
-                    <div class="show-all-users">
-                        <button class="btn btn-secondary" data-bs-toggle="modal"
-                            data-bs-target="#showAccountsModal">Show all users in DB</button>
-                        <div class="modal fade" id="showAccountsModal" tabindex="-1"
-                            aria-labelledby="showAccountsModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="showAccountsModalLabel">All Users in the
-                                            database</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="test">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">id</th>
-                                                        <th scope="col">First Name</th>
-                                                        <th scope="col">Last Name</th>
-                                                        <th scope="col">Gender</th>
-                                                        <th scope="col">School</th>
-                                                        <th scope="col">Nickname</th>
-                                                        <th scope="col">Email</th>
-                                                        <th scope="col">Picture</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for account in accounts %}
-                                                    <tr>
-                                                        <th scope="row">{{ account.id }}</th>
-                                                        <td>{{ account.first_name }}</td>
-                                                        <td>{{ account.last_name }}</td>
-                                                        <td>{{ account.gender }}</td>
-                                                        <td>{{ account.school }}</td>
-                                                        <td>{{ account.nickname }}</td>
-                                                        <td>{{ account.email }}</td>
-                                                        <td><img class="img-fluid img-thumbnail d-flex justify-content-center"
-                                                                src="{{url_for('static', filename = account.profile_pic )}}">
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
+        <div class="show-all-users">
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#showAccountsModal">Show all users
+                in DB</button>
+            <div class="modal fade" id="showAccountsModal" tabindex="-1" aria-labelledby="showAccountsModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="showAccountsModalLabel">All Users in the
+                                database</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="test">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">id</th>
+                                            <th scope="col">First Name</th>
+                                            <th scope="col">Last Name</th>
+                                            <th scope="col">Gender</th>
+                                            <th scope="col">School</th>
+                                            <th scope="col">Nickname</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Picture</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for account in accounts %}
+                                        <tr>
+                                            <th scope="row">{{ account.id }}</th>
+                                            <td>{{ account.first_name }}</td>
+                                            <td>{{ account.last_name }}</td>
+                                            <td>{{ account.gender }}</td>
+                                            <td>{{ account.school }}</td>
+                                            <td>{{ account.nickname }}</td>
+                                            <td>{{ account.email }}</td>
+                                            <td><img class="img-fluid img-thumbnail d-flex justify-content-center"
+                                                    src="{{url_for('static', filename = account.profile_pic )}}">
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-        </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
 </body>
 
 </html>
