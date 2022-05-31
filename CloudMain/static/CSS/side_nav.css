@@ -11,7 +11,6 @@
 }
 
 .user-section {
-    margin-top: 1px;
     border-top: 1px white;
     border-bottom: 1px white;
     border-style: solid none;
@@ -40,6 +39,30 @@
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+}
+
+.members-thumbnail {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 5px 0px;
+}
+
+.members-thumbnail img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.members-align {
+    
 }
 
 .nav-icons {
@@ -71,3 +94,7 @@
         margin-right: 30px;
     }
 }
+
+body:not(.modal-open){
+    padding-right: 0px !important;
+  }

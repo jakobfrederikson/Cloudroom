@@ -70,8 +70,22 @@ def dashboard_page(user):
 def classroom_main_page(class_id, paper_id):
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-    print(f"Paper: {paper}\nClassroom: {classroom}")
-    return render_template('classroom_main_page.html', classroom=classroom, paper=paper)
+
+
+    # Gathering all members in this paper.
+    papers = Paper.query.all()
+    accounts = Account.query.all()
+    members_list = []
+    for p in papers:
+        print(p.id)
+        if int(p.id) == int(paper_id):
+            for acc in accounts:
+                if p.id_student == acc.id:
+                    members_list.append(acc)
+
+    return render_template('classroom_main_page.html', classroom=classroom,
+                                                     paper=paper,
+                                                     members=members_list)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/<paper_id>/assignments')
@@ -197,6 +211,7 @@ def admin_page():
     # Forms
     classroom_form = Create_Classroom()
     paper_form = Create_Paper()
+    add_user_to_paper = Create_Paper()
 
     # Data
     if Classroom.query.all():
@@ -252,10 +267,26 @@ def admin_page():
     if classroom_form.errors != {}:
         for err_msg in classroom_form.errors.values():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
-            return redirect(url_for('home_page'))       
+            return redirect(url_for('home_page'))     
+
+    # if add_user_to_paper.submit_paper.data and add_user_to_paper.validate():
+    #     paper_to_create = Paper.query.filter_by(id=request.form.get('paper_select'))
+    #     student = Account.query.filter_by(id=request.form.get('student2_select'))
+    #     paper_to_create.id_student = student.id
+    #     db.session.add(paper_to_create)
+    #     db.session.commit()      
+    #     flash(f'Student added successfully! Student "{student.fist_name}" has been added.', category='success')
+    #     return redirect(url_for('home_page'))
+    # if paper_form.errors != {}:
+    #     for err in paper_form.errors:
+    #         print(f"ERROR: {err}")
+    #     for err_msg in paper_form.errors.values():     
+    #         flash(f'There was an error with adding a student: {err_msg}', err_msg)
+    #         return redirect(url_for('home_page'))  
 
     return render_template('admin_page.html', classroom_form=classroom_form, 
                                             paper_form=paper_form,
+                                            add_user_to_paper=add_user_to_paper,
                                             classrooms=classrooms,
                                             accounts=accounts,
                                             papers=papers,
@@ -283,28 +314,5 @@ def edit_profile():
         for err_msg in form.errors.values():
             flash(f'There was an error updating user: {err_msg}', err_msg)
     return render_template("editprofile.html", form=form)
-
-@app.route('/classroom/<class_id>/<paper_id>/members', methods=['POST', 'GET'])
-def view_classroom_members(class_id, paper_id):
-    classroom = Classroom.query.filter_by(id=class_id).first()
-    paper = Paper.query.filter_by(id=paper_id).first()
-    papers = Paper.query.all()
-    accounts = Account.query.all()
-
-    
-    # Gathering only the students in the class.
-    members_list = []
-    for p in papers:
-        print(p.id)
-        if int(p.id) == int(paper_id):
-            for acc in accounts:
-                if p.id_student == acc.id:
-                    members_list.append(acc)
-
-    return render_template('view_classroom_members.html', 
-                            classroom=classroom, 
-                            accounts=accounts,
-                            paper=paper,
-                            members=members_list)
 
 # TODO: create an "add member to paper"
