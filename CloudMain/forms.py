@@ -56,6 +56,15 @@ class Create_Paper(FlaskForm):
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
     submit_paper = SubmitField('Create Paper')
 
+# Add a user to a paper
+class Add_Student_To_Paper(FlaskForm):
+    paper_name = StringField(label="Paper Name", validators=[Length(max=40), DataRequired()])
+    paper_room_number = StringField(label="Paper Room Number", validators=[Length(max=5), DataRequired()])
+    paper_picture = RadioField(label="Profile Picture",
+        choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
+        ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
+    submit_student = SubmitField('Add Student To Paper')
+
 # Update user details forms
 class UpdateNickname(FlaskForm):
     nickname = StringField(label="Nickname", validators=[Length(min=2,max=30), DataRequired()])

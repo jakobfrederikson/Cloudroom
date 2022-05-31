@@ -3,7 +3,7 @@ from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Paper, Upload_File
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
-    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Add_Student_To_Paper
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
@@ -211,7 +211,7 @@ def admin_page():
     # Forms
     classroom_form = Create_Classroom()
     paper_form = Create_Paper()
-    add_user_to_paper = Create_Paper()
+    add_user_form = Add_Student_To_Paper()
 
     # Data
     if Classroom.query.all():
@@ -269,24 +269,43 @@ def admin_page():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
             return redirect(url_for('home_page'))     
 
-    # if add_user_to_paper.submit_paper.data and add_user_to_paper.validate():
-    #     paper_to_create = Paper.query.filter_by(id=request.form.get('paper_select'))
-    #     student = Account.query.filter_by(id=request.form.get('student2_select'))
-    #     paper_to_create.id_student = student.id
-    #     db.session.add(paper_to_create)
-    #     db.session.commit()      
-    #     flash(f'Student added successfully! Student "{student.fist_name}" has been added.', category='success')
-    #     return redirect(url_for('home_page'))
-    # if paper_form.errors != {}:
-    #     for err in paper_form.errors:
-    #         print(f"ERROR: {err}")
-    #     for err_msg in paper_form.errors.values():     
-    #         flash(f'There was an error with adding a student: {err_msg}', err_msg)
-    #         return redirect(url_for('home_page'))  
+    if add_user_form.submit_student.data and add_user_form.validate():
+        flag = False
+        papers = Paper.query.all()
+        paper_to_create = Paper.query.filter_by(id=int(request.form.get('paper_select')))
+        student_to_add = Account.query.filter_by(id=int(request.form.get('student2_select')))
+        
+        paper_to_check = []
+        for paper in papers:
+            if paper.id == paper_to_create.id:
+                paper_to_check.append(paper)
+
+        for paper in paper_to_check:
+            if paper.id_student == student_to_add.id:
+                flag = True
+
+        if flag == False:
+            print("\n\n\n BEING ADDED TO PAPER\n\n\n")
+            paper_to_create.id_student = student_to_add.id
+            db.session.add(paper_to_create)
+            db.session.commit()      
+            flash(f'Student added successfully! Student "{student_to_add.fist_name}" has been added.', category='success')
+            return redirect(url_for('home_page'))
+        else:
+            print("\n\n\n STUDENT EXIST IN PAPER\n\n\n")
+            flash(f'Student already exists in this paper.')
+            return redirect(url_for('home_page'))
+
+    if paper_form.errors != {}:
+        for err in paper_form.errors:
+            print(f"ERROR: {err}")
+        for err_msg in paper_form.errors.values():     
+            flash(f'There was an error with adding a student: {err_msg}', err_msg)
+            return redirect(url_for('home_page'))  
 
     return render_template('admin_page.html', classroom_form=classroom_form, 
                                             paper_form=paper_form,
-                                            add_user_to_paper=add_user_to_paper,
+                                            add_user_to_paper=add_user_form,
                                             classrooms=classrooms,
                                             accounts=accounts,
                                             papers=papers,
