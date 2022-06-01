@@ -31,41 +31,44 @@ Dashboard | Cloudroom
   <div class="container-fluid dashboard_main_content">
     <div class="row row-cols-sm-2 row-cols-md-4">
       <!--Displays all paper that the student is currently taking-->
+      {% for paper in user_papers %}
       {% for class in classroom %}
-        {% for paper in user_papers %}
-        <div class="col cloudroom_classnum" style="">
-          <br>
-          <p class="text-start" style="color:#05396B">{{class.classroom_name}}
-          </p>
-          <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
-            <div class="col-md-auto">
-              <br>
-              <img class="img-fluid" src="{{url_for('static', filename = paper.paper_picture )}}"style="width:270px; padding-bottom:30px;" >
-            </div>
-            <div class="col-md">
-              <p class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
-              </p>
-              <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling
-              </p>
-              <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
-              </p>
-              <div class="d-grid gap-2 mx-auto">
-                <a href="{{url_for('classroom_main_page', class_id = class.id,paper_id=paper.id)}}"
-                   class="text-reset text-decoration-none text-end">
-                  <button class="btn btn-light" type="btn btn-lg button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">
-                    Enter Cloudroom
-                  </button>
-                </a>
-              </div>
+      {%if class.id == paper.id_classroom %}
+      <div class="col cloudroom_classnum" style="">
+        <br>
+        <p class="text-start" style="color:#05396B">
+          {{class.classroom_name}}
+        </p>
+        <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
+          <div class="col-md-auto">
+            <br>
+            <img class="img-fluid" src="{{url_for('static', filename = paper.paper_picture )}}"style="width:270px; padding-bottom:30px;" >
+          </div>
+          <div class="col-md">
+            <p class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
+            </p>
+            <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling
+            </p>
+            <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
+            </p>
+            <div class="d-grid gap-2 mx-auto">
+              <a href="{{url_for('classroom_main_page', class_id =class.id,paper_id=paper.id)}}"
+                 class="text-reset text-decoration-none text-end">
+                <button class="btn btn-light" type="btn btn-lg button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">
+                  Enter Cloudroom
+                </button>
+              </a>
             </div>
           </div>
         </div>
-        {% endfor %}
+      </div>
+      {% endif %}
+      {% endfor %}
       {% endfor %}
     </div>
   </div>
   <!-- Modal -->
-<!--This will let user to join a classroom-->
+  <!--This will let user to join a classroom-->
   <div class="modal fade" id="Join_Cloudroom_Modal" tabindex="-1" aria-labelledby="Upload File" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
