@@ -94,3 +94,7 @@ class UpdatePassword(FlaskForm):
 
 class Delete_File(FlaskForm):
     submit = SubmitField(label='Delete File')
+
+class Join_Cloudroom(FlaskForm):
+    code = StringField(label="Enter Code:", validators=[Length(min=2,max=30), DataRequired()])
+    submit = SubmitField(label='Join')
