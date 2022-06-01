@@ -18,7 +18,8 @@ Dashboard | Cloudroom
       <div class="col-4">
         <a href="#" class="text-reset text-decoration-none">
           <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
-              <a href="#" data-bs-toggle="modal" data-bs-target="#Join_Cloudroom_Modal">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#Join_Cloudroom_Modal"
+                 class="text-reset text-decoration-none">
                  <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom
               </a>
           </h1>
@@ -47,10 +48,12 @@ Dashboard | Cloudroom
                  </p>
                  <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
                  </p>
-                 <div class="d-grid gap-2 mx-auto">,
-                     <a href="{{url_for('classroom_main_page', class_id = class.id,paper_id=paper.id)}}">
-                          <button class="btn btn-light" type="btn btn-lg button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">Join</button>
-                     </a>
+                 <div class="d-grid gap-2 mx-auto">
+                     <a href="{{url_for('classroom_main_page', class_id = class.id,paper_id=paper.id)}}"
+                            class="text-reset text-decoration-none text-end">
+                     <button class="btn btn-light" type="btn btn-lg button" style="margin-bottom:20px; margin-left:90px; margin-right:20px;">
+                         Enter Cloudroom
+                     </button></a>
                  </div>
                </div>
              </div>
