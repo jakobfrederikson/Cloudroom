@@ -2,18 +2,20 @@ from ast import AsyncFunctionDef
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File
-from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper, UpdateProfileInfo,UpdateNickname,\
+from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 
 
+#homepage
 @app.route('/')
 @app.route('/index')
 def home_page():
     return render_template('index.html')
 
+#login page
 @app.route('/login', methods=['POST', 'GET'])
 def login_page():
     form = LoginForm()
@@ -28,6 +30,7 @@ def login_page():
             flash('Username and password are not match! Please try again',category='danger')
     return render_template("login.html", form=form)
 
+#sign up page
 @app.route('/signup', methods=['POST', 'GET'])
 def sign_up():
     form = CreateAccount()
@@ -51,6 +54,7 @@ def sign_up():
             flash(f'There was an error with creating a user: {err_msg}', err_msg)
     return render_template("signup.html", form=form)
 
+#this will logout the user and return them to home page
 @app.route('/logout')
 def log_out():
     logout_user()
@@ -333,25 +337,3 @@ def admin_page():
                                             papers=papers,
                                             test_class=test_class,
                                             test_paper=test_paper)
-
-
-@app.route('/editprofile', methods=['POST', 'GET'])
-def edit_profile():
-    form = UpdateProfileInfo()
-    if form.validate_on_submit():
-        user_info = Account.query.filter_by(email=current_user.email).first()
-        user_info.first_name = form.first_name.data
-        user_info.last_name = form.last_name.data
-        user_info.school = form.school.data
-        user_info.gender = form.gender.data
-        user_info.nickname = form.nickname.data
-        user_info.profile_pic = form.profile_pic.data
-        db.session.add(user_info)
-        db.session.commit()
-        login_user(user_info)
-        return redirect(url_for('user_profile', user = current_user.first_name))
-
-    if form.errors != {}:
-        for err_msg in form.errors.values():
-            flash(f'There was an error updating user: {err_msg}', err_msg)
-    return render_template("editprofile.html", form=form)

@@ -7,7 +7,7 @@ from flask_login import UserMixin
 def load_user(user_id):
     return Account.query.get(int(user_id))
 
-
+#This class will create the model for accounts
 class Account(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     first_name = db.Column(db.String(length=30), nullable=False)
@@ -20,14 +20,15 @@ class Account(db.Model, UserMixin):
     profile_pic = db.Column(db.String(length=20), nullable=False)
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
 
+    #returns the password
     @property
     def password(self):
         return self.password
-
+    #this will decrypt the password
     @password.setter
     def password(self, plain_text_password):
         self.password_hash = bcrypt.generate_password_hash(plain_text_password).decode('utf-8')
-
+    #checks if password is valid
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
@@ -79,7 +80,7 @@ class ClassroomStudent(db.Model):
 #     paper_parent = db.Column(db.Integer(), db.ForeignKey('paper.id'))
 #     assignment_name = db.Column(db.String(length=30), nullable=False)
 
-
+#This creates a model in the database for Uploaded files
 class Upload_File(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     filename = db.Column(db.String, nullable=False)
