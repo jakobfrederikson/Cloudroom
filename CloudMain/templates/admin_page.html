@@ -127,15 +127,6 @@
                                                 <option value="{{ class.id }}">{{ class.classroom_name }}</option>
                                                 {% endfor %}
                                             </select>
-
-                                            <select name="student_select" class="form-select"
-                                                aria-label="Default select example">
-                                                <option selected>Select a student</option>
-                                                {% for student in accounts %}
-                                                <option value="{{ student.id }}">{{ student.first_name }}
-                                                    {{ student.last_name }}</option>
-                                                {% endfor %}
-                                            </select>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
@@ -162,7 +153,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form method="POST" class="form-add_user_to_paper">
+                                        <form method="POST" class="form-s_to_p_form">
                                             <select name="paper_select" class="form-select"
                                                 aria-label="Default select example">
                                                 <option selected>Select a paper</option>
@@ -181,7 +172,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Close</button>
-                                        {{ add_user_to_paper.submit_student(class="btn btn-primary") }}
+                                        {{ s_to_p_form.submit(class="btn btn-primary") }}
                                     </div>
                                     </form>
                                 </div>
