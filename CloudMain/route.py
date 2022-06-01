@@ -69,6 +69,7 @@ def dashboard_page(user):
         student_enrolled_already = False
 
         paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
+        print(paper.id, "hello")
         if paper is None:
             flash(f'Code in invalid.',
                   category='danger')
@@ -78,8 +79,9 @@ def dashboard_page(user):
             # Check if student is already in that paper
             if PaperStudent.query.all():
                 for entry in PaperStudent.query.all():
-                    if entry.id_student == paper_student_to_create.id_student:
-                        student_enrolled_already = True
+                    if entry.id_paper == paper_student_to_create.id_paper:
+                        if entry.id_student == paper_student_to_create.id_student:
+                            student_enrolled_already = True
 
             if student_enrolled_already:
                 flash(f'You have already joined this paper.')
