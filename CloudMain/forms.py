@@ -32,7 +32,7 @@ class Create_Classroom(FlaskForm):
     classroom_name = StringField(label="Classroom Name", validators=[Length(max=40), DataRequired()])
     submit_classroom = SubmitField('Create Classroom')
 
-# Create_Classroom - Jakob
+# Create_Paper - Jakob
 # This is the form used by a teacher/admin to create a paper.
 class Create_Paper(FlaskForm):
     paper_name = StringField(label="Paper Name", validators=[Length(max=40), DataRequired()])
