@@ -34,8 +34,7 @@ class Account(db.Model, UserMixin):
 
 
 # Jakob
-# Classroom model - holds papers (e.g. Classroom: Software Engineering, Paper: Python 203),
-#                   which hold the student, teacher and assignment ID's.
+# Classroom model - holds papers (e.g. Classroom: Software Engineering, Paper: Python 203, Paper: C++ 101)
 class Classroom(db.Model):
     __tablename__ = 'classroom'
     id = db.Column(db.Integer(), primary_key=True)
@@ -44,7 +43,7 @@ class Classroom(db.Model):
 
 
 # Jakob
-# Paper model - holds information about its teacher, students and assignments.
+# Paper model - holds data about itself and the Classroom it's attatched to.
 class Paper(db.Model):
     __tablename__ = 'paper'
     id = db.Column(db.Integer(), primary_key=True)
@@ -56,7 +55,7 @@ class Paper(db.Model):
 
 
 # Jakob
-# PaperStudent - holds information about what student is apart of what paper
+# PaperStudent - holds information about what student is apart of what paper.
 class PaperStudent(db.Model):
     __tablename__ = 'PaperStudent'
     id = db.Column(db.Integer(), primary_key=True)
@@ -65,7 +64,7 @@ class PaperStudent(db.Model):
 
 
 # Jakob
-# ClassroomStudent - holds information about what student is apart of what classroom
+# ClassroomStudent - holds information about what student is apart of what classroom.
 class ClassroomStudent(db.Model):
     __tablename__= 'ClassroomStudent'
     id = db.Column(db.Integer(), primary_key=True)

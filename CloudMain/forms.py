@@ -26,14 +26,14 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Password:", validators=[DataRequired()])
     submit = SubmitField(label='Sign in')
 
-# Create_Classroom - by Jakob
+# Create_Classroom - Jakob
 # This is the form used by a teacher/admin to create a classroom.
 class Create_Classroom(FlaskForm):
     classroom_name = StringField(label="Classroom Name", validators=[Length(max=40), DataRequired()])
     submit_classroom = SubmitField('Create Classroom')
 
-# Create_Classroom - by Jakob
-# This is the form used by a teacher/admin to create a classroom.
+# Create_Classroom - Jakob
+# This is the form used by a teacher/admin to create a paper.
 class Create_Paper(FlaskForm):
     paper_name = StringField(label="Paper Name", validators=[Length(max=40), DataRequired()])
     paper_room_number = StringField(label="Paper Room Number", validators=[Length(max=5), DataRequired()])
@@ -42,7 +42,8 @@ class Create_Paper(FlaskForm):
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
     submit_paper = SubmitField('Create Paper')
 
-# Add a user to a paper
+# Jakob
+# Add a user to a paper through admin page
 class Student_To_Paper(FlaskForm):
     paper_id = IntegerField(label="Paper ID")
     student_id = IntegerField(label="Student ID")
