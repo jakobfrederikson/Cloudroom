@@ -89,6 +89,7 @@
                   <p>View</p>
                </a>
             </li>
+<!--checks if user is logged in or not -->
             {% if current_user.is_authenticated %}
             <li class="nav-item list_mobile text-center">
                <a class="nav-link" href="{{ url_for('log_out') }}" >
@@ -132,6 +133,5 @@
            x.classList.toggle("change");
          }
       </script>
-      
    </body>
 </html>
