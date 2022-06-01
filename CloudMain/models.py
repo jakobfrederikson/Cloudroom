@@ -41,9 +41,6 @@ class Classroom(db.Model):
     classroom_name = db.Column(db.String(length=30), nullable=False)
     id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=True)
 
-    def __repr__(self):
-        return f'Classroom {self.classroom_name}'
-
 
 # Jakob
 # Paper model - holds information about its teacher, students and assignments.
@@ -54,9 +51,25 @@ class Paper(db.Model):
     paper_picture = db.Column(db.String(length=20), nullable=False)
     paper_room_number = db.Column(db.String(length=20), nullable=False)
     id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=True)
     # id_teacher = db.Column(db.Integer(), db.ForeignKey('account.id'))
-    # id_assignment = db.Column(db.Integer(), db.ForeignKey('assignment.id')) - We are not using this key yet, it's for future use.
+
+
+# Jakob
+# PaperStudent - holds information about what student is apart of what paper
+class PaperStudent(db.Model):
+    __tablename__ = 'PaperStudent'
+    id = db.Column(db.Integer(), primary_key=True)
+    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=True)
+    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=True)
+
+
+# Jakob
+# ClassroomStudent - holds information about what student is apart of what classroom
+class ClassroomStudent(db.Model):
+    __tablename__= 'ClassroomStudent'
+    id = db.Column(db.Integer(), primary_key=True)
+    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=True)
+    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=True)
 
 
 # Jakob

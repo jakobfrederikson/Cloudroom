@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField,RadioField
+from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 
 #Creating accounts form
@@ -55,6 +55,12 @@ class Create_Paper(FlaskForm):
         choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
     submit_paper = SubmitField('Create Paper')
+
+# Add a user to a paper
+class Student_To_Paper(FlaskForm):
+    paper_id = IntegerField(label="Paper ID")
+    student_id = IntegerField(label="Student ID")
+    submit = SubmitField('Add Student To Paper')
 
 # Update user details forms
 class UpdateNickname(FlaskForm):

@@ -1,9 +1,9 @@
 from ast import AsyncFunctionDef
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Paper, Upload_File
-from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, UpdateProfileInfo,UpdateNickname,\
-    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File
+from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File
+from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper, UpdateProfileInfo,UpdateNickname,\
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
@@ -73,15 +73,14 @@ def classroom_main_page(class_id, paper_id):
 
 
     # Gathering all members in this paper.
-    papers = Paper.query.all()
+    papers = PaperStudent.query.all()
     accounts = Account.query.all()
     members_list = []
     for p in papers:
-        print(p.id)
-        if int(p.id) == int(paper_id):
-            for acc in accounts:
-                if p.id_student == acc.id:
-                    members_list.append(acc)
+        for a in accounts:
+            if int(p.id_paper) == int(paper_id):
+                if int(p.id_student) == int(a.id):
+                    members_list.append(a)
 
     return render_template('classroom_main_page.html', classroom=classroom,
                                                      paper=paper,
@@ -162,12 +161,12 @@ def user_profile(user):
 @app.route('/profile/<user>/grades', methods=['GET'])
 def student_grades(user):
     # Get every paper the student is apart of
-    papers = Paper.query.all()
-    student = Account.query.filter_by(first_name=user).first()
+    student = Account.query.filter_by(id=current_user.id).first()
     user_papers = []
-    for paper in papers:
-        if paper.id_student == student.id:
-            user_papers.append(paper)
+
+    for entry in PaperStudent.query.all():
+        if entry.id_student == current_user.id:
+            user_papers.append(Paper.query.filter_by(id=entry.id_paper).first())
     return render_template('student_grades.html', name=user, papers=user_papers, student=student)
 
 # Student Drive - View all their saved notes or files
@@ -211,7 +210,7 @@ def admin_page():
     # Forms
     classroom_form = Create_Classroom()
     paper_form = Create_Paper()
-    add_user_to_paper = Create_Paper()
+    s_to_p_form = Student_To_Paper()
 
     # Data
     if Classroom.query.all():
@@ -231,8 +230,7 @@ def admin_page():
         paper_to_create = Paper(paper_name = "Python 203",
                                 paper_picture = "images/python_203_image.avif",
                                 paper_room_number = "203",
-                                id_classroom = "1",
-                                id_student = "1")
+                                id_classroom = "1")
         db.session.add(paper_to_create)
         db.session.commit()
         papers = Paper.query.all()
@@ -241,12 +239,12 @@ def admin_page():
     accounts = Account.query.all()
 
     # Form submissions
+    # CREATE PAPER
     if paper_form.submit_paper.data and paper_form.validate():
         paper_to_create = Paper(paper_name = paper_form.paper_name.data,
                                 paper_room_number = paper_form.paper_room_number.data,
                                 paper_picture = paper_form.paper_picture.data,
-                                id_classroom = request.form.get('classroom_select'),
-                                id_student = request.form.get('student_select'))
+                                id_classroom = request.form.get('classroom_select'))
         db.session.add(paper_to_create)
         db.session.commit()      
         flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
@@ -258,6 +256,7 @@ def admin_page():
             flash(f'There was an error with creating a Paper: {err_msg}', err_msg)
             return redirect(url_for('home_page'))
 
+    # CREATE CLASSROOM
     if classroom_form.submit_classroom.data and classroom_form.validate():
         classroom_to_create = Classroom(classroom_name = classroom_form.classroom_name.data)
         db.session.add(classroom_to_create)
@@ -269,24 +268,39 @@ def admin_page():
             flash(f'There was an error with creating a classroom: {err_msg}', err_msg)
             return redirect(url_for('home_page'))     
 
-    # if add_user_to_paper.submit_paper.data and add_user_to_paper.validate():
-    #     paper_to_create = Paper.query.filter_by(id=request.form.get('paper_select'))
-    #     student = Account.query.filter_by(id=request.form.get('student2_select'))
-    #     paper_to_create.id_student = student.id
-    #     db.session.add(paper_to_create)
-    #     db.session.commit()      
-    #     flash(f'Student added successfully! Student "{student.fist_name}" has been added.', category='success')
-    #     return redirect(url_for('home_page'))
-    # if paper_form.errors != {}:
-    #     for err in paper_form.errors:
-    #         print(f"ERROR: {err}")
-    #     for err_msg in paper_form.errors.values():     
-    #         flash(f'There was an error with adding a student: {err_msg}', err_msg)
-    #         return redirect(url_for('home_page'))  
+    # ADD USER TO PAPER
+    if request.method == 'POST' and request.form['submit'] == "Add Student To Paper":
+        student_enrolled_already = False
+        s_to_p_form.paper_id = int(request.form.get('paper_select'))
+        s_to_p_form.student_id = int(request.form.get('student2_select'))
+        paper_student_to_create = PaperStudent(id_paper=s_to_p_form.paper_id,
+                                               id_student=s_to_p_form.student_id)
+        
+        # Check if student is already in that paper
+        if PaperStudent.query.all():
+            for entry in PaperStudent.query.all():
+                if entry.id_student == paper_student_to_create.id_student:
+                    student_enrolled_already = True  
+            
+        if student_enrolled_already:
+            flash(f'Student already exists in this paper.')
+            return redirect(url_for('home_page'))
+        else:
+            db.session.add(paper_student_to_create)
+            db.session.commit()      
+            flash(f'Student added successfully! Student "{paper_student_to_create.id_student}" has been added.', category='success')
+            return redirect(url_for('home_page'))  
+
+    if s_to_p_form.errors != {}:
+        for err in paper_form.errors:
+            print(f"ERROR: {err}")
+        for err_msg in paper_form.errors.values():     
+            flash(f'There was an error with adding a student: {err_msg}', err_msg)
+            return redirect(url_for('home_page'))  
 
     return render_template('admin_page.html', classroom_form=classroom_form, 
                                             paper_form=paper_form,
-                                            add_user_to_paper=add_user_to_paper,
+                                            s_to_p_form=s_to_p_form,
                                             classrooms=classrooms,
                                             accounts=accounts,
                                             papers=papers,
@@ -314,5 +328,3 @@ def edit_profile():
         for err_msg in form.errors.values():
             flash(f'There was an error updating user: {err_msg}', err_msg)
     return render_template("editprofile.html", form=form)
-
-# TODO: create an "add member to paper"
