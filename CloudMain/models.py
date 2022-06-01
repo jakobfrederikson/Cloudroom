@@ -59,8 +59,8 @@ class Paper(db.Model):
 class PaperStudent(db.Model):
     __tablename__ = 'PaperStudent'
     id = db.Column(db.Integer(), primary_key=True)
-    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=True)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=True)
+    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=False)
+    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
 
 
 # Jakob
@@ -68,8 +68,8 @@ class PaperStudent(db.Model):
 class ClassroomStudent(db.Model):
     __tablename__= 'ClassroomStudent'
     id = db.Column(db.Integer(), primary_key=True)
-    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=True)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=True)
+    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
+    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
 
 
 # Jakob
