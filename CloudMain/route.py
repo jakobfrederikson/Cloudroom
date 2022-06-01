@@ -96,9 +96,9 @@ def dashboard_page(user):
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>')
 def classroom_main_page(class_id, paper_id):
+    # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-
 
     # Gathering all members in this paper.
     papers = PaperStudent.query.all()
@@ -114,20 +114,21 @@ def classroom_main_page(class_id, paper_id):
                                                      paper=paper,
                                                      members=members_list)
 
+# ALL ASSIGNMENT PAGES ARE NOT IN DEVELOPMENT YET
 # Classroom Assignments - Displays all assignments
-@app.route('/classroom/<class_id>/<paper_id>/assignments')
-def classroom_assignments_list(class_id):
-    return render_template('classroom_assignments_list.html')
+# @app.route('/classroom/<class_id>/<paper_id>/assignments')
+# def classroom_assignments_list(class_id):
+#     return render_template('classroom_assignments_list.html')
 
-# Assignment Page - View the details of a specific assignment
-@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
-def classroom_assignment_details(class_id, assignment_id):
-    return render_template('classroom_assignment_details.html')
+# # Assignment Page - View the details of a specific assignment
+# @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
+# def classroom_assignment_details(class_id, assignment_id):
+#     return render_template('classroom_assignment_details.html')
 
-# Assignment Begin - This is when the student has started the assignment.
-@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
-def classroom_assignment_content(class_id, assignment_id, page_num):
-    return render_template('classroom_assignment_content.html')
+# # Assignment Begin - This is when the student has started the assignment.
+# @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
+# def classroom_assignment_content(class_id, assignment_id, page_num):
+#     return render_template('classroom_assignment_content.html')
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
@@ -188,13 +189,14 @@ def user_profile(user):
 # Student Grades - View the average grades of all their courses so far
 @app.route('/profile/<user>/grades', methods=['GET'])
 def student_grades(user):
-    # Get every paper the student is apart of
+
+    # Getting every paper the student is enrolled in.
     student = Account.query.filter_by(id=current_user.id).first()
     user_papers = []
-
     for entry in PaperStudent.query.all():
         if entry.id_student == current_user.id:
             user_papers.append(Paper.query.filter_by(id=entry.id_paper).first())
+
     return render_template('student_grades.html', name=user, papers=user_papers, student=student)
 
 # Student Drive - View all their saved notes or files
@@ -232,15 +234,15 @@ def user_drive(user, id):
 
     return render_template('user_drive.html', name=user, files=files, delete_form=delete_form)
 
-# Admin Page - Some pages aren't accessible unless through admin privleges yet
+# Admin Page - Some functions (adding papers, classrooms)
 @app.route('/admin', methods=['POST', 'GET'])
 def admin_page():
-    # Forms
+    # Forms - used to gather information to create each entity
     classroom_form = Create_Classroom()
     paper_form = Create_Paper()
     s_to_p_form = Student_To_Paper()
 
-    # Data
+    # Creating an entry for classroom/paper if one doesn't exist already.
     if Classroom.query.all():
         classrooms = Classroom.query.all()
         test_class = Classroom.query.filter_by(id=1).first()
@@ -266,7 +268,7 @@ def admin_page():
     
     accounts = Account.query.all()
 
-    # Form submissions
+    # Form submissions - gathering data from the forms and then submitting into the database
     # CREATE PAPER
     if paper_form.submit_paper.data and paper_form.validate():
         paper_to_create = Paper(paper_name = paper_form.paper_name.data,
@@ -278,8 +280,6 @@ def admin_page():
         flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
         return redirect(url_for('home_page'))
     if paper_form.errors != {}:
-        for err in paper_form.errors:
-            print(f"ERROR: {err}")
         for err_msg in paper_form.errors.values():     
             flash(f'There was an error with creating a Paper: {err_msg}', err_msg)
             return redirect(url_for('home_page'))
@@ -318,7 +318,6 @@ def admin_page():
             db.session.commit()      
             flash(f'Student added successfully! Student "{paper_student_to_create.id_student}" has been added.', category='success')
             return redirect(url_for('home_page'))  
-
     if s_to_p_form.errors != {}:
         for err in paper_form.errors:
             print(f"ERROR: {err}")
