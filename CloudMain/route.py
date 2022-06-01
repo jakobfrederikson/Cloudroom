@@ -262,7 +262,7 @@ def admin_page():
         test_paper = Paper.query.filter_by(id=1).first()
     else:
         paper_to_create = Paper(paper_name = "Python 203",
-                                paper_picture = "images/python_203_image.avif",
+                                paper_picture = "images/python_201_image.jpg",
                                 paper_room_number = "203",
                                 id_classroom = "1")
         db.session.add(paper_to_create)
@@ -311,8 +311,9 @@ def admin_page():
         # Check if student is already in that paper
         if PaperStudent.query.all():
             for entry in PaperStudent.query.all():
-                if entry.id_student == paper_student_to_create.id_student:
-                    student_enrolled_already = True  
+                if entry.id_paper == paper_student_to_create.id_paper:
+                     if entry.id_student == paper_student_to_create.id_student:
+                        student_enrolled_already = True  
             
         if student_enrolled_already:
             flash(f'Student already exists in this paper.')
