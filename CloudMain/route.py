@@ -66,27 +66,30 @@ def log_out():
 def dashboard_page(user):
     join_room = Join_Cloudroom()
     if join_room.validate_on_submit():
-
         student_enrolled_already = False
-        paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
-        paper_student_to_create = PaperStudent(id_paper=paper.id,
-                                               id_student=current_user.id)
-        print("hello", join_room.code.data,paper.id)
-        # Check if student is already in that paper
-        if PaperStudent.query.all():
-            for entry in PaperStudent.query.all():
-                if entry.id_student == paper_student_to_create.id_student:
-                    student_enrolled_already = True
 
-        if student_enrolled_already:
-            flash(f'You have already joined this paper.')
-            return redirect(url_for('dashboard_page',user=current_user.id))
+        paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
+        if paper is None:
+            flash(f'Code in invalid.',
+                  category='danger')
         else:
-            db.session.add(paper_student_to_create)
-            db.session.commit()
-            flash(f'Student added successfully! You have joined "{paper.paper_name}".',
-                  category='success')
-            return redirect(url_for('dashboard_page',user=current_user.id))
+            paper_student_to_create = PaperStudent(id_paper=paper.id,
+                                                   id_student=current_user.id)
+            # Check if student is already in that paper
+            if PaperStudent.query.all():
+                for entry in PaperStudent.query.all():
+                    if entry.id_student == paper_student_to_create.id_student:
+                        student_enrolled_already = True
+
+            if student_enrolled_already:
+                flash(f'You have already joined this paper.')
+                return redirect(url_for('dashboard_page',user=current_user.id))
+            else:
+                db.session.add(paper_student_to_create)
+                db.session.commit()
+                flash(f'Student added successfully! You have joined "{paper.paper_name}".',
+                      category='success')
+                return redirect(url_for('dashboard_page',user=current_user.id))
 
     user_papers = []
     for entry in PaperStudent.query.all():
