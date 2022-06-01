@@ -3,7 +3,7 @@ from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper, UpdateProfileInfo,UpdateNickname,\
-    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
@@ -58,12 +58,40 @@ def log_out():
     return  redirect(url_for("home_page"))
 
 # Dashboard Page - Shows all classrooms that the user is currently apart of
-@app.route('/dashboard/<user>')
+@app.route('/dashboard/<user>', methods=['POST', 'GET'])
 def dashboard_page(user):
-    # paper = Paper.query.filter_by(id_student=current_user.id).first()
-    papers = Paper.query.all()
+    join_room = Join_Cloudroom()
+    if join_room.validate_on_submit():
+
+        student_enrolled_already = False
+        paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
+        paper_student_to_create = PaperStudent(id_paper=paper.id,
+                                               id_student=current_user.id)
+        print("hello", join_room.code.data,paper.id)
+        # Check if student is already in that paper
+        if PaperStudent.query.all():
+            for entry in PaperStudent.query.all():
+                if entry.id_student == paper_student_to_create.id_student:
+                    student_enrolled_already = True
+
+        if student_enrolled_already:
+            flash(f'You have already joined this paper.')
+            return redirect(url_for('dashboard_page',user=current_user.id))
+        else:
+            db.session.add(paper_student_to_create)
+            db.session.commit()
+            flash(f'Student added successfully! You have joined "{paper.paper_name}".',
+                  category='success')
+            return redirect(url_for('dashboard_page',user=current_user.id))
+
+    user_papers = []
+    for entry in PaperStudent.query.all():
+        if entry.id_student == current_user.id:
+            user_papers.append(Paper.query.filter_by(id=entry.id_paper).first())
+
+    # papers = Paper.query.all()
     classroom = Classroom.query.all()
-    return render_template('dashboard.html',papers=papers,classroom=classroom)
+    return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>')
