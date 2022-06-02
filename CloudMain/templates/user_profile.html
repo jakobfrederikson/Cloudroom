@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% block title %}
+Profile
+{% endblock %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+{% endblock %}
+{% block content %}
+
+<body class="text-center">
+   <div class="container" style="color: white;">
+      <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="profile_back">
+      <img src="../static/images/backarrow.png" alt="sss"></a>
+      <div class="container-fluid profile_form" style="background: #05396B">
+         <!--profile pic-->
+         <div class="col">
+            <a href="#"
+               class="text-reset text-decoration-none" id="show_btn5">
+               <p class="fw-bold text-sm-center fs-6" style="color:#20CED9; margin-left:40%;">Change Profile Picture</p>
+            </a>
+         </div>
+         <div class="row justify-content-center">
+            <img src="{{url_for('static',filename = current_user.profile_pic)}}"
+               class="img-fluid user-image rounded-circle" style="object-fit: cover; width: 300px; height: 280px;"
+               id="profile_picture" alt="Profile pic">
+         </div>
+         <form method="POST" class="form-register" style="color:white">
+            {{ form_nickname.hidden_tag() }}
+            <div class="form5" id="form5_profile">
+               <h1 class="display-6 text-center" style="margin-top:0;">Select Profile Picture</h1>
+               <div class="rows ">
+                  {% for subfield in form_profile_pic.profile_pic %}
+                  <div class="columns">
+                     <label class="custom_radio ">
+                     <img class="img-fluid img-thumbnail d-flex justify-content-center"
+                        src="{{url_for('static',filename = subfield.data )}}">
+                     {{ subfield }}{{ subfield.label }}</label>
+                  </div>
+                  {% endfor %}
+               </div>
+               {{ form_profile_pic.submit(class="btn btn-sm btn-outline-primary") }}
+               <button type="button" class="btn btn-sm btn-primary" id="hide_btn5">Cancel</button>
+            </div>
+         </form>
+         <br><br>
+         <!--nickname field-->
+         <div class="d-flex justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">NICKNAME:</p>
+            </div>
+            <div class="col-3">
+               <p class="text-sm-center" >{{current_user.nickname}}</p>
+            </div>
+            <div class="col-1">
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn1">Change</button>
+            </div>
+         </div>
+         <form method="POST" class="form-register" style="color:white">
+            {{ form_nickname.hidden_tag() }}
+            <div class="form2" id="form1_profile">
+               {{ form_nickname.nickname.label() }}
+               {{ form_nickname.nickname(class="form-control", placeholder=current_user.nickname) }}
+               {{ form_nickname.submit(class="btn btn-sm btn-outline-primary") }}
+               <button type="button" class="btn btn-sm btn-primary" id="hide_btn1">Cancel</button>
+            </div>
+         </form>
+         <!--First name and Last name field-->
+         <div class="d-flex justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">NAME:</p>
+            </div>
+            <div class="col-3">
+               <p class="text-sm-center">{{current_user.first_name }} {{current_user.last_name}}</p>
+            </div>
+            <div class="col-1">
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn2">Change</button>
+            </div>
+         </div>
+         <form method="POST" class="form-profile" style="color:white">
+            {{ form_fname_lname.hidden_tag() }}
+            <div class="form2" id="form2_profile">
+               {{ form_fname_lname.first_name.label() }}
+               {{ form_fname_lname.first_name(class="form-control", placeholder=current_user.first_name) }}
+               {{ form_fname_lname.last_name.label() }}
+               {{ form_fname_lname.last_name(class="form-control", placeholder=current_user.last_name) }}
+               {{ form_fname_lname.submit(class="btn btn-sm btn-outline-primary") }}
+               <button type="button" class="btn btn-sm btn-primary" id="hide_btn2">Cancel</button>
+            </div>
+         </form>
+         <!--school field-->
+         <div class="d-flex justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">SCHOOL:</p>
+            </div>
+            <div class="col-3">
+               <p class="text-sm-center">{{current_user.school}}</p>
+            </div>
+            <div class="col-1">
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn3">Change</button>
+            </div>
+         </div>
+         <form method="POST" class="form-profile" style="color:white">
+            {{ form_school.hidden_tag() }}
+            <div class="form2" id="form3_profile">
+               {{ form_school.school.label() }}
+               {{ form_school.school(class="form-control", placeholder=current_user.school) }}
+               {{ form_school.submit(class="btn btn-sm btn-outline-primary") }}
+               <button type="button" class="btn btn-sm btn-primary" id="hide_btn3">Cancel</button>
+            </div>
+         </form>
+         <!--gender field-->
+         <div class="d-flex justify-content-evenly">
+            <div class="col-2">
+               <p class="text-sm-start fw-bold">GENDER:</p>
+            </div>
+            <div class="col-3">
+               <p class="text-sm-center">{{current_user.gender}}</p>
+            </div>
+            <div class="col-1">
+               <button type="button" class="btn btn-sm btn-outline-primary" style="margin:0;" id="show_btn4">Change</button>
+            </div>
+         </div>
+         <br><br>
+         <form method="POST" class="form-profile" style="color:white">
+            {{ form_gender.hidden_tag() }}
+            <div class="form2" id="form4_profile">
+               {{ form_gender.gender.label() }}
+               {{ form_gender.gender(class="form-control", placeholder=current_user.school) }}
+               {{ form_gender.submit(class="btn btn-sm btn-outline-primary") }}
+               <button type="button" class="btn btn-sm btn-primary" id="hide_btn4">Cancel</button>
+            </div>
+         </form>
+         <!--email field-->
+         <div class="d-flex justify-content-center">
+            <div style="margin-right:10px;">
+               <p class="text-sm-start fw-bold">EMAIL:</p>
+            </div>
+            <div>
+               <p class="text-sm-start email_address">{{current_user.email}}</p>
+            </div>
+         </div>
+         <br><br>
+         <!--change password field-->
+         <div class="d-flex justify-content-evenly">
+            <a href="#" class="text-reset text-decoration-none" id="show_btn6">
+               <p class="text-center fw-bold" style="color:#20CED9;">Change Password</p>
+            </a>
+         </div>
+         <form method="POST" class="form-profile" style="color:white">
+            {{ form_password.hidden_tag() }}
+            <div class="form2" id="form6_profile">
+               {{ form_password.password_hash.label() }}
+               {{ form_password.password_hash(class="form-control", placeholder="") }}
+               {{ form_password.verify_password.label() }}
+               {{ form_password.verify_password(class="form-control", placeholder="") }}
+               {{ form_password.submit(class="btn btn-sm btn-outline-primary") }}
+               <button type="button" class="btn btn-sm btn-primary" id="hide_btn6">Cancel</button>
+            </div>
+         </form>
+      </div>
+   </div>
+   <script>
+      <!-- nickname-->
+          document.getElementById("hide_btn1").addEventListener("click", function() {
+             document.getElementById("form1_profile").style.display = "none";
+          });
+          document.getElementById("show_btn1").addEventListener("click", function() {
+             document.getElementById("form1_profile").style.display = "inline";
+          });
+      <!--    f_name l_name-->
+          document.getElementById("hide_btn2").addEventListener("click", function() {
+             document.getElementById("form2_profile").style.display = "none";
+          });
+          document.getElementById("show_btn2").addEventListener("click", function() {
+             document.getElementById("form2_profile").style.display = "inline";
+          });
+      <!--    school-->
+          document.getElementById("hide_btn3").addEventListener("click", function() {
+             document.getElementById("form3_profile").style.display = "none";
+          });
+          document.getElementById("show_btn3").addEventListener("click", function() {
+             document.getElementById("form3_profile").style.display = "inline";
+          });
+      <!--    gender-->
+          document.getElementById("hide_btn4").addEventListener("click", function() {
+             document.getElementById("form4_profile").style.display = "none";
+          });
+          document.getElementById("show_btn4").addEventListener("click", function() {
+             document.getElementById("form4_profile").style.display = "inline";
+          });
+      <!--    profile-->
+          document.getElementById("hide_btn5").addEventListener("click", function() {
+             document.getElementById("form5_profile").style.display = "none";
+             document.getElementById("profile_picture").style.display = "inline";
+             document.getElementById("show_btn5").style.display = "inline";
+          });
+          document.getElementById("show_btn5").addEventListener("click", function() {
+             document.getElementById("form5_profile").style.display = "inline";
+             document.getElementById("profile_picture").style.display = "none";
+             document.getElementById("show_btn5").style.display = "none";
+          });
+      <!--    password-->
+          document.getElementById("hide_btn6").addEventListener("click", function() {
+             document.getElementById("form6_profile").style.display = "none";
+             document.getElementById("show_btn6").style.display = "inline";
+             document.getElementById("show_btn6").style.display = "inline";
+          });
+          document.getElementById("show_btn6").addEventListener("click", function() {
+             document.getElementById("form6_profile").style.display = "inline";
+             document.getElementById("show_btn6").style.display = "none";
+             document.getElementById("show_btn6").style.display = "none";
+          });
+
+   </script>
+</body>
+{% endblock %}

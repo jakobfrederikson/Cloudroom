@@ -1,0 +1,333 @@
+body {
+    background-color: #05396B;
+}
+
+#content2{
+    display:none
+}
+
+#navbar{
+    background-color: #0FA958;
+}
+
+.nav-link{
+    color: white;
+}
+
+.navbar-brand{
+    font-weight: bold;
+    font-size: 36px;
+    margin-left: 40px;
+    color: white;
+    margin-left:90px;
+}
+
+#navbar-nav{
+    margin-right: 8%
+}
+
+.list_mobile{
+    display:none;
+}
+
+#dropMenu{
+    color: #0FA958;
+}
+
+#content{
+    margin-top: 5%;
+    padding-right: 100px;
+    padding-left: 100px;
+}
+
+#img1 {
+    padding:0;
+    border-radius: 12px;
+    border: 9px solid white;
+}
+
+.text2{
+    font-weight: 600;
+    color: white;
+}
+
+#img2{
+    padding:0;
+    margin-top: 60%;
+    border-radius: 12px;
+    border: 9px solid white;
+}
+
+.text1{
+    font-weight: 600;
+    color: white;
+    padding-top: 60%;
+}
+
+.col-5{
+    position:relative
+}
+
+#img3 {
+    margin-bottom: 13%;
+    margin-left: 20px;
+    border-radius: 12px;
+    border: 9px solid white;
+}
+
+.signup{
+    position: absolute;
+    top: 55%;
+    left: 47%;
+    width: 120px;
+    height: 55px;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    background: #5CDB94;
+    color: white;
+    border-radius: 12px;
+    border: 9px solid #5CDB94;
+}
+
+.text3{
+    font-size: 18px;
+    font-weight: bold;
+    position: absolute;
+    text-align: center;
+    top: -10%;
+    left: 30%;
+    height: 50%;
+    width: 50%;
+    color: white;
+    padding-top: 50%;
+}
+
+.signup_image{
+    display: none;
+}
+
+.bar1, .bar2, .bar3 {
+  width: 35px;
+  height: 5px;
+  background-color: white;
+  margin: 6px 0;
+  transition: 0.4s;
+}
+
+.change .bar1 {
+  -webkit-transform: rotate(-45deg) translate(-9px, 6px);
+  transform: rotate(-45deg) translate(-9px, 6px);
+}
+
+.change .bar2 {opacity: 0;}
+
+.change .bar3 {
+  -webkit-transform: rotate(45deg) translate(-8px, -8px);
+  transform: rotate(45deg) translate(-8px, -8px);
+}
+
+/* styles for browsers between 1025px and 1420px; */
+@media only screen and (min-width: 1025px) and (max-device-width: 1420px){
+    .text1{
+        font-size: 13px;
+        font-weight: 500;
+        padding-top: 40%;
+    }
+    .text2{
+        font-size: 13px;
+        font-weight: 500;
+        padding-top: 40%;
+    }
+
+    .text3{
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 15%;
+    }
+
+    #img1 {
+        margin-top: 45%;
+    }
+
+    #img2 {
+        margin-top: 45%;
+    }
+
+    #img3 {
+        margin-top: 30%;
+    }
+
+    .signup{
+        position: absolute;
+        top: 60%;
+        left: 45%;
+        width: 120px;
+        height: 55px;
+
+    }
+
+    #navbar-nav{
+        font-size: 13px;
+        margin-right: 12%;
+    }
+
+    #logo{
+        font-size: 40px;
+    }
+
+    .navbar-brand{
+        font-size: 28px;
+    }
+}
+
+/* tables*/
+@media only screen and (min-width: 915px) and (max-width: 1040px) {
+    .text1{
+        font-size: 12px;
+        font-weight: 500;
+        padding-top: 30%;
+    }
+    .text2{
+        font-size: 12px;
+        font-weight: 500;
+        padding-top: 40%;
+    }
+
+    .text3{
+        font-size: 12px;
+        font-weight: 500;
+        margin-top: 15%;
+    }
+
+    #img1 {
+        margin-top: 45%;
+    }
+
+    #img2 {
+        margin-top: 45%;
+    }
+
+    #img3 {
+        margin-top: 40%;
+    }
+
+    .signup{
+        position: absolute;
+        top: 60%;
+        left: 44%;
+        width: 100px;
+        height: 45px;
+
+    }
+
+    #navbar-nav{
+        font-size: 13px;
+        margin-right: 12%;
+    }
+
+    #logo{
+        font-size: 40px;
+    }
+
+    .navbar-brand{
+        font-size: 28px;
+        margin-left: 10px;
+    }
+}
+/* tables*/
+@media only screen and (min-width: 541px) and (max-device-width: 914px){
+
+    .col-5{
+        display: none;
+    }
+
+    .text1{
+        font-size: 13px;
+        font-weight: 500;
+        padding-top: 40%;
+    }
+    .text2{
+        font-size: 13px;
+        font-weight: 500;
+        padding-top: 70%;
+    }
+
+    #img1 {
+        margin-top: 45%;
+    }
+
+    #img2 {
+        margin-top: 45%;
+    }
+
+    .signup_image{
+        display: block;
+        position: relative;
+    }
+
+    .signup_image .text3{
+        font-size: 15px;
+        font-weight: 600;
+        margin-top: 5%;
+    }
+
+    .signup_image #img3 {
+        margin-top: 20%;
+    }
+
+    .signup_image .signup{
+        position: absolute;
+        top: 55%;
+        left: 46%;
+        width: 120px;
+        height: 55px;
+    }
+
+    #navbar-nav{
+        font-size: 13px;
+        margin-right: 12%;
+    }
+
+    #logo{
+        font-size: 40px;
+    }
+
+    .navbar-brand{
+        font-size: 28px;
+        margin-left: 10px;
+    }
+}
+
+/* mobile*/
+@media only screen and (max-device-width: 540px) {
+    body{
+        background: white;
+    }
+
+    #content{
+        display:none
+    }
+
+    #content2{
+        display:block;
+    }
+
+    .display-3{
+        margin-top:100px;
+    }
+
+    #content2 .signup{
+        background: #0FA958;
+    }
+    .text_account{
+        margin-top: 30px;
+    }
+
+    .h2_title{
+        margin-top: 30px;
+    }
+    .decs_2{
+        margin-top: 30px;
+    }
+}

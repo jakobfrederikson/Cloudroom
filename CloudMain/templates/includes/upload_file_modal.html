@@ -1,0 +1,26 @@
+<!-- Download File Modal -->
+<div class="modal fade" id="Modal-Download-{{ file.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          {{file.filename}}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Would you like to download this file?
+      </div>
+      <div class="modal-footer">
+        <form method="POST">
+          {{ delete_form.hidden_tag() }}
+            <input id="remove_item" name="remove_item" type="hidden" value="{{file.filename}}">
+              {{ delete_form.submit(class="btn btn-block btn-danger") }}
+        </form>
+        <a href="{{url_for('user_drive', user = current_user.first_name,id=file.id)}}">
+          <button type="button" class="btn btn-primary">Download</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

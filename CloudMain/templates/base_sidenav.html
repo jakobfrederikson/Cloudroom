@@ -1,0 +1,94 @@
+<!--<link rel="stylesheet" href="../static/CSS/temporary_nav_bar.css">-->
+<link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
+
+<!-- SIDE NAV -->
+<div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green position-fixed">
+  <div class="user-section">
+    <a href="{{url_for('user_profile', user = current_user.first_name)}}" class="text-reset text-decoration-none">
+      <p class="fw-bold text-sm-end" style="color:#20CED9; margin-left: 120px; margin-bottom:0;">Edit Profile</p>
+    </a>
+    <div class="thumbnail">
+      <img src="{{url_for('static',filename = current_user.profile_pic)}}" alt="Squid game avatar from Unsplash">
+    </div>
+    <h5 id="username">{{ current_user.first_name }} {{ current_user.last_name }}</h5>
+  </div>
+  <div class="nav-icons">
+    <div class="nav-button">
+      <a href="{{ url_for('dashboard_page', user = current_user.first_name) }}"
+        class="text-reset text-decoration-none nav-button">
+        <img src="{{url_for('static',filename = 'images/dashboard_icon.png')}}" alt="Your dashboard icon">
+        <p>View Dashboard</p>
+      </a>
+    </div>
+    <div class="nav-button">
+      <a href="{{url_for('user_drive', user = current_user.first_name ,id='000')}}"
+        class="text-reset text-decoration-none nav-button">
+        <img src="{{url_for('static',filename = 'images/ph_hard-drives-fill.png')}}" alt="Your storage drive icon">
+        <p>View Drive</p>
+      </a>
+    </div>
+    {% if "drive" not in request.path %}
+    {% if "dashboard" not in request.path %}
+    {% if "grades" not in request.path %}
+    <div class="nav-button">
+      <!-- Button Trigger Modal -->
+      <button type="button" data-bs-toggle="modal" data-bs-target="#showMembersModal"
+        style="border: none; background-color: transparent; color: white;">
+        <img src="{{url_for('static',filename = 'images/members_icon.png')}}" alt="All classroom members">
+        <p class="text-reset text-decoration-none nav-button">Classroom Members</p>
+      </button>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    <div class="nav-button">
+      <a href="{{ url_for('student_grades', user = current_user.first_name) }}"
+        class="text-reset text-decoration-none nav-button">
+        <img src="{{url_for('static',filename = 'images/grades_icon.png')}}" alt="Your grades icon">
+        <p>View Grades</p>
+      </a>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Modal -->
+{% if "drive" not in request.path %}
+{% if "dashboard" not in request.path %}
+{% if "grades" not in request.path %}
+<div class="modal fade" id="showMembersModal" tabindex="-1" aria-labelledby="showMembersLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="showMembersLabel">{{ paper.paper_name }} Members</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody>
+            {% for member in members %}
+            <tr>
+              <th scope="row">
+                <div class="members-thumbnail">
+                  <img src="{{ url_for('static', filename = member.profile_pic) }}" alt="Member's Profile Picture">
+                </div>
+              </th>
+              <td>{{ member.first_name }} {{ member.last_name }}</td>
+              <td><a href="">View Profile</a></td>
+              <td><a href="">Message</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+{% endif %}
+{% endif %}

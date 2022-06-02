@@ -1,0 +1,31 @@
+.all-classroom-posts {
+    display: flex;
+    justify-content: center;
+}
+
+.class-post {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.cloudroom-container {
+    height: 100vh;
+}
+
+@media (min-width: 1200px)
+{
+    .classroom-name {
+        margin-left: 100px;
+        margin-top: 20px;
+    }
+}
+
+@media (min-width: 770px)
+{
+    .class-post {
+        width: 40em;
+    }
+}

@@ -1,0 +1,100 @@
+.side-nav {
+    padding: 0%;
+}
+
+.cloudrooom-green {
+    background-color: #0FA958;
+}
+
+.navbar-white-text {
+    color: white;
+}
+
+.user-section {
+    border-top: 1px white;
+    border-bottom: 1px white;
+    border-style: solid none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.thumbnail {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 5px 0px;
+}
+
+.thumbnail img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.members-thumbnail {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 5px 0px;
+}
+
+.members-thumbnail img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.members-align {
+    
+}
+
+.nav-icons {
+    margin: 50px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* 992px is when the nav-bar turns into a hamburger menu */
+@media (max-width: 1205px) {
+    .side-nav {
+        display: none;
+    }
+}
+
+@media (min-width: 1200px) {
+    .move-inwards {
+        margin-right: 30px;
+    }
+}
+
+body:not(.modal-open){
+    padding-right: 0px !important;
+  }
