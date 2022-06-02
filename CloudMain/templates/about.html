@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+Sign In
+{% endblock %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+{% endblock %}
+{% block content %}
+<body class="text-center">
+  <h1>About Us
+  </h1>
+  <h2>Yoobee College Wellington
+  </h2>
+  <h3>CS203 Investigative Studio 1
+  </h3>
+  <br>
+  <p>In this project we are tasked to create a Web Application of our choice and build a prototype based
+    on the project proposal and inquiries in CS202
+  </p>
+  <br>
+  <div class="container" style="padding-bottom:200px;">
+    <p>Cloudroom will streamline sharing files between the teachers and students, this is an online learning environment
+      for teachers and students. Teachers can set up a Cloudroom and invite their students through a sharable link.
+      Teachers will be able to create “assignments” or “homework” and view the submitted assignments, suggest fixes
+      or mark the assignment etc.
+    </p>
+    <br>
+    <p>A one-stop hub for any schoolwork to be done; it eliminates the hassle of going
+      through google drive or searching through folders on your PC. Cloudroom can personalise your class experience by
+      adding an inbuilt tool/feature to enhance the learning process of students i.e. For programming courses it will
+      have a built-in code editor for Python, so students and teachers don’t have to download the necessary files to
+      run Python.
+    </p>
+    <br>
+    <br>
+    <h3>Developers
+    </h3>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col " >
+        <img src="{{url_for('static',filename = 'images/GigaJakob.png')}}" class="rounded" alt=""
+             style="width:50%;">
+      </div>
+      <div class="col" >
+        <br><br>
+        <h6>Jakob Frederikson</h6>
+        <p>
+            Development always brings a smile to my face.
+        </p>
+      </div>
+      <div class="col " >
+        <br><br>
+        <h6>Jay Anino</h6>
+        <p>
+            Just your average dude who likes to spend his time alone in his swamp
+        </p>
+      </div>
+      <div class="col" >
+        <img src="{{url_for('static',filename = 'images/JustJay.png')}}" class="rounded" alt=""
+             style="width:50%;">
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock %}
