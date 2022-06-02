@@ -71,9 +71,7 @@ def dashboard_page(user):
     join_room = Join_Cloudroom()
     if join_room.validate_on_submit():
         student_enrolled_already = False
-
         paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
-        print(paper.id, "hello")
         if paper is None:
             flash(f'Code in invalid.',
                   category='danger')
