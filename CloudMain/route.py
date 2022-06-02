@@ -345,3 +345,7 @@ def admin_page():
                                             papers=papers,
                                             test_class=test_class,
                                             test_paper=test_paper)
+
+@app.route('/cloudroom_tools')
+def cloudroom_tools():
+    return render_template('cloudroom_tools.html')
