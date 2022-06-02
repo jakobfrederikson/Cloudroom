@@ -30,6 +30,10 @@ def login_page():
             flash('Username and password are not match! Please try again',category='danger')
     return render_template("login.html", form=form)
 
+@app.route('/about')
+def about_page():
+    return render_template("about.html")
+
 #sign up page
 @app.route('/signup', methods=['POST', 'GET'])
 def sign_up():
