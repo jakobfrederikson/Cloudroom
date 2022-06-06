@@ -11,7 +11,7 @@ app.config['SECRET_KEY'] = '40cbeb3aa5d35a97424d230b'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = "sign_in"
+login_manager.login_view = "login_page" #redirect user to login page if they are not signed in
 login_manager.login_message_category = "info"
 
 from CloudMain import route

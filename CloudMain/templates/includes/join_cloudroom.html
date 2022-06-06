@@ -1,0 +1,22 @@
+<!-- Modal -->
+  <!--This will let user to join a classroom-->
+  <div class="modal fade" id="Join_Cloudroom_Modal" tabindex="-1" aria-labelledby="Upload File" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="Join_id">Enter Cloudroom Code
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class="form-signin" style="color:white">
+            {{ join_room.hidden_tag() }}
+            {{ join_room.code.label() }}
+            {{ join_room.code(class="form-control", placeholder="Enter Code") }}
+            {{ join_room.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
