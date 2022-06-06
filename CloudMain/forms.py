@@ -2,9 +2,16 @@ from flask import Flask
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
+from CloudMain.models import Account
 
 #Creating accounts form
 class CreateAccount(FlaskForm):
+    # Checks if email already exists
+    def validate_email(self, check_email):
+        email = Account.query.filter_by(email=check_email.data).first()
+        if email:
+            raise ValidationError('Email already exists! Please try again..')
+
     first_name = StringField(label="First name", validators=[Length(min=2,max=30), DataRequired()])
     last_name = StringField(label="Last name", validators=[Length(min=2,max=30), DataRequired()])
     gender = SelectField(label="Select your Gender", choices=[('Male'), ('Female'), ('Other')])
@@ -18,6 +25,9 @@ class CreateAccount(FlaskForm):
     profile_pic = RadioField(label="Profile Picture",
         choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
+    account_type = RadioField(label="Account Type",
+                             choices=[('images/Student Button.png', 'Student'), ('images/Teacher Button.png', 'Teacher')],
+                             validators=[DataRequired()])
     submit = SubmitField(label='Create Account')
 
 #Login form

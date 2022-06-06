@@ -8,6 +8,8 @@ Dashboard | Cloudroom
 {% block content %}
 {% include 'base_sidenav.html' %}
 <body class="text-center">
+  {% include 'includes/create_cloudroom.html' %}
+  {% include 'includes/join_cloudroom.html' %}
   <!--content title and join button-->
   <div class="container-fluid dashboard_header_content">
     <div class="row justify-content-between">
@@ -18,10 +20,16 @@ Dashboard | Cloudroom
       <div class="col-4">
         <a href="#" class="text-reset text-decoration-none">
           <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
+            {%if current_user.account_type == "Student" %}
             <a href="#" data-bs-toggle="modal" data-bs-target="#Join_Cloudroom_Modal"
                class="text-reset text-decoration-none">
               <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom
             </a>
+            {%else%}
+            <a href="#" data-bs-toggle="modal" data-bs-target="#Modal-Create-Cloudroom" class="text-reset text-decoration-none">
+               <img src="../static/images/Add Classroom.png" alt="">Create Cloudroom
+            </a>
+            {% endif %}
           </h1>
         </a>
       </div>
@@ -36,17 +44,17 @@ Dashboard | Cloudroom
       {%if class.id == paper.id_classroom %}
       <div class="col cloudroom_classnum" style="">
         <br>
-        <p class="text-start" style="color:#05396B">
+        <h5 class="text-start" style="color:#05396B">
           {{class.classroom_name}}
-        </p>
+        </h5>
         <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
           <div class="col-md-auto">
             <br>
             <img class="img-fluid" src="{{url_for('static', filename = paper.paper_picture )}}"style="width:270px; padding-bottom:30px;" >
           </div>
           <div class="col-md">
-            <p class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
-            </p>
+            <h6 class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
+            </h6>
             <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling
             </p>
             <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
@@ -65,28 +73,6 @@ Dashboard | Cloudroom
       {% endif %}
       {% endfor %}
       {% endfor %}
-    </div>
-  </div>
-  <!-- Modal -->
-  <!--This will let user to join a classroom-->
-  <div class="modal fade" id="Join_Cloudroom_Modal" tabindex="-1" aria-labelledby="Upload File" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="Join_id">Enter Cloudroom Code
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-          </button>
-        </div>
-        <div class="modal-body">
-          <form method="POST" class="form-signin" style="color:white">
-            {{ join_room.hidden_tag() }}
-            {{ join_room.code.label() }}
-            {{ join_room.code(class="form-control", placeholder="Enter Code") }}
-            {{ join_room.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
-          </form>
-        </div>
-      </div>
     </div>
   </div>
 </body>

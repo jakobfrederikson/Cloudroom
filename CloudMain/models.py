@@ -18,6 +18,7 @@ class Account(db.Model, UserMixin):
     email = db.Column(db.String(length=20), nullable=False, unique=True)
     password_hash = db.Column(db.String(length=12), nullable=False)
     profile_pic = db.Column(db.String(length=20), nullable=False)
+    account_type = db.Column(db.String(length=20), nullable=False)
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
 
     #returns the password
@@ -31,7 +32,6 @@ class Account(db.Model, UserMixin):
     #checks if password is valid
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
-
 
 # Jakob
 # Classroom model - holds papers (e.g. Classroom: Software Engineering, Paper: Python 203, Paper: C++ 101)

@@ -41,6 +41,7 @@
     {% endif %}
     {% endif %}
     {% endif %}
+    {% if current_user.account_type == "Student" %}
     <div class="nav-button">
       <a href="{{ url_for('student_grades', user = current_user.first_name) }}"
         class="text-reset text-decoration-none nav-button">
@@ -48,6 +49,7 @@
         <p>View Grades</p>
       </a>
     </div>
+    {% endif %}
   </div>
 </div>
 </div>

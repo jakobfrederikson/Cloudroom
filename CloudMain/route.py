@@ -39,6 +39,9 @@ def about_page():
 def sign_up():
     form = CreateAccount()
     if form.validate_on_submit():
+        value = form.account_type.data
+        choices = dict(form.account_type.choices)
+        label = choices[value]
         user_to_create = Account(first_name=form.first_name.data,
                                  last_name=form.last_name.data,
                                  school=form.school.data,
@@ -46,7 +49,8 @@ def sign_up():
                                  password=form.password_hash.data,
                                  email=form.email.data,
                                  nickname=form.nickname.data,
-                                 profile_pic=form.profile_pic.data)
+                                 profile_pic=form.profile_pic.data,
+                                 account_type=label)
         db.session.add(user_to_create)
         db.session.commit()
         login_user(user_to_create)
@@ -67,8 +71,14 @@ def log_out():
 
 # Dashboard Page - Shows all classrooms that the user is currently apart of
 @app.route('/dashboard/<user>', methods=['POST', 'GET'])
+@login_required
 def dashboard_page(user):
     join_room = Join_Cloudroom()
+    classroom_form = Create_Classroom()
+    paper_form = Create_Paper()
+    classrooms = Classroom.query.all()
+
+    # Join Cloudroom
     if join_room.validate_on_submit():
         student_enrolled_already = False
         paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
@@ -95,6 +105,27 @@ def dashboard_page(user):
                       category='success')
                 return redirect(url_for('dashboard_page',user=current_user.id))
 
+    # CREATE PAPER
+    if paper_form.submit_paper.data and paper_form.validate():
+        paper_to_create = Paper(paper_name=paper_form.paper_name.data,
+                                paper_room_number=paper_form.paper_room_number.data,
+                                paper_picture=paper_form.paper_picture.data,
+                                id_classroom=request.form.get('classroom_select'))
+        db.session.add(paper_to_create)
+        db.session.commit()
+        flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
+        return redirect(url_for('dashboard_page',user=current_user))
+
+    # CREATE CLASSROOM
+    if classroom_form.validate():
+        classroom_to_create = Classroom(classroom_name=classroom_form.classroom_name.data)
+        db.session.add(classroom_to_create)
+        db.session.commit()
+        flash(f'Classroom created successfully! Classroom "{classroom_to_create.classroom_name}" has been created.',
+              category='success')
+        return redirect(url_for('dashboard_page',user=current_user))
+
+
     user_papers = []
     for entry in PaperStudent.query.all():
         if entry.id_student == current_user.id:
@@ -102,7 +133,8 @@ def dashboard_page(user):
 
     # papers = Paper.query.all()
     classroom = Classroom.query.all()
-    return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room)
+    return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room,
+                           classroom_form=classroom_form,paper_form=paper_form,classrooms=classrooms)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>')
@@ -143,6 +175,7 @@ def classroom_main_page(class_id, paper_id):
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
+@login_required
 def user_profile(user):
     form_nickname = UpdateNickname()
     form_name = UpdateName()
@@ -212,6 +245,7 @@ def student_grades(user):
 
 # Student Drive - View all their saved notes or files
 @app.route('/profile/<user>/<id>/drive', methods=['POST', 'GET'])
+@login_required
 def user_drive(user, id):
     files = Upload_File().query.filter_by(owner=current_user.id)
     delete_form = Delete_File()
@@ -221,7 +255,6 @@ def user_drive(user, id):
         d_file_obj = Upload_File().query.filter_by(filename=delete_item).first()
         if d_file_obj:
             Upload_File().query.filter_by(id = d_file_obj.id).delete()
-            print(redirect(request.path),"hello from jay")
             flash(f'{d_file_obj.filename} has been deleted')
             db.session.commit()
             return redirect(url_for('user_drive', user=current_user.first_name, id='000'))
