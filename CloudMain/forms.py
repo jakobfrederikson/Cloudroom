@@ -1,6 +1,7 @@
+from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField
+from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, DateTimeField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from CloudMain.models import Account
 
@@ -58,6 +59,18 @@ class Student_To_Paper(FlaskForm):
     paper_id = IntegerField(label="Paper ID")
     student_id = IntegerField(label="Student ID")
     submit = SubmitField('Add Student To Paper')
+
+# Jakob
+# Create an assignment for a paper
+class Create_Assignment(FlaskForm):
+    name = StringField(label="Assignment name", validators=[Length(max=80), DataRequired()])
+    # creationDate - this is automatically added
+    dueDate = DateTimeField(label="Due date", validators=[DataRequired()])
+    # isCompleted - always false on creation
+    weight = IntegerField(label="Assignment weight", validators=[Length(max=3), DataRequired()])
+    # paper_id - this is grabbed from the HTML in a select element
+    submit = SubmitField("Create Assignment")
+
 
 # Update user details forms
 class UpdateNickname(FlaskForm):
