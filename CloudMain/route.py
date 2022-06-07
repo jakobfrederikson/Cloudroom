@@ -1,12 +1,14 @@
-from ast import AsyncFunctionDef
+from ast import Assign, AsyncFunctionDef
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File
+from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File, Assignment
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
-    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
+        Create_Assignment
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
+from datetime import datetime
 
 
 #homepage
@@ -157,21 +159,52 @@ def classroom_main_page(class_id, paper_id):
                                                      paper=paper,
                                                      members=members_list)
 
-# ALL ASSIGNMENT PAGES ARE NOT IN DEVELOPMENT YET
+
 # Classroom Assignments - Displays all assignments
-# @app.route('/classroom/<class_id>/<paper_id>/assignments')
-# def classroom_assignments_list(class_id):
-#     return render_template('classroom_assignments_list.html')
+@app.route('/classroom/<class_id>/<paper_id>/assignments')
+def classroom_assignments_list(class_id, paper_id):
 
-# # Assignment Page - View the details of a specific assignment
-# @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
-# def classroom_assignment_details(class_id, assignment_id):
-#     return render_template('classroom_assignment_details.html')
+    # Get the paper and classroom using the url
+    paper = Paper.query.filter_by(id=paper_id).first()
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    assignments = Assignment.query.all()
 
-# # Assignment Begin - This is when the student has started the assignment.
-# @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
-# def classroom_assignment_content(class_id, assignment_id, page_num):
-#     return render_template('classroom_assignment_content.html')
+    return render_template('classroom_assignments_list.html', classroom=classroom,
+                                                            paper=paper,
+                                                            assignments=assignments)
+
+# Create Assignment - Teacher can create an assignment here
+@app.route('/create_assignment', methods=['POST', 'GET'])
+def create_assignment():
+    classrooms = Classroom.query.all()
+    papers = Paper.query.all()
+
+    assignment_form = Create_Assignment()
+
+    if assignment_form.validate_on_submit():
+        assignment_to_create = Assignment(name = assignment_form.name,
+                                          creationDate = request.form.get("currentDate"),
+                                          dueDate = request.form.get("dueDate"),
+                                          isCompleted = False,
+                                          weight = assignment_form.weight,
+                                          paper_id = request.form.get("paper_select"))
+        db.session.add(assignment_to_create)
+        db.session.commit()
+        return render_template('dashboard.html', user = current_user)
+    return render_template('create_assignment.html', classrooms=classrooms,
+                                                    papers=papers,
+                                                    assignment_form=assignment_form)
+
+# Assignment Page - View the details of a specific assignment
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
+def classroom_assignment_details(class_id, assignment_id):
+    return render_template('classroom_assignment_details.html')
+
+# Assignment Begin - This is when the student has started the assignment.
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
+def classroom_assignment_content(class_id, assignment_id, page_num):
+    return render_template('classroom_assignment_content.html')
+
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
