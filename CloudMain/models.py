@@ -19,7 +19,7 @@ class Account(db.Model, UserMixin):
     profile_pic = db.Column(db.String(length=20), nullable=False)
     account_type = db.Column(db.String(length=20), nullable=False)
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
-    assignments = db.relationship('Assignment', backref='student', lazy=True)
+    assignments = db.relationship('Assignment', backref='owned_student', lazy=True)
 
     #returns the password
     @property
@@ -84,7 +84,7 @@ class Assignment(db.Model):
     isCompleted = db.Column(db.Boolean())
     weight = db.Column(db.Integer)
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
-    student = db.Column(db.Integer(), db.ForeignKey('account.id'))
+    owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
 
 
 #This creates a model in the database for Uploaded files

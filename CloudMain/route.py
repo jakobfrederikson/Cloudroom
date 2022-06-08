@@ -167,7 +167,11 @@ def classroom_assignments_list(class_id, paper_id):
     # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-    assignments = Assignment.query.all()
+
+    if Assignment.query.all():
+        assignments = Assignment.query.all()
+    else:
+        assignments = []
 
     return render_template('classroom_assignments_list.html', classroom=classroom,
                                                             paper=paper,
