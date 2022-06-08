@@ -56,21 +56,23 @@ class Paper(db.Model):
 
 
 # Jakob
-# PaperStudent - holds information about what student is apart of what paper.
-class PaperStudent(db.Model):
+# paper_members - holds information about what user is apart of what paper.
+class paper_members(db.Model):
     __tablename__ = 'PaperStudent'
     id = db.Column(db.Integer(), primary_key=True)
-    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=False)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
+    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
+    id_user = db.Column(db.Integer(), db.ForeginKey('account.id'), nullable = False)
+    account_type = db.Column(db.String(), db.ForeignKey('account.account_type'), nullable = False)
 
 
 # Jakob
-# ClassroomStudent - holds information about what student is apart of what classroom.
-class ClassroomStudent(db.Model):
+# classroom_members - holds information about what user is apart of what classroom.
+class classroom_members(db.Model):
     __tablename__= 'ClassroomStudent'
     id = db.Column(db.Integer(), primary_key=True)
-    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
+    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable = False)
+    id_user = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)
+    account_type = db.Column(db.String(), db.ForeignKey('account.account_type'), nullable = False)
 
 
 # Jakob
@@ -83,6 +85,7 @@ class Assignment(db.Model):
     dueDate = db.Column(db.Date())
     isCompleted = db.Column(db.Boolean())
     weight = db.Column(db.Integer())
+    teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
 
