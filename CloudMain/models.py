@@ -82,7 +82,7 @@ class Assignment(db.Model):
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())
     isCompleted = db.Column(db.Boolean())
-    weight = db.Column(db.Integer)
+    weight = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
 

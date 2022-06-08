@@ -15,7 +15,7 @@
               {{ paper.paper_name }} Assignments
             </div>
             <div class="row">
-              {% if not assignments %}
+              {% if not assignments and current_user.account_type != "Student"%}
                 <a href="{{ url_for('create_assignment') }}">Create an assignment</a>
               {% endif %}
             </div>
