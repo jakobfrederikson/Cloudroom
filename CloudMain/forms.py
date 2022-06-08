@@ -1,10 +1,18 @@
+from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField
+from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, DateTimeField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
+from CloudMain.models import Account
 
 #Creating accounts form
 class CreateAccount(FlaskForm):
+    # Checks if email already exists
+    def validate_email(self, check_email):
+        email = Account.query.filter_by(email=check_email.data).first()
+        if email:
+            raise ValidationError('Email already exists! Please try again..')
+
     first_name = StringField(label="First name", validators=[Length(min=2,max=30), DataRequired()])
     last_name = StringField(label="Last name", validators=[Length(min=2,max=30), DataRequired()])
     gender = SelectField(label="Select your Gender", choices=[('Male'), ('Female'), ('Other')])
@@ -18,6 +26,9 @@ class CreateAccount(FlaskForm):
     profile_pic = RadioField(label="Profile Picture",
         choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
+    account_type = RadioField(label="Account Type",
+                             choices=[('images/Student Button.png', 'Student'), ('images/Teacher Button.png', 'Teacher')],
+                             validators=[DataRequired()])
     submit = SubmitField(label='Create Account')
 
 #Login form
@@ -48,6 +59,18 @@ class Student_To_Paper(FlaskForm):
     paper_id = IntegerField(label="Paper ID")
     student_id = IntegerField(label="Student ID")
     submit = SubmitField('Add Student To Paper')
+
+# Jakob
+# Create an assignment for a paper
+class Create_Assignment(FlaskForm):
+    name = StringField(label="Assignment name", validators=[Length(max=80), DataRequired()])
+    # creationDate - this is automatically added
+    dueDate = DateTimeField(label="Due date", validators=[DataRequired()])
+    # isCompleted - always false on creation
+    weight = IntegerField(label="Assignment weight", validators=[Length(max=3), DataRequired()])
+    # paper_id - this is grabbed from the HTML in a select element
+    submit = SubmitField("Create Assignment")
+
 
 # Update user details forms
 class UpdateNickname(FlaskForm):

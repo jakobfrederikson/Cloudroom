@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
 
 <!-- SIDE NAV -->
-<div class="flex-nowrap col-sm-2 min-vh-100 position-absolute end-0 side-nav cloudrooom-green position-fixed">
+<div class="flex-nowrap col-sm-2 min-vh-100 float-end end-0 side-nav cloudrooom-green">
   <div class="user-section">
     <a href="{{url_for('user_profile', user = current_user.first_name)}}" class="text-reset text-decoration-none">
       <p class="fw-bold text-sm-end" style="color:#20CED9; margin-left: 120px; margin-bottom:0;">Edit Profile</p>
@@ -30,6 +30,8 @@
     {% if "drive" not in request.path %}
     {% if "dashboard" not in request.path %}
     {% if "grades" not in request.path %}
+    {% if "create_assignment" not in request.path %}
+    <!-- Classroom Members -->
     <div class="nav-button">
       <!-- Button Trigger Modal -->
       <button type="button" data-bs-toggle="modal" data-bs-target="#showMembersModal"
@@ -38,9 +40,20 @@
         <p class="text-reset text-decoration-none nav-button">Classroom Members</p>
       </button>
     </div>
+
+    <!-- View Assignments -->
+    <div class="nav-button">
+      <a href="{{ url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id) }}"
+        class="text-reset text-decoration-none nav-button">
+        <img src="{{url_for('static',filename = 'images/assignments_icon.png')}}" alt="Your storage drive icon">
+        <p>View assignments</p>
+      </a>
+    </div>
     {% endif %}
     {% endif %}
     {% endif %}
+    {% endif %}
+    {% if current_user.account_type == "Student" %}
     <div class="nav-button">
       <a href="{{ url_for('student_grades', user = current_user.first_name) }}"
         class="text-reset text-decoration-none nav-button">
@@ -48,6 +61,7 @@
         <p>View Grades</p>
       </a>
     </div>
+    {% endif %}
   </div>
 </div>
 </div>
@@ -57,6 +71,7 @@
 {% if "drive" not in request.path %}
 {% if "dashboard" not in request.path %}
 {% if "grades" not in request.path %}
+{% if "create_assignment" not in request.path %}
 <div class="modal fade" id="showMembersModal" tabindex="-1" aria-labelledby="showMembersLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -89,6 +104,7 @@
   </div>
 </div>
 </div>
+{% endif %}
 {% endif %}
 {% endif %}
 {% endif %}

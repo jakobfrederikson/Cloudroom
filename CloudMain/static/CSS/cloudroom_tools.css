@@ -1,0 +1,23 @@
+.tool-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 992px) {
+    .desktop-view {
+        display: none;
+    }
+    .mobile-view {
+        display: inline;
+    }
+}
+
+@media (min-width: 992px) {
+    .desktop-view {
+        display: inline;
+    }
+    .mobile-view {
+        display: none;
+    }
+}

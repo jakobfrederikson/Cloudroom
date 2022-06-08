@@ -2,7 +2,6 @@ from CloudMain import db, login_manager
 from CloudMain import bcrypt
 from flask_login import UserMixin
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return Account.query.get(int(user_id))
@@ -18,7 +17,9 @@ class Account(db.Model, UserMixin):
     email = db.Column(db.String(length=20), nullable=False, unique=True)
     password_hash = db.Column(db.String(length=12), nullable=False)
     profile_pic = db.Column(db.String(length=20), nullable=False)
+    account_type = db.Column(db.String(length=20), nullable=False)
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
+    assignments = db.relationship('Assignment', backref='owned_student', lazy=True)
 
     #returns the password
     @property
@@ -74,11 +75,17 @@ class ClassroomStudent(db.Model):
 
 # Jakob
 # Assignment Model - This is here for future use.
-# class Assignment(db.Model):
-#     __tablename__ = 'assignmnet'
-#     id = db.Column(db.Integer(), primary_key=True, nullable=False)
-#     paper_parent = db.Column(db.Integer(), db.ForeignKey('paper.id'))
-#     assignment_name = db.Column(db.String(length=30), nullable=False)
+class Assignment(db.Model):
+    __tablename__ = 'assignment'
+    id = db.Column(db.Integer(), primary_key=True, nullable=False)
+    name = db.Column(db.String(length=30), nullable=False)
+    creationDate = db.Column(db.Date())
+    dueDate = db.Column(db.Date())
+    isCompleted = db.Column(db.Boolean())
+    weight = db.Column(db.Integer)
+    paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
+    owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
+
 
 #This creates a model in the database for Uploaded files
 class Upload_File(db.Model):

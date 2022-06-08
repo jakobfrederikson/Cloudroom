@@ -1,12 +1,14 @@
-from ast import AsyncFunctionDef
+from ast import Assign, AsyncFunctionDef
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File
+from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File, Assignment
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
-    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom
+    UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
+        Create_Assignment
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
+from datetime import datetime
 
 
 #homepage
@@ -30,11 +32,18 @@ def login_page():
             flash('Username and password are not match! Please try again',category='danger')
     return render_template("login.html", form=form)
 
+@app.route('/about')
+def about_page():
+    return render_template("about.html")
+
 #sign up page
 @app.route('/signup', methods=['POST', 'GET'])
 def sign_up():
     form = CreateAccount()
     if form.validate_on_submit():
+        value = form.account_type.data
+        choices = dict(form.account_type.choices)
+        label = choices[value]
         user_to_create = Account(first_name=form.first_name.data,
                                  last_name=form.last_name.data,
                                  school=form.school.data,
@@ -42,7 +51,8 @@ def sign_up():
                                  password=form.password_hash.data,
                                  email=form.email.data,
                                  nickname=form.nickname.data,
-                                 profile_pic=form.profile_pic.data)
+                                 profile_pic=form.profile_pic.data,
+                                 account_type=label)
         db.session.add(user_to_create)
         db.session.commit()
         login_user(user_to_create)
@@ -63,13 +73,17 @@ def log_out():
 
 # Dashboard Page - Shows all classrooms that the user is currently apart of
 @app.route('/dashboard/<user>', methods=['POST', 'GET'])
+@login_required
 def dashboard_page(user):
     join_room = Join_Cloudroom()
+    classroom_form = Create_Classroom()
+    paper_form = Create_Paper()
+    classrooms = Classroom.query.all()
+
+    # Join Cloudroom
     if join_room.validate_on_submit():
         student_enrolled_already = False
-
         paper = Paper.query.filter_by(paper_name=join_room.code.data).first()
-        print(paper.id, "hello")
         if paper is None:
             flash(f'Code in invalid.',
                   category='danger')
@@ -93,6 +107,27 @@ def dashboard_page(user):
                       category='success')
                 return redirect(url_for('dashboard_page',user=current_user.id))
 
+    # CREATE PAPER
+    if paper_form.submit_paper.data and paper_form.validate():
+        paper_to_create = Paper(paper_name=paper_form.paper_name.data,
+                                paper_room_number=paper_form.paper_room_number.data,
+                                paper_picture=paper_form.paper_picture.data,
+                                id_classroom=request.form.get('classroom_select'))
+        db.session.add(paper_to_create)
+        db.session.commit()
+        flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
+        return redirect(url_for('dashboard_page',user=current_user))
+
+    # CREATE CLASSROOM
+    if classroom_form.validate():
+        classroom_to_create = Classroom(classroom_name=classroom_form.classroom_name.data)
+        db.session.add(classroom_to_create)
+        db.session.commit()
+        flash(f'Classroom created successfully! Classroom "{classroom_to_create.classroom_name}" has been created.',
+              category='success')
+        return redirect(url_for('dashboard_page',user=current_user))
+
+
     user_papers = []
     for entry in PaperStudent.query.all():
         if entry.id_student == current_user.id:
@@ -100,7 +135,8 @@ def dashboard_page(user):
 
     # papers = Paper.query.all()
     classroom = Classroom.query.all()
-    return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room)
+    return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room,
+                           classroom_form=classroom_form,paper_form=paper_form,classrooms=classrooms)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>')
@@ -123,24 +159,60 @@ def classroom_main_page(class_id, paper_id):
                                                      paper=paper,
                                                      members=members_list)
 
-# ALL ASSIGNMENT PAGES ARE NOT IN DEVELOPMENT YET
+
 # Classroom Assignments - Displays all assignments
-# @app.route('/classroom/<class_id>/<paper_id>/assignments')
-# def classroom_assignments_list(class_id):
-#     return render_template('classroom_assignments_list.html')
+@app.route('/classroom/<class_id>/<paper_id>/assignments')
+def classroom_assignments_list(class_id, paper_id):
 
-# # Assignment Page - View the details of a specific assignment
-# @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
-# def classroom_assignment_details(class_id, assignment_id):
-#     return render_template('classroom_assignment_details.html')
+    # Get the paper and classroom using the url
+    paper = Paper.query.filter_by(id=paper_id).first()
+    classroom = Classroom.query.filter_by(id=class_id).first()
 
-# # Assignment Begin - This is when the student has started the assignment.
-# @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
-# def classroom_assignment_content(class_id, assignment_id, page_num):
-#     return render_template('classroom_assignment_content.html')
+    if Assignment.query.all():
+        assignments = Assignment.query.all()
+    else:
+        assignments = []
+
+    return render_template('classroom_assignments_list.html', classroom=classroom,
+                                                            paper=paper,
+                                                            assignments=assignments)
+
+# Create Assignment - Teacher can create an assignment here
+@app.route('/create_assignment', methods=['POST', 'GET'])
+def create_assignment():
+    classrooms = Classroom.query.all()
+    papers = Paper.query.all()
+
+    assignment_form = Create_Assignment()
+
+    if assignment_form.validate_on_submit():
+        assignment_to_create = Assignment(name = assignment_form.name,
+                                          creationDate = request.form.get("currentDate"),
+                                          dueDate = request.form.get("dueDate"),
+                                          isCompleted = False,
+                                          weight = assignment_form.weight,
+                                          paper_id = request.form.get("paper_select"))
+        db.session.add(assignment_to_create)
+        db.session.commit()
+        return render_template('dashboard.html', user = current_user)
+    return render_template('create_assignment.html', classrooms=classrooms,
+                                                    papers=papers,
+                                                    assignment_form=assignment_form)
+
+# Assignment Page - View the details of a specific assignment
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
+def classroom_assignment_details(class_id, assignment_id):
+    return render_template('classroom_assignment_details.html')
+
+# Assignment Begin - This is when the student has started the assignment.
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
+def classroom_assignment_content(class_id, assignment_id, page_num):
+    return render_template('classroom_assignment_content.html')
+
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
+@login_required
 def user_profile(user):
     form_nickname = UpdateNickname()
     form_name = UpdateName()
@@ -210,6 +282,7 @@ def student_grades(user):
 
 # Student Drive - View all their saved notes or files
 @app.route('/profile/<user>/<id>/drive', methods=['POST', 'GET'])
+@login_required
 def user_drive(user, id):
     files = Upload_File().query.filter_by(owner=current_user.id)
     delete_form = Delete_File()
@@ -219,7 +292,6 @@ def user_drive(user, id):
         d_file_obj = Upload_File().query.filter_by(filename=delete_item).first()
         if d_file_obj:
             Upload_File().query.filter_by(id = d_file_obj.id).delete()
-            print(redirect(request.path),"hello from jay")
             flash(f'{d_file_obj.filename} has been deleted')
             db.session.commit()
             return redirect(url_for('user_drive', user=current_user.first_name, id='000'))
@@ -343,3 +415,7 @@ def admin_page():
                                             papers=papers,
                                             test_class=test_class,
                                             test_paper=test_paper)
+
+@app.route('/cloudroom_tools')
+def cloudroom_tools():
+    return render_template('cloudroom_tools.html')

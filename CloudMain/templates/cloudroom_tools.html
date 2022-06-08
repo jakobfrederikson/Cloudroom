@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}
+Cloudroom Tools | Cloudroom
+{% endblock %}
+{% block style %}
+<script src="../static/JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.js"></script>
+<link rel="stylesheet" href="../static/JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.css">
+<script src="../static/JS/AssignmentsJS/codemirror-5.65.3/mode/python/python.js"></script>
+<link rel="stylesheet" href="../static/JS/AssignmentsJS/codemirror-5.65.3/theme/yonce.css">
+<link rel="stylesheet" href="../static/CSS/cloudroom_tools.css">
+{% endblock %}
+{% block content %}
+<div class="desktop-view">
+    <div class="container-sm">
+        <div class="row">
+            <div class="col">
+                <h1>Cloudroom Tools</h1>
+            </div>
+        </div>
+    
+    <div class="row gx-5">
+        <div class="col-6 tool-group">
+            <div class="display-6">
+                Programming Assignments
+            </div>
+            <figure class="figure">
+                <textarea id="editor">
+    def hello_world():
+        print("Hello World")</textarea>
+                <figcaption class="figure-caption">Interactive example of our inbuilt tool for programming assignments.</figcaption>
+            </figure>
+            <p>Cloudroom will allow teachers create to create programming assignments <span class="fst-italic">online.</span>
+            This allows students to learn and program in a real development environment.</p>
+        </div>
+        <div class="col-6 tool-group">
+            <div class="display-6">
+                Note Keeping
+            </div>
+            <figure class="figure">
+                <img class="img-fluid" src="../static/images/drive_screenshot.png" alt="Screenshot of the drive page inside Cloudroom.">
+                <figcaption class="figure-caption">Screenshot of the drive page inside Cloudroom/</figcaption>
+            </figure>
+            <p>Cloudroom has an inbuilt drive for each user. Here, you can upload files and notes you may have taken during and download them when you get back home!</p>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="mobile-view">
+    <div class="container-sm responsive">
+
+        <div class="row">
+            <div class="col">
+                <h1>Cloudroom Tools</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col tool-group">
+                <div class="display-6">
+                    Programming Assignments
+                </div>
+                <figure class="figure">
+                    <textarea id="mobile-editor">
+def hello_world():
+    print("Hello World")</textarea>
+                    <figcaption class="figure-caption">Interactive example of our inbuilt tool for programming
+                        assignments.</figcaption>
+                </figure>
+                <p>Cloudroom will allow teachers create to create programming assignments <span
+                        class="fst-italic">online.</span>
+                    This allows students to learn and program in a real development environment.</p>
+            </div>
+        </div>
+            <div class="row">
+                <div class="col tool-group">
+                    <div class="display-6">
+                        Note Keeping
+                    </div>
+                    <figure class="figure">
+                        <img class="img-fluid" src="../static/images/drive_screenshot.png"
+                            alt="Screenshot of the drive page inside Cloudroom.">
+                        <figcaption class="figure-caption">Screenshot of the drive page inside Cloudroom.</figcaption>
+                    </figure>
+                    <p>Cloudroom has an inbuilt drive for each user. Here, you can upload files and notes you may have taken
+                        during and download them when you get back home!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var editor = CodeMirror.fromTextArea
+    (document.getElementById('editor'), {
+        mode: {
+            name: "python",
+            version: 5,
+            singleLineStringErrors: false
+        },
+        lineNumbers: true,
+        indentUnit: 4,
+        matchBrackets: true,
+        theme: "yonce"
+    });
+</script>
+
+<script>
+    var editor = CodeMirror.fromTextArea
+    (document.getElementById('mobile-editor'), {
+        mode: {
+            name: "python",
+            version: 5,
+            singleLineStringErrors: false
+        },
+        lineNumbers: true,
+        indentUnit: 4,
+        matchBrackets: true,
+        theme: "yonce"
+    });
+</script>
+{% endblock %}
+
