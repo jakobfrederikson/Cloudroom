@@ -52,23 +52,22 @@ class Paper(db.Model):
     paper_picture = db.Column(db.String(length=20), nullable=False)
     paper_room_number = db.Column(db.String(length=20), nullable=False)
     id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
-    # id_teacher = db.Column(db.Integer(), db.ForeignKey('account.id'))
 
 
 # Jakob
 # paper_members - holds information about what user is apart of what paper.
 class paper_members(db.Model):
-    __tablename__ = 'PaperStudent'
+    __tablename__ = 'paper_members'
     id = db.Column(db.Integer(), primary_key=True)
     id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
-    id_user = db.Column(db.Integer(), db.ForeginKey('account.id'), nullable = False)
+    id_user = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)
     account_type = db.Column(db.String(), db.ForeignKey('account.account_type'), nullable = False)
 
 
 # Jakob
 # classroom_members - holds information about what user is apart of what classroom.
 class classroom_members(db.Model):
-    __tablename__= 'ClassroomStudent'
+    __tablename__= 'classroom_members'
     id = db.Column(db.Integer(), primary_key=True)
     id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable = False)
     id_user = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)

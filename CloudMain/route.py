@@ -185,6 +185,10 @@ def create_assignment():
 
     # TODO: Only show papers that the teacher is apart of
     papers = Paper.query.all()
+
+    # We only want to create this assignment for the students apart of this paper.
+    # Therefore, we are getting a list of all the relevant students.
+    # Later, in validate_on_submit, we loop over every student to give them the assignment.
     students_of_paper = Paper.query.filter_by()
 
     assignment_form = Create_Assignment()
@@ -398,12 +402,12 @@ def admin_page():
         student_enrolled_already = False
         s_to_p_form.paper_id = int(request.form.get('paper_select'))
 
-        user = Account.query.filter_by(id=request.form.get('student2_select'))
-        s_to_p_form.user_id = user.id
+        user = Account.query.filter_by(id=int(request.form.get('student2_select'))).first()
+        s_to_p_form.id_user = user.id
         s_to_p_form.account_type = user.account_type
 
         paper_student_to_create = paper_members(id_paper=s_to_p_form.paper_id,
-                                               id_user=s_to_p_form.user_id,
+                                               id_user=s_to_p_form.id_user,
                                                account_type=s_to_p_form.account_type)
         
         # Check if student is already in that paper
@@ -414,12 +418,12 @@ def admin_page():
                         student_enrolled_already = True  
             
         if student_enrolled_already:
-            flash(f'Student already exists in this paper.')
+            flash(f'User already exists in this paper.')
             return redirect(url_for('home_page'))
         else:
             db.session.add(paper_student_to_create)
             db.session.commit()      
-            flash(f'Student added successfully! Student "{paper_student_to_create.id_student}" has been added.', category='success')
+            flash(f'User added successfully! User "{paper_student_to_create.id_user}" has been added.', category='success')
             return redirect(url_for('home_page'))  
     if s_to_p_form.errors != {}:
         for err in paper_form.errors:
