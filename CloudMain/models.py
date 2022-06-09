@@ -52,37 +52,39 @@ class Paper(db.Model):
     paper_picture = db.Column(db.String(length=20), nullable=False)
     paper_room_number = db.Column(db.String(length=20), nullable=False)
     id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
-    # id_teacher = db.Column(db.Integer(), db.ForeignKey('account.id'))
 
 
 # Jakob
-# PaperStudent - holds information about what student is apart of what paper.
-class PaperStudent(db.Model):
-    __tablename__ = 'PaperStudent'
+# paper_members - holds information about what user is apart of what paper.
+class paper_members(db.Model):
+    __tablename__ = 'paper_members'
     id = db.Column(db.Integer(), primary_key=True)
-    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable=False)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
+    id_paper = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
+    id_user = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)
+    account_type = db.Column(db.String(), db.ForeignKey('account.account_type'), nullable = False)
 
 
 # Jakob
-# ClassroomStudent - holds information about what student is apart of what classroom.
-class ClassroomStudent(db.Model):
-    __tablename__= 'ClassroomStudent'
+# classroom_members - holds information about what user is apart of what classroom.
+class classroom_members(db.Model):
+    __tablename__= 'classroom_members'
     id = db.Column(db.Integer(), primary_key=True)
-    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
-    id_student = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
+    id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable = False)
+    id_user = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)
+    account_type = db.Column(db.String(), db.ForeignKey('account.account_type'), nullable = False)
 
 
 # Jakob
 # Assignment Model - This is here for future use.
 class Assignment(db.Model):
     __tablename__ = 'assignment'
-    id = db.Column(db.Integer(), primary_key=True, nullable=False)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())
     isCompleted = db.Column(db.Boolean())
-    weight = db.Column(db.Integer)
+    weight = db.Column(db.Integer())
+    teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
 

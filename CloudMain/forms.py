@@ -65,9 +65,9 @@ class Student_To_Paper(FlaskForm):
 class Create_Assignment(FlaskForm):
     name = StringField(label="Assignment name", validators=[Length(max=80), DataRequired()])
     # creationDate - this is automatically added
-    dueDate = DateTimeField(label="Due date", validators=[DataRequired()])
+    # dueDate = DateTimeField(label="Due date", validators=[DataRequired()])
     # isCompleted - always false on creation
-    weight = IntegerField(label="Assignment weight", validators=[Length(max=3), DataRequired()])
+    weight = IntegerField(label="Assignment weight", validators=[DataRequired()])
     # paper_id - this is grabbed from the HTML in a select element
     submit = SubmitField("Create Assignment")
 

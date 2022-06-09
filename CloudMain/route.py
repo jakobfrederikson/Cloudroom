@@ -1,7 +1,10 @@
 from ast import Assign, AsyncFunctionDef
+from asyncio.windows_events import NULL
+
+from sqlalchemy import null
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Paper, PaperStudent, Upload_File, Assignment
+from CloudMain.models import Account,Classroom, Paper, paper_members, Upload_File, Assignment
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
         Create_Assignment
@@ -88,13 +91,14 @@ def dashboard_page(user):
             flash(f'Code in invalid.',
                   category='danger')
         else:
-            paper_student_to_create = PaperStudent(id_paper=paper.id,
-                                                   id_student=current_user.id)
+            paper_student_to_create = paper_members(id_paper=paper.id,
+                                                   id_user=current_user.id,
+                                                   account_type=current_user.account_type)
             # Check if student is already in that paper
-            if PaperStudent.query.all():
-                for entry in PaperStudent.query.all():
+            if paper_members.query.all():
+                for entry in paper_members.query.all():
                     if entry.id_paper == paper_student_to_create.id_paper:
-                        if entry.id_student == paper_student_to_create.id_student:
+                        if entry.id_user == paper_student_to_create.id_user:
                             student_enrolled_already = True
 
             if student_enrolled_already:
@@ -129,8 +133,8 @@ def dashboard_page(user):
 
 
     user_papers = []
-    for entry in PaperStudent.query.all():
-        if entry.id_student == current_user.id:
+    for entry in paper_members.query.all():
+        if entry.id_user == current_user.id:
             user_papers.append(Paper.query.filter_by(id=entry.id_paper).first())
 
     # papers = Paper.query.all()
@@ -146,13 +150,13 @@ def classroom_main_page(class_id, paper_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
 
     # Gathering all members in this paper.
-    papers = PaperStudent.query.all()
+    papers = paper_members.query.all()
     accounts = Account.query.all()
     members_list = []
     for p in papers:
         for a in accounts:
             if int(p.id_paper) == int(paper_id):
-                if int(p.id_student) == int(a.id):
+                if int(p.id_user) == int(a.id):
                     members_list.append(a)
 
     return render_template('classroom_main_page.html', classroom=classroom,
@@ -181,20 +185,63 @@ def classroom_assignments_list(class_id, paper_id):
 @app.route('/create_assignment', methods=['POST', 'GET'])
 def create_assignment():
     classrooms = Classroom.query.all()
+
+    # TODO: Only show papers that the teacher is apart of
     papers = Paper.query.all()
 
     assignment_form = Create_Assignment()
 
     if assignment_form.validate_on_submit():
-        assignment_to_create = Assignment(name = assignment_form.name,
-                                          creationDate = request.form.get("currentDate"),
-                                          dueDate = request.form.get("dueDate"),
-                                          isCompleted = False,
-                                          weight = assignment_form.weight,
-                                          paper_id = request.form.get("paper_select"))
-        db.session.add(assignment_to_create)
-        db.session.commit()
-        return render_template('dashboard.html', user = current_user)
+        # We only want to create this assignment for the students apart of this paper.
+        # Therefore, we are getting a list of all the relevant students.
+        selected_paper = int(request.form.get("paper_select"))
+        students_of_paper = []
+        if paper_members.query.all():
+            for entry in paper_members.query.all():
+                if entry.id_paper == selected_paper:
+                    if entry.account_type == "Student":
+                        students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
+
+        # Reformatting the dates.
+        # Flask only takes Y-m-d format for dates
+        cDate = datetime.strptime(
+                                    request.form.get("currentDate"),
+                                    '%Y-%m-%d').date()
+        dDate = datetime.strptime(
+                                    request.form.get("dueDate"),
+                                    '%Y-%m-%d').date() 
+        if students_of_paper:
+            print(f"\n\n Weight type = {type(assignment_form.weight)}\n\n ")
+            for student in students_of_paper:
+                assignment_to_create = Assignment(name = request.form.get("name"),
+                                                creationDate = cDate,
+                                                dueDate = dDate,
+                                                isCompleted = False,
+                                                weight = int(request.form.get("weight")),
+                                                teacher_id = int(current_user.id),
+                                                paper_id = int(selected_paper),
+                                                owner = int(student.id))
+                db.session.add(assignment_to_create)
+                db.session.commit()
+        else: # If there are no students in the paper yet
+            assignment_to_create = Assignment(name = assignment_form.name,
+                                                creationDate = cDate,
+                                                dueDate = dDate,
+                                                isCompleted = False,
+                                                weight = assignment_form.weight,
+                                                teacher_id = current_user.id,
+                                                paper_id = selected_paper,
+                                                owner = null)
+            db.session.add(assignment_to_create)
+            db.session.commit()
+
+        flash(f"Assignment has been successfully created!")
+        return redirect(url_for('dashboard_page', user = current_user.first_name))
+
+    if assignment_form.errors != {}:
+        for err_msg in assignment_form.errors.values():     
+            flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
+
     return render_template('create_assignment.html', classrooms=classrooms,
                                                     papers=papers,
                                                     assignment_form=assignment_form)
@@ -274,8 +321,8 @@ def student_grades(user):
     # Getting every paper the student is enrolled in.
     student = Account.query.filter_by(id=current_user.id).first()
     user_papers = []
-    for entry in PaperStudent.query.all():
-        if entry.id_student == current_user.id:
+    for entry in paper_members.query.all():
+        if entry.id_user == current_user.id:
             user_papers.append(Paper.query.filter_by(id=entry.id_paper).first())
 
     return render_template('student_grades.html', name=user, papers=user_papers, student=student)
@@ -381,24 +428,29 @@ def admin_page():
     if request.method == 'POST' and request.form['submit'] == "Add Student To Paper":
         student_enrolled_already = False
         s_to_p_form.paper_id = int(request.form.get('paper_select'))
-        s_to_p_form.student_id = int(request.form.get('student2_select'))
-        paper_student_to_create = PaperStudent(id_paper=s_to_p_form.paper_id,
-                                               id_student=s_to_p_form.student_id)
+
+        user = Account.query.filter_by(id=int(request.form.get('student2_select'))).first()
+        s_to_p_form.id_user = user.id
+        s_to_p_form.account_type = user.account_type
+
+        paper_student_to_create = paper_members(id_paper=s_to_p_form.paper_id,
+                                               id_user=s_to_p_form.id_user,
+                                               account_type=s_to_p_form.account_type)
         
         # Check if student is already in that paper
-        if PaperStudent.query.all():
-            for entry in PaperStudent.query.all():
+        if paper_members.query.all():
+            for entry in paper_members.query.all():
                 if entry.id_paper == paper_student_to_create.id_paper:
-                     if entry.id_student == paper_student_to_create.id_student:
+                     if entry.id_user == paper_student_to_create.id_user:
                         student_enrolled_already = True  
             
         if student_enrolled_already:
-            flash(f'Student already exists in this paper.')
+            flash(f'User already exists in this paper.')
             return redirect(url_for('home_page'))
         else:
             db.session.add(paper_student_to_create)
             db.session.commit()      
-            flash(f'Student added successfully! Student "{paper_student_to_create.id_student}" has been added.', category='success')
+            flash(f'User added successfully! User "{paper_student_to_create.id_user}" has been added.', category='success')
             return redirect(url_for('home_page'))  
     if s_to_p_form.errors != {}:
         for err in paper_form.errors:
