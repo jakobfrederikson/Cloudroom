@@ -78,7 +78,7 @@ class classroom_members(db.Model):
 # Assignment Model - This is here for future use.
 class Assignment(db.Model):
     __tablename__ = 'assignment'
-    id = db.Column(db.Integer(), primary_key=True, nullable=False)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())

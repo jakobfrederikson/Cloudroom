@@ -1,4 +1,7 @@
 from ast import Assign, AsyncFunctionDef
+from asyncio.windows_events import NULL
+
+from sqlalchemy import null
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Paper, paper_members, Upload_File, Assignment
@@ -186,35 +189,59 @@ def create_assignment():
     # TODO: Only show papers that the teacher is apart of
     papers = Paper.query.all()
 
-    # We only want to create this assignment for the students apart of this paper.
-    # Therefore, we are getting a list of all the relevant students.
-    # Later, in validate_on_submit, we loop over every student to give them the assignment.
-    students_of_paper = Paper.query.filter_by()
-
     assignment_form = Create_Assignment()
 
     if assignment_form.validate_on_submit():
-        for user in Account.query.all():
-            if user.account_type == "Student":
-                assignment_to_create = Assignment(name = assignment_form.name,
-                                                creationDate = request.form.get("currentDate"),
-                                                dueDate = request.form.get("dueDate"),
+        # We only want to create this assignment for the students apart of this paper.
+        # Therefore, we are getting a list of all the relevant students.
+        selected_paper = int(request.form.get("paper_select"))
+        students_of_paper = []
+        if paper_members.query.all():
+            for entry in paper_members.query.all():
+                if entry.id_paper == selected_paper:
+                    if entry.account_type == "Student":
+                        students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
+
+        # Reformatting the dates.
+        # Flask only takes Y-m-d format for dates
+        cDate = datetime.strptime(
+                                    request.form.get("currentDate"),
+                                    '%Y-%m-%d').date()
+        dDate = datetime.strptime(
+                                    request.form.get("dueDate"),
+                                    '%Y-%m-%d').date() 
+        if students_of_paper:
+            print(f"\n\n Weight type = {type(assignment_form.weight)}\n\n ")
+            for student in students_of_paper:
+                assignment_to_create = Assignment(name = request.form.get("name"),
+                                                creationDate = cDate,
+                                                dueDate = dDate,
+                                                isCompleted = False,
+                                                weight = int(request.form.get("weight")),
+                                                teacher_id = int(current_user.id),
+                                                paper_id = int(selected_paper),
+                                                owner = int(student.id))
+                db.session.add(assignment_to_create)
+                db.session.commit()
+        else: # If there are no students in the paper yet
+            assignment_to_create = Assignment(name = assignment_form.name,
+                                                creationDate = cDate,
+                                                dueDate = dDate,
                                                 isCompleted = False,
                                                 weight = assignment_form.weight,
                                                 teacher_id = current_user.id,
-                                                paper_id = request.form.get("paper_select"),
-                                                owner = user.id)
-                db.session.add(assignment_to_create)
-                db.session.commit()
-                return render_template('dashboard.html', user = current_user)
+                                                paper_id = selected_paper,
+                                                owner = null)
+            db.session.add(assignment_to_create)
+            db.session.commit()
+
+        flash(f"Assignment has been successfully created!")
+        return redirect(url_for('dashboard_page', user = current_user.first_name))
+
     if assignment_form.errors != {}:
         for err_msg in assignment_form.errors.values():     
             flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
 
-            # Print Errors
-            print(f"\n\n\ncreationDate = {request.form.get('currentDate')}")
-            print(f"\n\n\ndueDate      = {request.form.get('dueDate')}")
-            print(f"\n\n\npaper_id     = {request.form.get('paper_select')}")
     return render_template('create_assignment.html', classrooms=classrooms,
                                                     papers=papers,
                                                     assignment_form=assignment_form)
