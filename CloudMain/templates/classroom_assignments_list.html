@@ -9,40 +9,38 @@
 {% include 'base_sidenav.html' %}
 <body>
       <!-- CONTENT -->
-      <div class="container cloudroom-container">
-        <div class="row w-75">
+      <div class="container-sm cloudroom-container row">
+        <div class="row align-items-center">
           <div class="col" style="text-align: justify;">
             <div class="display-4">
               {{ paper.paper_name }} Assignments
             </div>
-            <div class="row">
-              {% if current_user.account_type != "Student"%}
-                <a href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">Create an assignment</a>
-              {% endif %}
-              <div class="container">
-                <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3 g-4">
-              {% for entry in assignments %}
-                    <div class="col">
-                      <div class="card h-100" name="assignment-box">
-                        <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
-                        <div class="card-body">
-                          <h5 class="card-title text-truncate">{{ entry.name }}</h5>
-                          <p class="card-text text-truncate">{{ entry.description }}</p>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><span class="text-muted">Created: </span>{{entry.creationDate}}</li>
-                          <li class="list-group-item"><span class="text-muted">Due: </span>{{entry.dueDate}} 11:59pm</li>
-                        </ul>
-                        <div class="card-body">
-                          <a href="" class="btn btn-primary">View assignment</a>
-                        </div>
-                      </div>
-                    </div>
-              {% endfor %}
-            </div>
-            </div> 
+          </div>
+          <div class="col">
+            <a class="text-decoration-none" href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">Create an assignment</a> 
+          </div>
+        </div>
+        <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4">
+          {% for entry in assignments %}
+          <div class="col">
+            <div class="card h-100" name="assignment-box">
+              <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title text-truncate">{{ entry.name }}</h5>
+                <p class="card-text text-truncate">{{ entry.description }}</p>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-muted">Created: </span>{{entry.creationDate}}</li>
+                <li class="list-group-item"><span class="text-muted">Due: </span>{{entry.dueDate}} 11:59pm</li>
+              </ul>
+              <div class="card-body">
+                <a href="" class="btn btn-primary">View assignment</a>
+              </div>
             </div>
           </div>
+          {% endfor %}
+        </div>
+      </div>
 
     <!-- JavaScript Bundle with Popper -->
     <script 
