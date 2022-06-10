@@ -12,26 +12,22 @@ Create Assignment | Cloudroom
     <div class="container-fluid cloudroom-container">
         <div class="row h-100">
             <div class="col-sm-10" style="text-align: justify;">
+                <a href="javascript:history.back()">Back</a>
                 <div class="display-4">
-                    Create an assignment
+                    Create an assignment for {{ paper.paper_name }}
                 </div>
             </div>
         </div>
         <div class="form-section">
             <form method="POST">
-                <div class="mb-3">
-                    <label for="paper_select" class="form-label">Select a paper</label>
-                    <select name="paper_select" id="paper_select" class="form-control">
-                        <option selected>Select a paper</option>
-                        {% for paper in papers %}
-                        <option value="{{ paper.id }}">{{ paper.id }} {{ paper.paper_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
                 {{ assignment_form.hidden_tag() }}
                 <div class="mb-3">
                     {{ assignment_form.name.label(class="form-label") }}
                     {{ assignment_form.name(placeholder="Assignment Name", class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ assignment_form.description.label(class="form-label") }}
+                    {{ assignment_form.description(placeholder="Assignment description", class="form-control") }}
                 </div>
                 <div class="mb-3">
                     <label for="currentDate">Current date</label>
@@ -44,6 +40,18 @@ Create Assignment | Cloudroom
                 <div class="mb-3">
                     {{ assignment_form.weight.label(class="form-label") }}
                     {{ assignment_form.weight(placeholder="Weightage", class="form-control") }}
+                </div>
+                <div class="mb-3 d-flex flex-column justify-content-center align-content-center">
+                    <p class="form-label">Select an assignment picture</p>
+                    {% for subfield in assignment_form.picture %}
+                        <div class="col">
+                            <img class="img-thumbnail" src="{{ url_for('static', filename = subfield.data) }}">
+                            <div class="form-check">
+                                {{ subfield(class="form-check-input") }}
+                                {{ subfield.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
                 {{ assignment_form.submit(class="btn btn-primary", type="submit") }}
             </form>

@@ -3,21 +3,36 @@
 {{ paper.paper_name }} Assignments | Cloudroom
 {% endblock %}
 {% block style %}
+<link rel="stylesheet" href="{{ url_for('static',filename='css/assignment_list.css') }}">
 {% endblock %}
 {% block content %}
 {% include 'base_sidenav.html' %}
 <body>
       <!-- CONTENT -->
       <div class="container-fluid cloudroom-container">
-        <div class="row h-100">
-          <div class="col-sm-10" style="text-align: justify;">
+        <div class="row">
+          <div class="col" style="text-align: justify;">
             <div class="display-4">
               {{ paper.paper_name }} Assignments
             </div>
             <div class="row">
               {% if current_user.account_type != "Student"%}
-                <a href="{{ url_for('create_assignment') }}">Create an assignment</a>
+                <a href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">Create an assignment</a>
               {% endif %}
+              <div class="container">
+                <div class="row">
+              {% for entry in assignments %}
+                  <div class="card" style="width: 18rem;">
+                    <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ entry.name }}</h5>
+                      <p class="card-text">{{ entry.description }}</p>
+                      <a href="" class="btn btn-primary">View assignment</a>
+                    </div>
+                  </div>   
+              {% endfor %}
+            </div>
+            </div> 
             </div>
           </div>
 

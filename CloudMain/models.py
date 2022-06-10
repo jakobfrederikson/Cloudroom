@@ -80,13 +80,15 @@ class Assignment(db.Model):
     __tablename__ = 'assignment'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
+    description = db.Column(db.String(), nullable = True)
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())
     isCompleted = db.Column(db.Boolean())
     weight = db.Column(db.Integer())
+    picture = db.Column(db.String(length=20), nullable=False)
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
-    owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
+    owner = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = True)
 
 
 #This creates a model in the database for Uploaded files

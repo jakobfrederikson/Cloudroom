@@ -1,1 +1,7 @@
 python_201_image.jpg - Photo by Fotis Fotopoulos on Unsplash
+
+laptops.jpg - Photo by Marvin Meyer on Unsplash
+https://unsplash.com/photos/SYTO3xs06fU?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink
+
+tech.jpg - Photo by Lorenzo Herrera on Unsplash
+https://unsplash.com/photos/SYTO3xs06fU?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink

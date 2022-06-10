@@ -1,7 +1,7 @@
 from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, DateTimeField
+from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from CloudMain.models import Account
 
@@ -64,11 +64,11 @@ class Student_To_Paper(FlaskForm):
 # Create an assignment for a paper
 class Create_Assignment(FlaskForm):
     name = StringField(label="Assignment name", validators=[Length(max=80), DataRequired()])
-    # creationDate - this is automatically added
-    # dueDate = DateTimeField(label="Due date", validators=[DataRequired()])
-    # isCompleted - always false on creation
+    description = TextAreaField(label="Assignment description")
     weight = IntegerField(label="Assignment weight", validators=[DataRequired()])
-    # paper_id - this is grabbed from the HTML in a select element
+    picture = RadioField(label="Assignment Picture",
+        choices=[('images/classroom_pic1.png','Computer Screen'),('images/python_201_image.jpg','Double Monitor'),
+        ('images/laptops.jpg','Laptops'),('images/tech.jpg','Old Tech')],validators=[DataRequired()])
     submit = SubmitField("Create Assignment")
 
 
