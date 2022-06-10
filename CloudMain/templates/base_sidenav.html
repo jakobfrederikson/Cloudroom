@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{ url_for('static',filename='css/side_nav.css') }}">
 
 <!-- SIDE NAV -->
-<div class="flex-nowrap col-sm-2 min-vh-100 float-end end-0 side-nav cloudrooom-green">
+<div class="col-sm-2 min-vh-100 float-end end-0 side-nav cloudroom-green position-fixed">
   <div class="user-section">
     <a href="{{url_for('user_profile', user = current_user.first_name)}}" class="text-reset text-decoration-none">
       <p class="fw-bold text-sm-end" style="color:#20CED9; margin-left: 120px; margin-bottom:0;">Edit Profile</p>

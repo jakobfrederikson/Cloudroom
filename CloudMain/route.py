@@ -168,33 +168,37 @@ def classroom_main_page(class_id, paper_id):
 @app.route('/classroom/<class_id>/<paper_id>/assignments')
 def classroom_assignments_list(class_id, paper_id):
 
+    # Only get assignments apart of this paper
+    assignments = []
+    for entry in Assignment.query.all():
+        if str(entry.paper_id) == str(paper_id):
+            print(f"\n\n{entry.name}\n\n")
+            assignments.append(entry)
+
     # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
 
-    if Assignment.query.all():
-        assignments = Assignment.query.all()
-    else:
-        assignments = []
-
     return render_template('classroom_assignments_list.html', classroom=classroom,
                                                             paper=paper,
-                                                            assignments=assignments)
+                                                            assignments=assignments,
+                                                            class_id = class_id,
+                                                            paper_id = paper_id)
 
-# Create Assignment - Teacher can create an assignment here
-@app.route('/create_assignment', methods=['POST', 'GET'])
-def create_assignment():
+# Create Assignment - Teacher can create an assignment here for a paper here
+@app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])
+def create_assignment(class_id, paper_id):
     classrooms = Classroom.query.all()
 
     # TODO: Only show papers that the teacher is apart of
-    papers = Paper.query.all()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
 
     assignment_form = Create_Assignment()
 
     if assignment_form.validate_on_submit():
         # We only want to create this assignment for the students apart of this paper.
         # Therefore, we are getting a list of all the relevant students.
-        selected_paper = int(request.form.get("paper_select"))
+        selected_paper = int(paper_id)
         students_of_paper = []
         if paper_members.query.all():
             for entry in paper_members.query.all():
@@ -214,36 +218,40 @@ def create_assignment():
             print(f"\n\n Weight type = {type(assignment_form.weight)}\n\n ")
             for student in students_of_paper:
                 assignment_to_create = Assignment(name = request.form.get("name"),
+                                                description = request.form.get("description"),
                                                 creationDate = cDate,
                                                 dueDate = dDate,
                                                 isCompleted = False,
                                                 weight = int(request.form.get("weight")),
+                                                picture = assignment_form.picture.data,
                                                 teacher_id = int(current_user.id),
                                                 paper_id = int(selected_paper),
                                                 owner = int(student.id))
                 db.session.add(assignment_to_create)
                 db.session.commit()
         else: # If there are no students in the paper yet
-            assignment_to_create = Assignment(name = assignment_form.name,
+            assignment_to_create = Assignment(name = request.form.get("name"),
+                                                description = request.form.get("description"),
                                                 creationDate = cDate,
                                                 dueDate = dDate,
                                                 isCompleted = False,
-                                                weight = assignment_form.weight,
-                                                teacher_id = current_user.id,
-                                                paper_id = selected_paper,
-                                                owner = null)
+                                                picture = assignment_form.picture.data,
+                                                weight = int(request.form.get("weight")),
+                                                teacher_id = int(current_user.id),
+                                                paper_id = int(selected_paper),
+                                                owner = int(current_user.id))
             db.session.add(assignment_to_create)
             db.session.commit()
 
         flash(f"Assignment has been successfully created!")
-        return redirect(url_for('dashboard_page', user = current_user.first_name))
+        return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
 
     if assignment_form.errors != {}:
         for err_msg in assignment_form.errors.values():     
             flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
 
     return render_template('create_assignment.html', classrooms=classrooms,
-                                                    papers=papers,
+                                                    paper=paper,
                                                     assignment_form=assignment_form)
 
 # Assignment Page - View the details of a specific assignment
