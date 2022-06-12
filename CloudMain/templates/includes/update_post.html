@@ -1,0 +1,24 @@
+<!-- Download File Modal -->
+<div class="modal fade" id="Update_Post_Modal-{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#0FA958;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="color:white;"> Edit Post </h5>
+      </div>
+      <div class="modal-body">
+        <form method="POST" style="color:white" enctype="multipart/form-data">
+          {{ edit_post.hidden_tag() }}
+          {{ edit_post.title.label() }}
+          {{ edit_post.title(class="form-control", placeholder=post.title) }}
+          {{ edit_post.content.label() }}
+          {{ edit_post.content(class="form-control", placeholder=post.content) }}
+          <br>
+          <div class="modal-footer">
+            <input id="edit_post" name="edit_post" type="hidden" value="{{post.title}}">
+            {{ edit_post.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

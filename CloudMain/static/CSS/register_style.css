@@ -81,7 +81,7 @@ h1{
 }
 
 .dashboard_header_content{
-    margin-left:90px;
+    padding-left:90px;
 }
 
 /* Sign in CSS */
@@ -157,7 +157,7 @@ h1{
 
     }
     .dashboard_header_content{
-        margin-left:60px;
+        padding-left:60px;
     }
 
     .dashboard_main_content{
@@ -217,7 +217,6 @@ h1{
     }
 
     .dashboard_header_content{
-
-        margin-left:10px;
+        padding-left:10px;
     }
 }

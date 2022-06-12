@@ -1,18 +1,13 @@
-from ast import Assign, AsyncFunctionDef
-from asyncio.windows_events import NULL
-
-from sqlalchemy import null
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Paper, paper_members, Upload_File, Assignment
+from CloudMain.models import Account,Classroom, Paper, paper_members, Upload_File, Assignment,Post
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
-        Create_Assignment
+        Create_Assignment, PostForm, Update_Post
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 from datetime import datetime
-
 
 #homepage
 @app.route('/')
@@ -117,8 +112,17 @@ def dashboard_page(user):
                                 paper_room_number=paper_form.paper_room_number.data,
                                 paper_picture=paper_form.paper_picture.data,
                                 id_classroom=request.form.get('classroom_select'))
+
         db.session.add(paper_to_create)
         db.session.commit()
+
+        paper_teacher_to_create = paper_members(id_paper=paper_to_create.id,
+                                                id_user=current_user.id,
+                                                account_type=current_user.account_type)
+
+        db.session.add(paper_teacher_to_create)
+        db.session.commit()
+
         flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
         return redirect(url_for('dashboard_page',user=current_user))
 
@@ -143,11 +147,61 @@ def dashboard_page(user):
                            classroom_form=classroom_form,paper_form=paper_form,classrooms=classrooms)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
-@app.route('/classroom/<class_id>/<paper_id>')
+@app.route('/classroom/<class_id>/<paper_id>', methods=['POST', 'GET'])
+@login_required
 def classroom_main_page(class_id, paper_id):
     # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
+    posts = Post.query.filter_by(paper_id=paper.id)
+    del_post = Delete_File()
+    edit_post = Update_Post()
+
+    postform = PostForm()
+    if request.method == "POST":
+        delete_item = request.form.get('remove_item')
+        d_file_obj = Post().query.filter_by(title=delete_item).first()
+        #handles delete post
+        if d_file_obj:
+            Post().query.filter_by(id = d_file_obj.id).delete()
+            flash(f'{d_file_obj.title} has been deleted')
+            db.session.commit()
+            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
+                                    posts=posts, del_post=del_post, edit_post=edit_post))
+
+        #handles remove student
+        remove_student = request.form.get('remove_student')
+        std_file_obj = paper_members().query.filter_by(id_user=remove_student).first()
+        print(remove_student,"hellos")
+        if std_file_obj:
+            paper_members().query.filter_by(id = std_file_obj.id).delete()
+            db.session.commit()
+            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
+                                    posts=posts, del_post=del_post, edit_post=edit_post))
+
+        #handles edit post
+        post = request.form.get('edit_post')
+        post_file_obj = Post().query.filter_by(title=post).first()
+        if post_file_obj:
+            if edit_post.title.data:
+                post_file_obj.title = edit_post.title.data
+            if edit_post.content.data:
+                post_file_obj.content = edit_post.content.data
+            db.session.add(post_file_obj)
+            db.session.commit()
+            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
+                                    posts=posts, del_post=del_post, edit_post=edit_post))
+    #create a post
+    if postform.validate_on_submit():
+        post = Post(title=postform.title.data,
+                    paper_id=paper.id,
+                    content=postform.content.data,
+                    owner=current_user.id)
+
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('classroom_main_page',class_id=classroom.id,paper_id=paper.id,postform=postform,
+                                posts=posts,del_post=del_post,edit_post=edit_post))
 
     # Gathering all members in this paper.
     papers = paper_members.query.all()
@@ -160,9 +214,8 @@ def classroom_main_page(class_id, paper_id):
                     members_list.append(a)
 
     return render_template('classroom_main_page.html', classroom=classroom,
-                                                     paper=paper,
-                                                     members=members_list)
-
+                                                     paper=paper,members=members_list,postform=postform,posts=posts
+                           ,del_post=del_post,edit_post=edit_post)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/<paper_id>/assignments')
@@ -465,7 +518,7 @@ def admin_page():
             print(f"ERROR: {err}")
         for err_msg in paper_form.errors.values():     
             flash(f'There was an error with adding a student: {err_msg}', err_msg)
-            return redirect(url_for('home_page'))  
+            return redirect(url_for('home_page'))
 
     return render_template('admin_page.html', classroom_form=classroom_form, 
                                             paper_form=paper_form,
