@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}
-{{ paper.paper_name }} | Cloudroom
+{% block title %} {{ paper.paper_name }} | Cloudroom
 {% endblock %}
 {% block style %}
 <link rel="stylesheet" href="{{ url_for('static',filename='css/classroom_main_page.css') }}">
@@ -8,29 +7,60 @@
 {% block content %}
 {% include 'base_sidenav.html' %}
 <body>
-      <!-- CONTENT -->
-      <div class="container cloudroom-container">
-        <div class="row h-100">
-          <div class="col-sm-10" style="text-align: justify;">
+   <!-- CONTENT -->
+   {% include 'includes/create_post.html' %}
+   {%if current_user.account_type == "Teacher" %}
+   <div class="d-flex flex-row-reverse create_post_btn">
+      <a href="#" class="text-reset text-decoration-none">
+         <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
+      <a href="#" data-bs-toggle="modal" data-bs-target="#Create_Post_Modal" class="text-reset text-decoration-none">
+      <img src="{{url_for('static',filename = 'images/add_icon2.png')}}" alt="">Create Post </a>
+      </h1>
+      </a>
+   </div>
+   {% endif %}
+   <div class="container cloudroom-container">
+      <div class="row h-100">
+         <div class="col-sm-10" style="text-align: justify;">
             <div class="display-4">
-              {{ classroom.classroom_name }}
+               {{ classroom.classroom_name }}
             </div>
             <div class="all-classroom-posts">
-              <div class="class-post">
-                <h3>Welcome to {{ paper.paper_name }}!</h3>
-                <img src="{{ url_for('static',filename = paper.paper_picture )}}" class="img-fluid" alt="Image of a laptop screen showing code in the python programming language.">
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae debitis est facilis aliquam deleniti, officiis quisquam, veniam maiores temporibus asperiores obcaecati magnam laudantium eaque nihil expedita, harum accusamus assumenda consequuntur?</p>
-              </div>
+               <div class="class-post">
+                  <h3>Welcome to {{ paper.paper_name }}!</h3>
+                  <img src="{{ url_for('static',filename = paper.paper_picture )}}" class="img-fluid" alt="Image of a laptop screen showing code in the python programming language.">
+                  {% for post in posts %}
+                  {% include 'includes/update_post.html' %}
+                  <div class="col" style="">
+                     <br>
+                     <p class="text-md-end lead" style="font-size:.9rem; margin-top:10px;">{{post.date_posted.strftime('%d-%m-%Y')}}</p>
+                     <h3 class="text-center">
+                        {{post.title}}
+                     </h3>
+                     <div class="row row-cols-1 row-cols-2">
+                        <div class="col-md">
+                           <p class="text-md-start" style="margin-top:30px;">{{post.content}}</p>
+                        </div>
+                     </div>
+                  </div>
+                  {%if post.owner == current_user.id %}
+                  <form method="POST">
+                     <input id="remove_item" name="remove_item" type="hidden" value="{{post.title}}">
+                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        {{ del_post.submit(class="btn btn-danger") }}
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#Update_Post_Modal-{{ post.id }}">
+                        <button class="btn btn-primary">Edit</button>
+                        </a>
+                     </div>
+                  </form>
+                  {% endif %}
+                  {% endfor %}
+               </div>
             </div>
-          </div>
-
-    <!-- JavaScript Bundle with Popper -->
-    <script 
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" 
-    integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" 
-    crossorigin="anonymous">
-    </script>
+         </div>
+      </div>
+   </div>
+   <!-- JavaScript Bundle with Popper -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 {% endblock %}

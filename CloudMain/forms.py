@@ -49,8 +49,8 @@ class Create_Paper(FlaskForm):
     paper_name = StringField(label="Paper Name", validators=[Length(max=40), DataRequired()])
     paper_room_number = StringField(label="Paper Room Number", validators=[Length(max=5), DataRequired()])
     paper_picture = RadioField(label="Profile Picture",
-        choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
-        ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
+        choices=[('images/tech.jpg','Tech image'),('images/python_201_image.jpg','Python image'),
+        ('images/laptops.jpg','Laptop image'),('images/home4.jpg','Phone image')],validators=[DataRequired()])
     submit_paper = SubmitField('Create Paper')
 
 # Jakob
@@ -101,10 +101,24 @@ class UpdatePassword(FlaskForm):
     password_hash = PasswordField(label="Password", validators=[Length(min=8), DataRequired()])
     verify_password = PasswordField(label="Confirm Password", validators=[EqualTo('password_hash'), DataRequired()])
     submit = SubmitField(label='Save Changes')
+
 #delete the file
 class Delete_File(FlaskForm):
-    submit = SubmitField(label='Delete File')
+    submit = SubmitField(label='Delete')
+
 #join a classroom
 class Join_Cloudroom(FlaskForm):
     code = StringField(label="Enter Code:", validators=[Length(min=2,max=30), DataRequired()])
     submit = SubmitField(label='Join')
+
+#Posting content in Classroom page
+class PostForm(FlaskForm):
+    title = StringField(label="Title", validators=[DataRequired()])
+    content = TextAreaField(label="Content", validators=[DataRequired()])
+    submit = SubmitField(label='Post')
+
+#updating Post
+class Update_Post(FlaskForm):
+    title = StringField(label="Title")
+    content = TextAreaField(label="Content")
+    submit = SubmitField(label='Edit')

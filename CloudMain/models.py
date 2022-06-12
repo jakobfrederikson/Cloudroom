@@ -1,6 +1,7 @@
 from CloudMain import db, login_manager
 from CloudMain import bcrypt
 from flask_login import UserMixin
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -20,6 +21,7 @@ class Account(db.Model, UserMixin):
     account_type = db.Column(db.String(length=20), nullable=False)
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
     assignments = db.relationship('Assignment', backref='owned_student', lazy=True)
+    poster = db.relationship('Post', backref='poster', lazy=True)  # Lazy gets all items from Upload_file
 
     #returns the password
     @property
@@ -52,7 +54,7 @@ class Paper(db.Model):
     paper_picture = db.Column(db.String(length=20), nullable=False)
     paper_room_number = db.Column(db.String(length=20), nullable=False)
     id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
-
+    owner = db.relationship('Post', backref='post_owner', lazy=True)
 
 # Jakob
 # paper_members - holds information about what user is apart of what paper.
@@ -97,4 +99,12 @@ class Upload_File(db.Model):
     filename = db.Column(db.String, nullable=False)
     data = db.Column(db.LargeBinary(length=(2 ** 32) - 1), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.now())
+    owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'))
+    title = db.Column(db.String, nullable=False)
+    content = db.Column(db.Text,nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
