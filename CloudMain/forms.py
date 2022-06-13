@@ -121,4 +121,4 @@ class PostForm(FlaskForm):
 class Update_Post(FlaskForm):
     title = StringField(label="Title")
     content = TextAreaField(label="Content")
-    submit = SubmitField(label='Edit')
+    submit = SubmitField(label='Save Changes')

@@ -20,6 +20,10 @@
     height: 100vh;
 }
 
+.post_content{
+    height: 500px;
+}
+
 @media (min-width: 1200px)
 {
     .classroom-name {
