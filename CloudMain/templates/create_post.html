@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}
+Create Post
+{% endblock %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}
+<body>
+    <div class="container mt-5">
+      <a href="{{url_for('classroom_main_page', class_id =classroom.id,paper_id=paper.id)}}">
+        <img src="{{url_for('static',filename = 'images/backarrow.png')}}" alt="Your dashboard icon">
+      </a>
+    </div>
+    <div class="container mt-5 bd-highlight justify-content-center edit_form_container">
+      <h1 class="mb-1">Create Post</h1>
+      <form method="POST" style="color:white" enctype="multipart/form-data">
+        <div class="container">
+          {{ postform.hidden_tag() }}
+          {{ postform.title.label() }}
+          {{ postform.title(class="form-control", placeholder="Title") }}
+          {{ postform.content.label() }}
+          {{ postform.content(class="form-control post_content", placeholder="Content") }}
+        </div>
+        <br>
+        {{ postform.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
+      </form>
+      {{ ckeditor.load() }}
+      {{ ckeditor.config(name='content') }}
+    </div>
+</body>
+{% endblock %}

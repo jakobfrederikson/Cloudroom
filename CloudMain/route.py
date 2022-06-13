@@ -3,7 +3,7 @@ from flask import render_template, request, send_file
 from CloudMain.models import Account,Classroom, Paper, paper_members, Upload_File, Assignment,Post
 from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
-        Create_Assignment, PostForm, Update_Post
+        Create_Assignment, PostForm
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
@@ -153,8 +153,8 @@ def dashboard_page(user):
 def update_post(class_id, paper_id,post_id):
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-    edit_post = Update_Post()
-    postform = PostForm()
+    edit_post = PostForm()
+    post_form = PostForm()
     posts = Post.query.filter_by(paper_id=paper_id)
     del_post = Delete_File()
 
@@ -172,14 +172,42 @@ def update_post(class_id, paper_id,post_id):
                 post_file_obj.content = "No Description"
             db.session.add(post_file_obj)
             db.session.commit()
-            return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=postform,
+            return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=post_form,
                                    posts=posts, del_post=del_post, edit_post=edit_post))
 
     member_list = functions.get_all_members(paper_id)
     to_update = Post().query.filter_by(id=post_id).first()
     edit_post.title.data = to_update.title
     edit_post.content.data = to_update.content
-    return render_template('edit_post.html', edit_post=edit_post,postform=postform,classroom=classroom,paper=paper,
+    return render_template('edit_post.html', edit_post=edit_post,postform=post_form,classroom=classroom,paper=paper,
+                           members=member_list)
+
+# This will update the post of the user
+@app.route('/classroom/create_post/<class_id>/<paper_id>', methods=['POST', 'GET'])
+@login_required
+def create_post(class_id, paper_id):
+    paper = Paper.query.filter_by(id=paper_id).first()
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    edit_post = PostForm()
+    post_form = PostForm()
+    posts = Post.query.filter_by(paper_id=paper_id)
+    del_post = Delete_File()
+
+    # create a post
+    if post_form.validate_on_submit():
+        post = Post(title=post_form.title.data,
+                    paper_id=paper.id,
+                    content=post_form.content.data,
+                    owner=current_user.id)
+
+        db.session.add(post)
+        db.session.commit()
+
+        return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=post_form,
+                               posts=posts, del_post=del_post, edit_post=edit_post))
+
+    member_list = functions.get_all_members(paper_id)
+    return render_template('create_post.html',postform=post_form,classroom=classroom,paper=paper,
                            members=member_list)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
