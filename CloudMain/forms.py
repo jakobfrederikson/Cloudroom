@@ -72,6 +72,15 @@ class Create_Assignment(FlaskForm):
         ('images/laptops.jpg','Laptops'),('images/tech.jpg','Old Tech')],validators=[DataRequired()])
     submit = SubmitField("Create Assignment")
 
+# Jakob
+# Assignment questions
+class Create_Assignment_Questions(FlaskForm):
+    title = StringField('Title')
+    type = SelectField(u'Question Type', choices=[('code', 'Python'), ('text', 'Plain Text')], validators=[DataRequired()])
+    description = CKEditorField('Question Description')
+    placeholder_text = CKEditorField('Placeholder Content')
+    submit = SubmitField('Submit')
+
 
 # Update user details forms
 class UpdateNickname(FlaskForm):
