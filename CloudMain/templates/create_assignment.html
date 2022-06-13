@@ -39,7 +39,7 @@ Create Assignment | Cloudroom
                 </div>
                 <div class="mb-3">
                     {{ assignment_form.weight.label(class="form-label") }}
-                    {{ assignment_form.weight(placeholder="Weightage", class="form-control") }}
+                    {{ assignment_form.weight(placeholder="Weightage", class="form-control", id="weight") }}
                 </div>
                 <div class="mb-3 d-flex flex-column justify-content-center align-content-center">
                     <p class="form-label">Select an assignment picture</p>
@@ -53,7 +53,7 @@ Create Assignment | Cloudroom
                         </div>
                     {% endfor %}
                 </div>
-                {{ assignment_form.submit(class="btn btn-primary", type="submit") }}
+                {{ assignment_form.submit(class="btn btn-primary", type="submit", id="submitBtn") }}
             </form>
         </div>
     </div>
