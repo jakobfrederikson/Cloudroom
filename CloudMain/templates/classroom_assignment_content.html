@@ -1,1 +1,79 @@
-<!-- This page is not in development yet  -->
+{% extends 'base.html' %}
+{% block title %}
+Create Assignment | Cloudroom
+{% endblock %}
+{% block style %}
+<script src="{{ url_for('static',filename='JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.js') }}"></script>
+<script src="{{ url_for('static',filename='JS/AssignmentsJS/codemirror-5.65.3/mode/python/python.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='JS/AssignmentsJS/codemirror-5.65.3/theme/yonce.css') }}">
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}<!-- This page is not in development yet  -->
+<body>
+    <!-- Load CKEditor -->
+    {{ ckeditor.load() }}
+
+    <div class="container-fluid cloudroom-container">
+        <div class="row min-vh-100">
+            <!-- Assignment Description -->
+            <div class="col-sm-5 assignment-description p-3 bg-light">
+                <header>
+                    <h3> {{ classroom.classroom_name }} {{ paper.paper_name }} </h3>
+                    <span class="badge rounded-pill bg-success">Lesson {{ assignment.id }}</span>
+                </header>
+                <section class="description">
+                    <h1>{{ assignment.name }}</h1>
+                    <p class="text-break">{{ assignment.description }} </p>
+                    <p class="text-break lh-sm">Assignment started on <strong>{{ assignment.creationDate }}</strong>. <br>
+                                                Assignment due on <strong>{{ assignment.dueDate }}</strong>.
+                    </p>
+                </section>
+            </div>
+
+            <!-- Assignment Questions -->
+            <div class="col-sm-5 assignment-questions p-3">
+                <div class="accordion" id="questionsAccordion">
+                    {% for question in questions %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ question.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ question.id }}" aria-expanded="false" aria-controls="collapse{{ question.id }}">
+                                    {{ question.title }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ question.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ question.id }}" data-bs-parent="#questionsAccordion">
+                                {{ question.description|safe }}
+                                {% if question.type == "code" %}
+                                <textarea id="editor">
+    {{ question.placeholder_text|safe }}
+                                </textarea>
+                                {% endif %}
+                                {% if question.type == "text" %}
+                                    {{ ckeditor.create() }}
+                                {% endif %}                                
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-outline-success mt-3">Submit Assignment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Codemirror script -->
+    <script>
+        var editor = CodeMirror.fromTextArea
+        (document.getElementById('editor'), {
+            mode: {
+                name: "python",
+                version: 5,
+                singleLineStringErrors: false
+            },
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            theme: "yonce"
+        });
+    </script>
+</body>
+{% endblock %}

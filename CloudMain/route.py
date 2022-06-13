@@ -1,3 +1,5 @@
+from msilib.schema import Class
+from sqlalchemy import null
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
 from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
@@ -262,8 +264,9 @@ def create_assignment(class_id, paper_id):
         dDate = datetime.strptime(
                                     request.form.get("dueDate"),
                                     '%Y-%m-%d').date() 
+
+        assignment_id = 0
         if students_of_paper:
-            print(f"\n\n Weight type = {type(assignment_form.weight)}\n\n ")
             for student in students_of_paper:
                 assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
@@ -276,6 +279,7 @@ def create_assignment(class_id, paper_id):
                                                 paper_id = int(selected_paper),
                                                 owner = int(student.id))
                 db.session.add(assignment_to_create)
+                db.session.commit()
         else: # If there are no students in the paper yet
             assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
@@ -286,10 +290,12 @@ def create_assignment(class_id, paper_id):
                                                 weight = int(request.form.get("weight")),
                                                 teacher_id = int(current_user.id),
                                                 paper_id = int(selected_paper),
-                                                owner = int(current_user.id))
+                                                owner = current_user.id)      
             db.session.add(assignment_to_create)
-        
-        return redirect(url_for('create_classroom_questions', class_id = class_id, paper_id = paper_id, assignment_form = assignment_form))
+            db.session.commit()
+
+        assignment_id = Assignment.query.order_by(-Assignment.id).first()
+        return redirect(url_for('create_classroom_questions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id.id))
 
     if assignment_form.errors != {}:
         for err_msg in assignment_form.errors.values():     
@@ -300,39 +306,48 @@ def create_assignment(class_id, paper_id):
                                                     assignment_form=assignment_form)
 
 # In this function, the assignment is created as well as the questions
-@app.route('/classroom/<class_id>/<paper_id>/create_assignment/questions', methods=['POST', 'GET'])
-def create_classroom_questions(class_id, paper_id, assignment_form):
+@app.route('/classroom/<class_id>/<paper_id>/create_assignment/<assignment_id>/', methods=['POST', 'GET'])
+def create_classroom_questions(class_id, paper_id, assignment_id):
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=assignment_id).first()
     questions_form = Create_Assignment_Questions()
-    questions_count = 0
 
     if questions_form.validate_on_submit():
         # for question in question_count:
         question = AssignmentQuestions(title = request.form.get("title"),
-                                        owner = assignment_form.id,
+                                        owner = int(assignment_id),
                                         type = request.form.get("type"),
                                         description= questions_form.description.data,
                                         placeholder_text = questions_form.placeholder_text.data)
+
+        # Commit the questions
         db.session.add(question)
-        db.session.commit() # this commits both the Assignment AND the questions
+        db.session.commit()
         
     if questions_form.errors != {}:
-        for err_msg in assignment_form.errors.values():     
+        for err_msg in questions_form.errors.values():     
             flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
 
     return render_template('create_assignment_questions.html', class_id = class_id, 
                                                                 paper_id = paper_id,
+                                                                paper = paper,
                                                                 questions_form = questions_form,
-                                                                questions_count=questions_count)
-
-# Assignment Page - View the details of a specific assignment
-@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
-def classroom_assignment_details(class_id, assignment_id):
-    return render_template('classroom_assignment_details.html')
+                                                                assignment = assignment)
 
 # Assignment Begin - This is when the student has started the assignment.
-@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/<page_num>')
-def classroom_assignment_content(class_id, assignment_id, page_num):
-    return render_template('classroom_assignment_content.html')
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
+def classroom_assignment_content(class_id, paper_id, assignment_id):
+    classroom = Classroom.query.filter_by(id=int(class_id)).first()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+    questions = []
+    for question in AssignmentQuestions.query.all():
+        if int(question.owner) == int(assignment_id):
+            questions.append(question)
+    return render_template('classroom_assignment_content.html', classroom=classroom,
+                                                                paper=paper,
+                                                                assignment=assignment,
+                                                                questions=questions)
 
 
 # User Profile - Display the users information here

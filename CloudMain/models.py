@@ -91,7 +91,7 @@ class Assignment(db.Model):
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = True)
-    questions = db.relationship('AssignmentQuestions', backref='parent_assignment', lazy=True) 
+    questions = db.relationship('AssignmentQuestions', backref='owned_assignment', lazy=True) 
 
 
 # Jakob
