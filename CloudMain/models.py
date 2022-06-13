@@ -91,6 +91,19 @@ class Assignment(db.Model):
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = True)
+    questions = db.relationship('AssignmentQuestions', backref='poster', lazy=True) 
+
+
+# Jakob
+# AssignmentQuestions Model - this is for the questions allocated to the assignment
+class AssignmentQuestions(db.Model):
+    __tablename__ = 'assignment_questions'
+    id = db.Column(db.Integer(), primary_key=True)
+    owner = db.Column(db.Integer(), db.ForeignKey('assignment.id'), nullable = False)
+    type = db.Column(db.String(), nullable = False)
+    title = db.Column(db.String(), nullable = False)
+    description = db.Column(db.String(), nullable = True)
+    placeholder_text = db.Column(db.String(), nullable = True)
 
 
 #This creates a model in the database for Uploaded files

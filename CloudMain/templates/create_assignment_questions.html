@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}
+Create Assignment | Cloudroom
+{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static',filename='css/create_assignment.css') }}">
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}
+<body>
+    {{ ckeditor.load() }}
+    <div class="container">
+        <form method="POST">
+            {{ ckeditor.create() }}
+        </form>
+    </div>
+    
+    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+</body>
+{% endblock %}

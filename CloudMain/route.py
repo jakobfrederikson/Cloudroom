@@ -307,6 +307,10 @@ def create_assignment(class_id, paper_id):
                                                     paper=paper,
                                                     assignment_form=assignment_form)
 
+@app.route('/classroom/<class_id>/<paper_id>/create_assignment/questions', methods=['POST', 'GET'])
+def create_classroom_questions(class_id, paper_id):
+    return render_template('create_assignment_questions.html', class_id = class_id, paper_id = paper_id)
+
 # Assignment Page - View the details of a specific assignment
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
 def classroom_assignment_details(class_id, assignment_id):

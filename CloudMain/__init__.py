@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import PickleType
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_ckeditor import CKEditor
+
+ckeditor = CKEditor()
 
 app = Flask(__name__)
 # file location
@@ -13,5 +16,6 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login_page" #redirect user to login page if they are not signed in
 login_manager.login_message_category = "info"
+ckeditor.init_app(app)
 
 from CloudMain import route
