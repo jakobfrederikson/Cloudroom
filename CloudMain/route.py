@@ -1,7 +1,7 @@
 from CloudMain import app, flash, url_for, redirect
 from flask import render_template, request, send_file
-from CloudMain.models import Account,Classroom, Paper, paper_members, Upload_File, Assignment,Post
-from CloudMain.forms import Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
+from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
+from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
         Create_Assignment, PostForm, Update_Post
 from CloudMain import db
@@ -242,15 +242,10 @@ def classroom_assignments_list(class_id, paper_id):
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])
 def create_assignment(class_id, paper_id):
     classrooms = Classroom.query.all()
-
-    # TODO: Only show papers that the teacher is apart of
     paper = Paper.query.filter_by(id=int(paper_id)).first()
-
     assignment_form = Create_Assignment()
 
     if assignment_form.validate_on_submit():
-        # We only want to create this assignment for the students apart of this paper.
-        # Therefore, we are getting a list of all the relevant students.
         selected_paper = int(paper_id)
         students_of_paper = []
         if paper_members.query.all():
@@ -281,7 +276,6 @@ def create_assignment(class_id, paper_id):
                                                 paper_id = int(selected_paper),
                                                 owner = int(student.id))
                 db.session.add(assignment_to_create)
-                db.session.commit()
         else: # If there are no students in the paper yet
             assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
@@ -294,10 +288,8 @@ def create_assignment(class_id, paper_id):
                                                 paper_id = int(selected_paper),
                                                 owner = int(current_user.id))
             db.session.add(assignment_to_create)
-            db.session.commit()
-
-        flash(f"Assignment has been successfully created!")
-        return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
+        
+        return redirect(url_for('create_classroom_questions', class_id = class_id, paper_id = paper_id, assignment_form = assignment_form))
 
     if assignment_form.errors != {}:
         for err_msg in assignment_form.errors.values():     
@@ -307,9 +299,30 @@ def create_assignment(class_id, paper_id):
                                                     paper=paper,
                                                     assignment_form=assignment_form)
 
+# In this function, the assignment is created as well as the questions
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment/questions', methods=['POST', 'GET'])
-def create_classroom_questions(class_id, paper_id):
-    return render_template('create_assignment_questions.html', class_id = class_id, paper_id = paper_id)
+def create_classroom_questions(class_id, paper_id, assignment_form):
+    questions_form = Create_Assignment_Questions()
+    questions_count = 0
+
+    if questions_form.validate_on_submit():
+        # for question in question_count:
+        question = AssignmentQuestions(title = request.form.get("title"),
+                                        owner = assignment_form.id,
+                                        type = request.form.get("type"),
+                                        description= questions_form.description.data,
+                                        placeholder_text = questions_form.placeholder_text.data)
+        db.session.add(question)
+        db.session.commit() # this commits both the Assignment AND the questions
+        
+    if questions_form.errors != {}:
+        for err_msg in assignment_form.errors.values():     
+            flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
+
+    return render_template('create_assignment_questions.html', class_id = class_id, 
+                                                                paper_id = paper_id,
+                                                                questions_form = questions_form,
+                                                                questions_count=questions_count)
 
 # Assignment Page - View the details of a specific assignment
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')

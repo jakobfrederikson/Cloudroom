@@ -8,13 +8,45 @@ Create Assignment | Cloudroom
 {% block content %}
 {% include 'base_sidenav.html' %}
 <body>
+    <!-- Load the text editor -->
     {{ ckeditor.load() }}
-    <div class="container">
-        <form method="POST">
-            {{ ckeditor.create() }}
-        </form>
+
+    <!-- CONTENT -->
+    <div class="container-fluid cloudroom-container">
+        <div class="row h-100">
+            <div class="col-sm-10" style="text-align: justify;">
+                <a href="javascript:history.back()">Back</a>
+                <div class="display-4">
+                    Create an assignment for [insert paper name]
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <form method="POST">
+                {{ questions_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ questions_form.type.label}} 
+                    <br>
+                    {{ questions_form.type}}
+                </div>
+                <div class="mb-3">
+                    {{ questions_form.title.label(class="form-label") }}
+                    {{ questions_form.title(placeholder="Question Title", class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ questions_form.description.label(class="form-label") }}
+                    {{ questions_form.description(placeholder="Question description", class="form-control") }}
+                </div>    
+                <div class="mb-3">
+                    {{ questions_form.placeholder_text.label(class="form-label") }}
+                    {{ questions_form.placeholder_text(placeholder="Placeholder Contetn", class="form-control", id="weight") }}
+                </div>
+                {{ questions_form.submit(class="btn btn-primary", type="submit", id="submitBtn") }}
+            </form>
+        </div>
     </div>
-    
+
     <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+    <script src="{{ url_for('static',filename='js/create_assignment_questions.js') }}"></script>
 </body>
 {% endblock %}

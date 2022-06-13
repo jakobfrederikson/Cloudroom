@@ -26,3 +26,5 @@ weight.addEventListener("keydown", function() {
         alert("The value of a paper cannot be above 100.");
     }
 });
+
+

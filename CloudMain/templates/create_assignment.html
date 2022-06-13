@@ -18,7 +18,7 @@ Create Assignment | Cloudroom
                 </div>
             </div>
         </div>
-        <div class="form-section">
+        <div class="form-section w-50">
             <form method="POST">
                 {{ assignment_form.hidden_tag() }}
                 <div class="mb-3">
@@ -53,7 +53,7 @@ Create Assignment | Cloudroom
                         </div>
                     {% endfor %}
                 </div>
-                {{ assignment_form.submit(class="btn btn-primary", type="submit", id="submitBtn") }}
+                {{ assignment_form.submit(class="btn btn-primary", type="submit", id="submitBtn") }}                
             </form>
         </div>
     </div>

@@ -1,9 +1,11 @@
+from logging import PlaceHolder
 from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from CloudMain.models import Account
+from flask_ckeditor import CKEditorField
 
 #Creating accounts form
 class CreateAccount(FlaskForm):
@@ -70,6 +72,15 @@ class Create_Assignment(FlaskForm):
         choices=[('images/classroom_pic1.png','Computer Screen'),('images/python_201_image.jpg','Double Monitor'),
         ('images/laptops.jpg','Laptops'),('images/tech.jpg','Old Tech')],validators=[DataRequired()])
     submit = SubmitField("Create Assignment")
+
+# Jakob
+# Assignment questions
+class Create_Assignment_Questions(FlaskForm):
+    title = StringField('Title')
+    type = SelectField(u'Question Type', choices=[('code', 'Python'), ('text', 'Plain Text')], validators=[DataRequired()])
+    description = CKEditorField('Description')
+    placeholder_text = CKEditorField('Placeholder Content')
+    submit = SubmitField('Submit')
 
 
 # Update user details forms
