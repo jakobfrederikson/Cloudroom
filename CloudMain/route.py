@@ -5,11 +5,12 @@ from flask import render_template, request, send_file
 from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
 from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
-        Create_Assignment, PostForm, Update_Post
+        Create_Assignment, PostForm
 from CloudMain import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 from datetime import datetime
+from CloudMain import functions
 
 #homepage
 @app.route('/')
@@ -148,6 +149,69 @@ def dashboard_page(user):
     return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room,
                            classroom_form=classroom_form,paper_form=paper_form,classrooms=classrooms)
 
+# This will update the post of the user
+@app.route('/classroom/update_post/<class_id>/<paper_id>/<post_id>', methods=['POST', 'GET'])
+@login_required
+def update_post(class_id, paper_id,post_id):
+    paper = Paper.query.filter_by(id=paper_id).first()
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    edit_post = PostForm()
+    post_form = PostForm()
+    posts = Post.query.filter_by(paper_id=paper_id)
+    del_post = Delete_File()
+
+    if edit_post.validate_on_submit():
+        post_file_obj = Post().query.filter_by(id=post_id).first()
+        if post_file_obj:
+            if edit_post.title.data:
+                post_file_obj.title = edit_post.title.data
+            else:
+                post_file_obj.title = "No Title"
+
+            if edit_post.content.data:
+                post_file_obj.content = edit_post.content.data
+            else:
+                post_file_obj.content = "No Description"
+            db.session.add(post_file_obj)
+            db.session.commit()
+            return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=post_form,
+                                   posts=posts, del_post=del_post, edit_post=edit_post))
+
+    member_list = functions.get_all_members(paper_id)
+    to_update = Post().query.filter_by(id=post_id).first()
+    edit_post.title.data = to_update.title
+    edit_post.content.data = to_update.content
+    return render_template('edit_post.html', edit_post=edit_post,postform=post_form,classroom=classroom,paper=paper,
+                           members=member_list)
+
+# This will update the post of the user
+@app.route('/classroom/create_post/<class_id>/<paper_id>', methods=['POST', 'GET'])
+@login_required
+def create_post(class_id, paper_id):
+    paper = Paper.query.filter_by(id=paper_id).first()
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    edit_post = PostForm()
+    post_form = PostForm()
+    posts = Post.query.filter_by(paper_id=paper_id)
+    del_post = Delete_File()
+
+    # create a post
+    if post_form.validate_on_submit():
+        post = Post(title=post_form.title.data,
+                    paper_id=paper.id,
+                    content=post_form.content.data,
+                    owner=current_user.id)
+
+        db.session.add(post)
+        db.session.commit()
+
+        return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=post_form,
+                               posts=posts, del_post=del_post, edit_post=edit_post))
+
+    member_list = functions.get_all_members(paper_id)
+    return render_template('create_post.html',postform=post_form,classroom=classroom,paper=paper,
+                           members=member_list)
+
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>', methods=['POST', 'GET'])
 @login_required
@@ -157,9 +221,8 @@ def classroom_main_page(class_id, paper_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
     posts = Post.query.filter_by(paper_id=paper.id)
     del_post = Delete_File()
-    edit_post = Update_Post()
-
     postform = PostForm()
+
     if request.method == "POST":
         delete_item = request.form.get('remove_item')
         d_file_obj = Post().query.filter_by(title=delete_item).first()
@@ -169,7 +232,7 @@ def classroom_main_page(class_id, paper_id):
             flash(f'{d_file_obj.title} has been deleted')
             db.session.commit()
             return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
-                                    posts=posts, del_post=del_post, edit_post=edit_post))
+                                    posts=posts, del_post=del_post))
 
         #handles remove student
         remove_student = request.form.get('remove_student')
@@ -179,20 +242,8 @@ def classroom_main_page(class_id, paper_id):
             paper_members().query.filter_by(id = std_file_obj.id).delete()
             db.session.commit()
             return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
-                                    posts=posts, del_post=del_post, edit_post=edit_post))
+                                    posts=posts, del_post=del_post))
 
-        #handles edit post
-        post = request.form.get('edit_post')
-        post_file_obj = Post().query.filter_by(title=post).first()
-        if post_file_obj:
-            if edit_post.title.data:
-                post_file_obj.title = edit_post.title.data
-            if edit_post.content.data:
-                post_file_obj.content = edit_post.content.data
-            db.session.add(post_file_obj)
-            db.session.commit()
-            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
-                                    posts=posts, del_post=del_post, edit_post=edit_post))
     #create a post
     if postform.validate_on_submit():
         post = Post(title=postform.title.data,
@@ -203,21 +254,12 @@ def classroom_main_page(class_id, paper_id):
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('classroom_main_page',class_id=classroom.id,paper_id=paper.id,postform=postform,
-                                posts=posts,del_post=del_post,edit_post=edit_post))
+                                posts=posts,del_post=del_post))
 
     # Gathering all members in this paper.
-    papers = paper_members.query.all()
-    accounts = Account.query.all()
-    members_list = []
-    for p in papers:
-        for a in accounts:
-            if int(p.id_paper) == int(paper_id):
-                if int(p.id_user) == int(a.id):
-                    members_list.append(a)
-
-    return render_template('classroom_main_page.html', classroom=classroom,
-                                                     paper=paper,members=members_list,postform=postform,posts=posts
-                           ,del_post=del_post,edit_post=edit_post)
+    member_list = functions.get_all_members(paper_id)
+    return render_template('classroom_main_page.html', classroom=classroom,paper=paper,members=member_list,
+                           postform=postform,posts=posts,del_post=del_post)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/<paper_id>/assignments')
@@ -233,12 +275,13 @@ def classroom_assignments_list(class_id, paper_id):
     # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
+    member_list = functions.get_all_members(paper_id)
 
     return render_template('classroom_assignments_list.html', classroom=classroom,
                                                             paper=paper,
                                                             assignments=assignments,
                                                             class_id = class_id,
-                                                            paper_id = paper_id)
+                                                            paper_id = paper_id,members=member_list)
 
 # Create Assignment - Teacher can create an assignment here for a paper here
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])

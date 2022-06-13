@@ -130,6 +130,17 @@ h1{
     display: none;
 }
 
+.post_content{
+    height: 500px;
+}
+
+.edit_form_container{
+    padding-right:110px
+}
+
+.save_changes_btn{
+    width: 20%
+}
 
 @media (max-width: 1200px)
 {
@@ -190,6 +201,9 @@ h1{
 @media (max-width: 990px){
     .mobile_icons{
         display:inline;
+    }
+    .edit_form_container{
+        padding-right:0;
     }
 }
 

@@ -124,11 +124,6 @@ class Join_Cloudroom(FlaskForm):
 #Posting content in Classroom page
 class PostForm(FlaskForm):
     title = StringField(label="Title", validators=[DataRequired()])
-    content = TextAreaField(label="Content", validators=[DataRequired()])
+    content = CKEditorField('Content', validators=[DataRequired()])
+    # content = TextAreaField(label="Content", validators=[DataRequired()])
     submit = SubmitField(label='Post')
-
-#updating Post
-class Update_Post(FlaskForm):
-    title = StringField(label="Title")
-    content = TextAreaField(label="Content")
-    submit = SubmitField(label='Edit')

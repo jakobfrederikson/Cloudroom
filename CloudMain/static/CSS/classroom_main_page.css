@@ -1,7 +1,7 @@
 .all-classroom-posts {
     display: flex;
     justify-content: center;
-    margin-bottom: 80px;
+    margin-bottom: 50px;
 }
 .create_post_btn{
     padding-top:60px;
@@ -18,6 +18,10 @@
 .cloudroom-container {
     padding-top: 50px;
     height: 100vh;
+}
+
+.post_content{
+    height: 500px;
 }
 
 @media (min-width: 1200px)
