@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-Sign In
+Edit Post
 {% endblock %}
 {% block style %}
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
@@ -14,18 +14,20 @@ Sign In
   </a>
 </div>
 <div class="container mt-5 bd-highlight justify-content-center edit_form_container">
+  <h1 class="mb-1">Edit Post</h1>
   <form method="POST" style="color:white" enctype="multipart/form-data">
     <div class="container">
-          {{ edit_post.hidden_tag() }}
-    {{ edit_post.title.label() }}
-    {{ edit_post.title(class="form-control", placeholder="Title") }}
-    {{ edit_post.content.label() }}
-    {{ edit_post.content(class="form-control post_content", placeholder="Content") }}
+     {{ edit_post.hidden_tag() }}
+     {{ edit_post.title.label() }}
+     {{ edit_post.title(class="form-control", placeholder="Title") }}
+     {{ edit_post.content.label() }}
+     {{ edit_post.content(class="form-control post_content", placeholder="Content") }}
     </div>
-
     <br>
-    {{ edit_post.submit(class="save_changes_btn d-grid gap-2 col-6 mx-auto mt-3 signin_btn btn btn-block btn-primary") }}
+    {{ edit_post.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
   </form>
+  {{ ckeditor.load() }}
+  {{ ckeditor.config(name='content') }}
 </div>
 
 </body>

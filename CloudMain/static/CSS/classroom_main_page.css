@@ -1,7 +1,7 @@
 .all-classroom-posts {
     display: flex;
     justify-content: center;
-    margin-bottom: 80px;
+    margin-bottom: 50px;
 }
 .create_post_btn{
     padding-top:60px;

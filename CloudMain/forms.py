@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from CloudMain.models import Account
+from flask_ckeditor import CKEditorField
 
 #Creating accounts form
 class CreateAccount(FlaskForm):
@@ -114,11 +115,6 @@ class Join_Cloudroom(FlaskForm):
 #Posting content in Classroom page
 class PostForm(FlaskForm):
     title = StringField(label="Title", validators=[DataRequired()])
-    content = TextAreaField(label="Content", validators=[DataRequired()])
+    content = CKEditorField('Content', validators=[DataRequired()])
+    # content = TextAreaField(label="Content", validators=[DataRequired()])
     submit = SubmitField(label='Post')
-
-#updating Post
-class Update_Post(FlaskForm):
-    title = StringField(label="Title")
-    content = TextAreaField(label="Content")
-    submit = SubmitField(label='Save Changes')
