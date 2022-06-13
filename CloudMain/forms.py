@@ -1,4 +1,3 @@
-from logging import PlaceHolder
 from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
