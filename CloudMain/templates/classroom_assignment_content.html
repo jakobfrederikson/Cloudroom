@@ -42,14 +42,24 @@ Create Assignment | Cloudroom
                                 </button>
                             </h2>
                             <div id="collapse{{ question.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ question.id }}" data-bs-parent="#questionsAccordion">
-                                {{ question.description|safe }}
+                                <p>
+                                    <small>
+                                        <strong>Question Description</strong>
+                                        <br>
+                                        {% if question.description != "" %}
+                                        {{ question.description|safe }}
+                                        {% else %}
+                                        <em>The assignment creator did not provide a description for this question.</em>
+                                        {% endif %}
+                                    </small>
+                                </p>
                                 {% if question.type == "code" %}
                                 <textarea id="editor">
     {{ question.placeholder_text|safe }}
                                 </textarea>
                                 {% endif %}
                                 {% if question.type == "text" %}
-                                    {{ ckeditor.create() }}
+                                {{ ckeditor.create() }}
                                 {% endif %}                                
                             </div>
                         </div>

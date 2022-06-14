@@ -29,6 +29,12 @@
                   </ul>
                   <div class="card-body">
                     <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
+                    {% if current_user.account_type == "Teacher" %}
+                    <br>
+                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Edit assignment</a>
+                    <br>
+                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Delete assignment</a>
+                    {% endif %}
                   </div>
                 </div>
               </div>

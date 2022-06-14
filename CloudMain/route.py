@@ -1,6 +1,6 @@
 from msilib.schema import Class
 from sqlalchemy import null
-from CloudMain import app, flash, url_for, redirect
+from CloudMain import app, flash, url_for, redirect, session
 from flask import render_template, request, send_file
 from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
 from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
@@ -348,24 +348,53 @@ def create_assignment(class_id, paper_id):
                                                     paper=paper,
                                                     assignment_form=assignment_form)
 
-# In this function, the assignment is created as well as the questions
+# Create the questions for the assignment
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment/<assignment_id>/', methods=['POST', 'GET'])
 def create_classroom_questions(class_id, paper_id, assignment_id):
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=assignment_id).first()
     questions_form = Create_Assignment_Questions()
 
+    # Start the user session to store multiple questions for an assignment
+    questions_list = []    
+    if 'questions' not in session:
+        session['questions'] = []
+    questions_list = session['questions']  
+
     if questions_form.validate_on_submit():
-        # for question in question_count:
-        question = AssignmentQuestions(title = request.form.get("title"),
+        if request.form['submit'] == "Submit":
+            if questions_list:
+                for q in questions_list:
+                    question = AssignmentQuestions(title = q['title'],
+                                                    owner = int(q['owner']),
+                                                    type = q['type'],
+                                                    description = q['description'],
+                                                    placeholder_text = q['placeholder_text'])
+                    db.session.add(question)
+            else:
+                question = AssignmentQuestions(title = request.form.get("title"),
+                                                    owner = int(assignment_id),
+                                                    type = request.form.get("type"),
+                                                    description= questions_form.description.data,
+                                                    placeholder_text = questions_form.placeholder_text.data)
+                db.session.add(question)
+
+            db.session.commit()
+
+            # clear the session cache of our questions
+            session.pop('questions')
+            flash(f'Questions successfully created for {assignment.name}')
+            return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
+        
+        # Append the created question to the questions list
+        if request.form['submit'] == "Create another question":
+            question = AssignmentQuestions(title = request.form.get("title"),
                                         owner = int(assignment_id),
                                         type = request.form.get("type"),
                                         description= questions_form.description.data,
                                         placeholder_text = questions_form.placeholder_text.data)
-
-        # Commit the questions
-        db.session.add(question)
-        db.session.commit()
+            questions_list.append(question.serialize())
+            session['questions'] = questions_list      
         
     if questions_form.errors != {}:
         for err_msg in questions_form.errors.values():     
@@ -375,6 +404,7 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
                                                                 paper_id = paper_id,
                                                                 paper = paper,
                                                                 questions_form = questions_form,
+                                                                questions_list = questions_list,
                                                                 assignment = assignment)
 
 # Assignment Begin - This is when the student has started the assignment.

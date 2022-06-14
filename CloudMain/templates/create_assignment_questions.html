@@ -16,17 +16,20 @@ Create Assignment | Cloudroom
         <div class="row">
             <div class="col-sm-10">
                 <div class="row">
-                    <div class="col-sm-10" style="text-align: justify;">
+                    <div class="col" style="text-align: justify;">
                         <a href="javascript:history.back()">Back</a>
                         <div class="display-4">
-                            Create questions for {{ assignment.name }}
+                            <strong>Create questions for {{ assignment.name }}</strong>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
+                    <div class="col-sm-6 d-flex flex-column">
+                        <div class="display-6">
+                            Question Form
+                        </div>
                         <!-- content -->
-                        <div class="w-50 p-1 mb-3 mt-3 bg-light border rounded">
+                        <div class="p-1 mb-3 mt-3 bg-light border rounded">
                             <form method="POST">
                                 {{ questions_form.hidden_tag() }}
                                 <div class="mb-3">
@@ -45,13 +48,47 @@ Create Assignment | Cloudroom
                                     {{ questions_form.placeholder_text.label(class="form-label") }}
                                     {{ questions_form.placeholder_text(class="form-control") }}
                                 </div>
-                                <button type="button" class="btn btn-outline-success">Add another question</button>
-                                {{ questions_form.submit(class="btn btn-primary", type="submit", id="submitBtn") }}                
-                            </form>
+                                {{ questions_form.submit(class="btn btn-outline-success mb-1", value="Create another question") }}   
+                                <br>
+                                {{ questions_form.submit(class="btn btn-primary mb-3", value="Submit") }}          
+                            </form>                          
+                        </div>
+                        
+                    </div>
+
+                    <!-- Show current questions for the assignment -->
+                    <div class="col-sm-6">
+                        <div class="display-6 mb-3">
+                            Current Questions
+                        </div>
+                        <div class="accordion" id="questionsAccordion">                     
+                            {% for question in questions_list %}
+                            {% if question.owner == assignment.id %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                                            {{ question.title }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#questionsAccordion">
+                                        <div class="bg-light rounded">
+                                            <p><strong>Question Description:</strong> {{ question.description|safe }}</p>
+                                        </div>
+                                        {% if question.type == "code" %}
+                                            <p><strong>Question Type:</strong> code</p>
+                                        {% endif %}
+                                        {% if question.type == "text" %}
+                                            <p><strong>Question Type:</strong> plain text</p>
+                                        {% endif %}                                
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
+
                 </div>
-            </div>
+            </div>        
         </div>
     </div>
 

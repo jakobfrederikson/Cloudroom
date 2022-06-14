@@ -105,6 +105,14 @@ class AssignmentQuestions(db.Model):
     description = db.Column(db.String(), nullable = True)
     placeholder_text = db.Column(db.String(), nullable = True)
 
+    def serialize(self):
+        return {"id" : self.id,
+                "owner": self.owner,
+                "type": self.type,
+                "title": self.title,
+                "description": self.description,
+                "placeholder_text": self.placeholder_text}
+
 
 #This creates a model in the database for Uploaded files
 class Upload_File(db.Model):

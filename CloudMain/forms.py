@@ -79,7 +79,7 @@ class Create_Assignment_Questions(FlaskForm):
     type = SelectField(u'Question Type', choices=[('code', 'Python'), ('text', 'Plain Text')], validators=[DataRequired()])
     description = CKEditorField('Question Description')
     placeholder_text = TextAreaField('Placeholder Content')
-    submit = SubmitField('Submit')
+    submit = SubmitField()
 
 
 # Update user details forms
