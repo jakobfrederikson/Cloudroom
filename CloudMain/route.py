@@ -1,22 +1,55 @@
 from msilib.schema import Class
 from sqlalchemy import null
-from CloudMain import app, flash, url_for, redirect
+from CloudMain import app, flash, url_for, redirect, db, functions, mail
 from flask import render_template, request, send_file
 from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
 from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
-        Create_Assignment, PostForm
-from CloudMain import db
+        Create_Assignment, PostForm, RequestResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 from datetime import datetime
-from CloudMain import functions
 
 #homepage
 @app.route('/')
 @app.route('/index')
 def home_page():
     return render_template('index.html')
+
+#request for reset password
+@app.route('/reset_password_request', methods=['POST', 'GET'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('home_page'))
+
+    form = RequestResetPasswordForm()
+    if form.validate_on_submit():
+        user = Account.query.filter_by(email=form.email.data).first()
+        functions.send_reset_email(user)
+        flash('An email has been sent to reset your password',category="info")
+        return redirect(url_for('login_page'))
+
+    return render_template('forgot_password.html',form=form)
+
+#resets password
+@app.route('/reset_password/<token>', methods=['POST', 'GET'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home_page'))
+    user = Account.verify_reset_token(token)
+
+    if user is None:
+        flash('Token is invalid or token has expired',category='warning')
+        return redirect(url_for('forgot_password'))
+    form_password = UpdatePassword()
+
+    if form_password.validate_on_submit():
+        new_pass = form_password.password_hash.data
+        user.password = new_pass
+        db.session.commit()
+        flash('Password has been reset', category='info')
+        return redirect(url_for('login_page'))
+    return render_template('reset_password.html',form_password=form_password)
 
 #login page
 @app.route('/login', methods=['POST', 'GET'])
