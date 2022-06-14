@@ -25,9 +25,12 @@ def forgot_password():
     form = RequestResetPasswordForm()
     if form.validate_on_submit():
         user = Account.query.filter_by(email=form.email.data).first()
-        functions.send_reset_email(user)
-        flash('An email has been sent to reset your password',category="info")
-        return redirect(url_for('login_page'))
+        if user:
+            functions.send_reset_email(user)
+            flash('An email has been sent to reset your password',category="info")
+            return redirect(url_for('login_page'))
+        else:
+            flash('Invalid email please try again.',category="danger")
 
     return render_template('forgot_password.html',form=form)
 
