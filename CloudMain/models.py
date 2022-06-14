@@ -1,7 +1,8 @@
-from CloudMain import db, login_manager
+from CloudMain import db, login_manager, app
 from CloudMain import bcrypt
 from flask_login import UserMixin
 from datetime import datetime
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -27,14 +28,43 @@ class Account(db.Model, UserMixin):
     @property
     def password(self):
         return self.password
+
     #this will decrypt the password
     @password.setter
     def password(self, plain_text_password):
         self.password_hash = bcrypt.generate_password_hash(plain_text_password).decode('utf-8')
+
     #checks if password is valid
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
+    def get_reset_token(self):
+        s = Serializer(app.config['SECRET_KEY'], )
+        return s.dumps({'user_id': self.id})
+
+    @staticmethod
+    def verify_reset_token(token, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token, expires_sec)['user_id']
+        except:
+            return None
+        return Account.query.get(user_id)
+
+    # #generate a token
+    # def get_reset_token(self,expires_sec=1800):
+    #     s = Serializer(app.config['SECRET_KEY'], expires_sec)
+    #     return s.dumps({'user_id': self.id}).decode('utf-8')
+    #
+    # #verify token
+    # @staticmethod
+    # def verify_reset_token(token):
+    #     s = Serializer(app.config['SECRET_KEY'])
+    #     try:
+    #         user_id = s.loads(token)['user_id']
+    #     except:
+    #         return None
+    #     return Account.query.get(user_id)
 
 # Jakob
 # Classroom model - holds papers (e.g. Classroom: Software Engineering, Paper: Python 203, Paper: C++ 101)

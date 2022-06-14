@@ -106,11 +106,12 @@ class UpdateProfilePic(FlaskForm):
         choices=[('images/profile1.jpg','Ghost'),('images/profile2.jpg','Zombie'),
         ('images/profile3.jpg','Squid Game'),('images/profile4.jpg','Astro Cat')],validators=[DataRequired()])
     submit = SubmitField(label='Save Changes')
+
 #updates password
 class UpdatePassword(FlaskForm):
     password_hash = PasswordField(label="Password", validators=[Length(min=8), DataRequired()])
     verify_password = PasswordField(label="Confirm Password", validators=[EqualTo('password_hash'), DataRequired()])
-    submit = SubmitField(label='Save Changes')
+    submit = SubmitField(label='Reset Password')
 
 #delete the file
 class Delete_File(FlaskForm):
@@ -125,5 +126,8 @@ class Join_Cloudroom(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField(label="Title", validators=[DataRequired()])
     content = CKEditorField('Content', validators=[DataRequired()])
-    # content = TextAreaField(label="Content", validators=[DataRequired()])
     submit = SubmitField(label='Post')
+
+class RequestResetPasswordForm(FlaskForm):
+    email = StringField('Email',validators=[DataRequired(),Email()])
+    submit = SubmitField(label='Reset Password')

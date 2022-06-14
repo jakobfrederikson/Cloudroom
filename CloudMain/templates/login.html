@@ -18,7 +18,8 @@ Sign In
         {{ form.email(class="form-control", placeholder="User Name") }}
         {{ form.password.label() }}
         {{ form.password(class="form-control", placeholder="Password") }}
-        {{ form.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
+        <a href="{{ url_for('forgot_password') }}"><p>Forgot Password</p></a>
+        {{ form.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn mt-5 btn-block btn-primary") }}
         <div class="checkbox mb-3">
           <h6 class="text-center">Do not have an account?
             <a href="{{ url_for('sign_up') }}">
