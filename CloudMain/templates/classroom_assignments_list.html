@@ -9,18 +9,13 @@
 {% include 'base_sidenav.html' %}
 <body>
       <!-- CONTENT -->
-      <div class="container-sm cloudroom-container row">
+      <div class="container-sm cloudroom-container">
         <div class="row">
-          <div class="col-sm-10">
-            <div class="row align-items-center">
-              <div class="col" style="text-align: justify;">
+          <div class="col-sm-9 mb-lg-5">
                 <div class="display-4">
                   {{ paper.paper_name }} Assignments
                 </div>
-              </div>
-                <a class="text-decoration-none" href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">Create an assignment</a>
-            </div>
-            <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4">
+            <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4 mt-1">
               {% for entry in assignments %}
               <div class="col">
                 <div class="card h-100" name="assignment-box">
@@ -30,16 +25,27 @@
                     <p class="card-text text-truncate">{{ entry.description }}</p>
                   </div>
                   <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><span class="text-muted">Created: </span><div class="cDate">{{entry.creationDate}}</div></li>
                     <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{entry.dueDate}}</div></li>
                   </ul>
                   <div class="card-body">
                     <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
+                    {% if current_user.account_type == "Teacher" %}
+                    <br>
+                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Edit assignment</a>
+                    <br>
+                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Delete assignment</a>
+                    {% endif %}
                   </div>
                 </div>
               </div>
               {% endfor %}
             </div>
+          </div>
+          <div class="col-sm-1 mt-2">
+            <a class="text-decoration-none btn btn-primary" role="button" 
+            href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">
+            Create an assignment
+          </a>
           </div>
         </div>
       </div>
