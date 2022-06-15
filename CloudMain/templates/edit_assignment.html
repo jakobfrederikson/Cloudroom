@@ -26,12 +26,12 @@ Edit Assignment | Cloudroom
                             {{ edit_form.description(placeholder="Assignment description", class="form-control") }}
                         </div>
                         <div class="mb-3">
-                            <label for="currentDate">Current date</label>
-                            <input type="date" name="currentDate" id="currentDate" class="form-control" readonly>
+                            {{ edit_form.creationDate.label(class="form-label") }}
+                            {{ edit_form.creationDate(class="form-label", id="cDate")}}
                         </div>
                         <div class="mb-3">
-                            <label for="dueDate" class="form-label">Due Date</label>
-                            <input type="date" id="dueDate" name="dueDate" class="form-control">
+                            {{ edit_form.dueDate.label(class="form-label") }}
+                            {{ edit_form.dueDate(class="form-label", id="dDate")}}
                         </div>
                         <div class="mb-3">
                             {{ edit_form.weight.label(class="form-label") }}
@@ -62,7 +62,6 @@ Edit Assignment | Cloudroom
             </div>
         </div>
     </div>
-
-    <script src="{{ url_for('static',filename='js/create_assignment_script.js') }}"></script>
+    <script src="{{ url_for('static', filename = 'JS/edit_assignment_script.js') }}"></script>
 </body>
 {% endblock %}

@@ -56,9 +56,11 @@ Create Assignment | Cloudroom
                                     </small>
                                 </p>
                                 {% if question.type == "code" %}
-                                <textarea id="editor">
+                                <div class="code-box">
+                                    <textarea id="editor">
     {{ question.placeholder_text|safe }}
-                                </textarea>
+                                    </textarea>
+                                </div>
                                 {% endif %}
                                 {% if question.type == "text" %}
                                 {{ ckeditor.create() }}
@@ -73,22 +75,6 @@ Create Assignment | Cloudroom
             </div>
         </div>
     </div>
-
-    <!-- Codemirror script -->
-    <script>
-        var editor = CodeMirror.fromTextArea
-        (document.getElementById('editor'), {
-            mode: {
-                name: "python",
-                version: 5,
-                singleLineStringErrors: false
-            },
-            lineNumbers: true,
-            indentUnit: 4,
-            matchBrackets: true,
-            theme: "yonce"
-        });
-    </script>
 
     <script src="{{ url_for('static', filename = 'JS/assignment_content_script.js') }}"></script>
 </body>

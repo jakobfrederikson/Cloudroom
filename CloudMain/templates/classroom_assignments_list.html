@@ -45,7 +45,7 @@
                           <a href="{{ url_for('edit_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-dark">Edit</a>
                           <a href="{{ url_for('delete_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-danger">Delete</a>
                           {% if entry.isPublished == False %}
-                          <button type="button" class="btn btn-outline-success">Publish</button>
+                          <a href="{{ url_for('publish_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-success">Publish</a>
                           {% endif %}
                           {% endif %}
                         </div>
@@ -67,12 +67,6 @@
                         </ul>
                         <div class="card-body">
                           <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
-                          {% if current_user.account_type == "Teacher" %}
-                          <br>
-                          <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Edit assignment</a>
-                          <br>
-                          <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Delete assignment</a>
-                          {% endif %}
                         </div>
                       </div>
                     </div>
@@ -96,7 +90,6 @@
     integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" 
     crossorigin="anonymous">
     </script>
-
     <script src="{{ url_for('static', filename = 'JS/assignment_list_script.js') }}"></script>
 </body>
 {% endblock %}

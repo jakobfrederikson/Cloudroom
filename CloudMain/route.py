@@ -3,7 +3,7 @@ from sqlalchemy import delete, null
 from CloudMain import app, flash, url_for, redirect, db, functions, mail, session
 from flask import render_template, request, send_file
 from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
-from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, Delete_Assignment, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
+from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, GeneralSubmitForm, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
         Create_Assignment, PostForm, RequestResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
@@ -313,17 +313,12 @@ def classroom_assignments_list(class_id, paper_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
     member_list = functions.get_all_members(paper_id)
 
-    delete_assignments = []
-    for entry in assignments:
-        delete_assignments.append(Delete_Assignment(assignment_id = entry.id))
-
     return render_template('classroom_assignments_list.html', classroom=classroom,
                                                             paper=paper,
                                                             assignments=assignments,
                                                             class_id = class_id,
                                                             paper_id = paper_id,
-                                                            members=member_list,
-                                                            delete_assignments = delete_assignments)
+                                                            members=member_list)
 
 # Create Assignment - Teacher can create an assignment here for a paper here
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])
@@ -342,21 +337,12 @@ def create_assignment(class_id, paper_id):
                     if entry.account_type == "Student":
                         students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
 
-        # Reformatting the dates.
-        # Flask only takes Y-m-d format for dates
-        cDate = datetime.strptime(
-                                    request.form.get("currentDate"),
-                                    '%Y-%m-%d').date()
-        dDate = datetime.strptime(
-                                    request.form.get("dueDate"),
-                                    '%Y-%m-%d').date() 
-
         if students_of_paper:
             for student in students_of_paper:
                 assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
-                                                creationDate = cDate,
-                                                dueDate = dDate,
+                                                creationDate = assignment_form.creationDate.data,
+                                                dueDate = assignment_form.dueDate.data,
                                                 isCompleted = False,
                                                 weight = int(request.form.get("weight")),                                                
                                                 picture = assignment_form.picture.data,
@@ -369,8 +355,8 @@ def create_assignment(class_id, paper_id):
         else: # If there are no students in the paper yet
             assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
-                                                creationDate = cDate,
-                                                dueDate = dDate,
+                                                creationDate = assignment_form.creationDate.data,
+                                                dueDate = assignment_form.dueDate.data,
                                                 isCompleted = False,
                                                 weight = int(request.form.get("weight")),
                                                 picture = assignment_form.picture.data,    
@@ -479,6 +465,7 @@ def edit_assignment(class_id, paper_id, assignment_id):
     assignment = Assignment.query.filter_by(id=assignment_id).first()
     edit_form = Create_Assignment()
 
+    print(f"\n\n{assignment.dueDate} \n {assignment.creationDate}\n\n")
     if edit_form.validate_on_submit():
         selected_paper = int(paper_id)
         students_of_paper = []
@@ -488,15 +475,12 @@ def edit_assignment(class_id, paper_id, assignment_id):
                     if entry.account_type == "Student":
                         students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
 
-        # Reformatting the dates.
-        # Flask only takes Y-m-d format for dates
-        dDate = datetime.strptime(request.form.get("dueDate"), '%Y-%m-%d').date() 
-
         if students_of_paper:
             for student in students_of_paper:
                 assignment.name = edit_form.name.data
                 assignment.description = edit_form.description.data
-                assignment.dueDate = dDate
+                assignment.creationDate = edit_form.creationDate.data
+                assignment.dueDate = edit_form.dueDate.data
                 assignment.weight = edit_form.weight.data
                 assignment.picture = edit_form.picture.data
                 assignment.isPublished = edit_form.isPublished.data
@@ -505,7 +489,8 @@ def edit_assignment(class_id, paper_id, assignment_id):
         else:
             assignment.name = edit_form.name.data
             assignment.description = edit_form.description.data
-            assignment.dueDate = dDate
+            assignment.creationDate = edit_form.creationDate.data
+            assignment.dueDate = edit_form.dueDate.data
             assignment.weight = edit_form.weight.data
             assignment.picture = edit_form.picture.data
             assignment.isPublished = edit_form.isPublished.data
@@ -517,7 +502,8 @@ def edit_assignment(class_id, paper_id, assignment_id):
 
     edit_form.name.data = assignment.name
     edit_form.description.data = assignment.description
-    # edit_form.dueDate.data = assignment.dueDate
+    edit_form.creationDate.data = assignment.creationDate
+    edit_form.dueDate.data = assignment.dueDate
     edit_form.weight.data = assignment.weight
     edit_form.picture.data = assignment.picture
     return render_template('edit_assignment.html', assignment = assignment, edit_form = edit_form, classroom = classroom, paper = paper)
@@ -528,19 +514,44 @@ def delete_assignment(class_id, paper_id, assignment_id):
     classroom = Classroom.query.filter_by(id=int(class_id)).first()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
-    delete_form = Delete_Assignment()
+    delete_form = GeneralSubmitForm()
 
     if request.method == "POST":
         assignment_to_delete = Assignment.query.filter_by(id = assignment_id).first()
-        print("\n\nhi\n\n")
         if assignment_to_delete:
+            # Delete Assignment
             Assignment.query.filter_by(id=assignment_to_delete.id).delete()
 
-            flash(f'{assignment_to_delete.name} has been successfully delted.')
+            # Delete all questions related to the assignment
+            for question in AssignmentQuestions.query.all():
+                if question.owner == assignment_to_delete.id:
+                    AssignmentQuestions.query.filter_by(id = question.id).delete()
+            
+            flash(f'{assignment_to_delete.name} has been successfully deleted.')
             db.session.commit()
             return redirect(url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id))
 
-    return render_template('delete_assignment.html', assignment = assignment, delete_form = delete_form,classroom = classroom, paper = paper)
+    return render_template('delete_assignment.html', assignment = assignment, delete_form = delete_form, classroom = classroom, paper = paper)
+
+# Publish an assignment
+@app.route('/classroom/<class_id>/<paper_id>/assignments/publish/<assignment_id>', methods=['POST', 'GET'])
+def publish_assignment(class_id, paper_id, assignment_id):
+    classroom = Classroom.query.filter_by(id=int(class_id)).first()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+    publish_form = GeneralSubmitForm()
+
+    if request.method == "POST":
+        assignment_to_publish = Assignment.query.filter_by(id = assignment_id).first()
+        if assignment_to_publish:
+            assignment_to_publish.isPublished = True
+            db.session.add(assignment_to_publish)
+
+            flash(f'{assignment_to_publish.name} has been successfully published.')
+            db.session.commit()
+            return redirect(url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id))
+
+    return render_template('publish_assignment.html', assignment = assignment, publish_form = publish_form, classroom = classroom, paper = paper)
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])

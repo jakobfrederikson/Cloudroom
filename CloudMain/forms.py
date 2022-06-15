@@ -1,12 +1,11 @@
-from ast import Delete
-from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
 from sqlalchemy import delete
-from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField, BooleanField
+from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField, BooleanField, DateField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from CloudMain.models import Account
 from flask_ckeditor import CKEditorField
+from datetime import date
 
 #Creating accounts form
 class CreateAccount(FlaskForm):
@@ -72,6 +71,8 @@ class Student_To_Paper(FlaskForm):
 class Create_Assignment(FlaskForm):
     name = StringField(label="Assignment name", validators=[Length(max=80), DataRequired()])
     description = TextAreaField(label="Assignment description")
+    creationDate = DateField('Current Date', render_kw={'readonly': True}, validators=[DataRequired()], default=date.today)
+    dueDate = DateField('Due Date', validators=[DataRequired()])
     weight = IntegerField(label="Assignment weight", validators=[DataRequired()])
     picture = RadioField(label="Assignment Picture",
         choices=[('images/classroom_pic1.png','Computer Screen'),('images/python_201_image.jpg','Double Monitor'),
@@ -92,7 +93,7 @@ class Create_Assignment_Questions(FlaskForm):
 
 # Jakob
 # Delete an assignment
-class Delete_Assignment(FlaskForm):
+class GeneralSubmitForm(FlaskForm):
     submit = SubmitField('Delete')
 
 
