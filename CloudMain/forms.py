@@ -93,7 +93,7 @@ class Create_Assignment_Questions(FlaskForm):
 
 # Jakob
 # Delete an assignment
-class Delete_Assignment(FlaskForm):
+class GeneralSubmitForm(FlaskForm):
     submit = SubmitField('Delete')
 
 
