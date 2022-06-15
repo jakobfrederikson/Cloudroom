@@ -28,12 +28,12 @@ Create Assignment | Cloudroom
                             {{ assignment_form.description(placeholder="Assignment description", class="form-control") }}
                         </div>
                         <div class="mb-3">
-                            <label for="currentDate">Current date</label>
-                            <input type="date" name="currentDate" id="currentDate" class="form-control" readonly>
+                            {{ assignment_form.creationDate.label(class="form-label") }}
+                            {{ assignment_form.creationDate(class="form-label", id="cDate")}}
                         </div>
                         <div class="mb-3">
-                            <label for="dueDate" class="form-label">Due Date</label>
-                            <input type="date" id="dueDate" name="dueDate" class="form-control">
+                            {{ assignment_form.dueDate.label(class="form-label") }}
+                            {{ assignment_form.dueDate(class="form-label", id="dDate")}}
                         </div>
                         <div class="mb-3">
                             {{ assignment_form.weight.label(class="form-label") }}
@@ -72,6 +72,6 @@ Create Assignment | Cloudroom
     crossorigin="anonymous">
     </script>
 
-    <script src="{{ url_for('static',filename='js/create_assignment_script.js') }}"></script>
+    <script src="{{ url_for('static', filename = 'JS/create_assignment_script.js') }}"></script>
 </body>
 {% endblock %}

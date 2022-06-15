@@ -342,21 +342,21 @@ def create_assignment(class_id, paper_id):
                     if entry.account_type == "Student":
                         students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
 
-        # Reformatting the dates.
-        # Flask only takes Y-m-d format for dates
-        cDate = datetime.strptime(
-                                    request.form.get("currentDate"),
-                                    '%Y-%m-%d').date()
-        dDate = datetime.strptime(
-                                    request.form.get("dueDate"),
-                                    '%Y-%m-%d').date() 
+        # # Reformatting the dates.
+        # # Flask only takes Y-m-d format for dates
+        # cDate = datetime.strptime(
+        #                             request.form.get("currentDate"),
+        #                             '%Y-%m-%d').date()
+        # dDate = datetime.strptime(
+        #                             request.form.get("dueDate"),
+        #                             '%Y-%m-%d').date() 
 
         if students_of_paper:
             for student in students_of_paper:
                 assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
-                                                creationDate = cDate,
-                                                dueDate = dDate,
+                                                creationDate = assignment_form.creationDate.data,
+                                                dueDate = assignment_form.dueDate.data,
                                                 isCompleted = False,
                                                 weight = int(request.form.get("weight")),                                                
                                                 picture = assignment_form.picture.data,
@@ -369,8 +369,8 @@ def create_assignment(class_id, paper_id):
         else: # If there are no students in the paper yet
             assignment_to_create = Assignment(name = request.form.get("name"),
                                                 description = request.form.get("description"),
-                                                creationDate = cDate,
-                                                dueDate = dDate,
+                                                creationDate = assignment_form.creationDate.data,
+                                                dueDate = assignment_form.dueDate.data,
                                                 isCompleted = False,
                                                 weight = int(request.form.get("weight")),
                                                 picture = assignment_form.picture.data,    
@@ -387,6 +387,7 @@ def create_assignment(class_id, paper_id):
         return redirect(url_for('create_classroom_questions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id.id))
 
     if assignment_form.errors != {}:
+        print(f'\n\n{assignment_form.dueDate.data}\n{assignment_form.creationDate.data}\n\n')
         for err_msg in assignment_form.errors.values():     
             flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
 
@@ -479,6 +480,7 @@ def edit_assignment(class_id, paper_id, assignment_id):
     assignment = Assignment.query.filter_by(id=assignment_id).first()
     edit_form = Create_Assignment()
 
+    print(f"\n\n{assignment.dueDate} \n {assignment.creationDate}\n\n")
     if edit_form.validate_on_submit():
         selected_paper = int(paper_id)
         students_of_paper = []
@@ -488,15 +490,12 @@ def edit_assignment(class_id, paper_id, assignment_id):
                     if entry.account_type == "Student":
                         students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
 
-        # Reformatting the dates.
-        # Flask only takes Y-m-d format for dates
-        dDate = datetime.strptime(request.form.get("dueDate"), '%Y-%m-%d').date() 
-
         if students_of_paper:
             for student in students_of_paper:
                 assignment.name = edit_form.name.data
                 assignment.description = edit_form.description.data
-                assignment.dueDate = dDate
+                assignment.creationDate = edit_form.creationDate.data
+                assignment.dueDate = edit_form.dueDate.data
                 assignment.weight = edit_form.weight.data
                 assignment.picture = edit_form.picture.data
                 assignment.isPublished = edit_form.isPublished.data
@@ -505,7 +504,8 @@ def edit_assignment(class_id, paper_id, assignment_id):
         else:
             assignment.name = edit_form.name.data
             assignment.description = edit_form.description.data
-            assignment.dueDate = dDate
+            assignment.creationDate = edit_form.creationDate.data
+            assignment.dueDate = edit_form.dueDate.data
             assignment.weight = edit_form.weight.data
             assignment.picture = edit_form.picture.data
             assignment.isPublished = edit_form.isPublished.data
@@ -517,7 +517,8 @@ def edit_assignment(class_id, paper_id, assignment_id):
 
     edit_form.name.data = assignment.name
     edit_form.description.data = assignment.description
-    # edit_form.dueDate.data = assignment.dueDate
+    edit_form.creationDate.data = assignment.creationDate
+    edit_form.dueDate.data = assignment.dueDate
     edit_form.weight.data = assignment.weight
     edit_form.picture.data = assignment.picture
     return render_template('edit_assignment.html', assignment = assignment, edit_form = edit_form, classroom = classroom, paper = paper)
