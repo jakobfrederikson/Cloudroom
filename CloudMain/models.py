@@ -112,16 +112,32 @@ class Assignment(db.Model):
     __tablename__ = 'assignment'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
+    owner = db.Column(db.String(length=30), nullable=False)
     description = db.Column(db.String(), nullable = True)
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())
     isCompleted = db.Column(db.Boolean())
     weight = db.Column(db.Integer())
     picture = db.Column(db.String(length=20), nullable=False)
+    isPublished = db.Column(db.Boolean())
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = True)
     questions = db.relationship('AssignmentQuestions', backref='owned_assignment', lazy=True) 
+
+    def serialize(self):
+        return {"id" : self.id,
+                "name": self.owner,
+                "description": self.description,
+                "creationDate": self.creationDate,
+                "dueDate": self.dueDate,
+                "isCompleted": self.isCompleted,
+                "weight": self.weight,
+                "picture": self.picture,
+                "isPublished": self.isPublished,
+                "teacher_id": self.teacher_id,
+                "paper_id": self.paper_id,
+                "owner": self.owner}
 
 
 # Jakob

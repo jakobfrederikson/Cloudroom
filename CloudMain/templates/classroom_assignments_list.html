@@ -13,32 +13,72 @@
         <div class="row">
           <div class="col-sm-9 mb-lg-5">
                 <div class="display-4">
-                  {{ paper.paper_name }} Assignments
+                  <strong>{{ paper.paper_name }} Assignments</strong>
                 </div>
             <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4 mt-1">
-              {% for entry in assignments %}
-              <div class="col">
-                <div class="card h-100" name="assignment-box">
-                  <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
-                  <div class="card-body">
-                    <h5 class="card-title text-truncate">{{ entry.name }}</h5>
-                    <p class="card-text text-truncate">{{ entry.description }}</p>
-                  </div>
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{entry.dueDate}}</div></li>
-                  </ul>
-                  <div class="card-body">
-                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
-                    {% if current_user.account_type == "Teacher" %}
-                    <br>
-                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Edit assignment</a>
-                    <br>
-                    <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Delete assignment</a>
+              {% if current_user.account_type == "Teacher" %}
+                {% for entry in assignments %}
+                  {% if entry.isPublished == False %}
+                    <div class="col not-published">
+                  {% else %}
+                    <div class="col">
+                  {% endif %}
+                      <div class="card h-100" name="assignment-box">
+                        <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title text-truncate">{{ entry.name }}</h5>
+                          <p class="card-text text-truncate">{{ entry.description }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{entry.dueDate}}</div></li>
+                          <li class="list-group-item"><span class="text-muted">Published: </span>
+                            {% if entry.isPublished == False %}
+                            No 
+                            {% else %} 
+                            Yes 
+                            {% endif %}
+                          </li>
+                        </ul>
+                        <div class="card-body">
+                          <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
+                          {% if current_user.account_type == "Teacher" %}
+                          <a href="{{ url_for('edit_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-dark">Edit</a>
+                          <a href="{{ url_for('delete_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-danger">Delete</a>
+                          {% if entry.isPublished == False %}
+                          <button type="button" class="btn btn-outline-success">Publish</button>
+                          {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                {% endfor %}
+                {% elif current_user.account_type == "Student" %}
+                  {% for entry in assignments %}
+                    {% if entry.isPublished == True %}
+                    <div class="col">
+                      <div class="card h-100" name="assignment-box">
+                        <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title text-truncate">{{ entry.name }}</h5>
+                          <p class="card-text text-truncate">{{ entry.description }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{entry.dueDate}}</div></li>
+                        </ul>
+                        <div class="card-body">
+                          <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
+                          {% if current_user.account_type == "Teacher" %}
+                          <br>
+                          <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Edit assignment</a>
+                          <br>
+                          <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}">Delete assignment</a>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
                     {% endif %}
-                  </div>
-                </div>
-              </div>
-              {% endfor %}
+                  {% endfor %}
+              {% endif %}
             </div>
           </div>
           <div class="col-sm-1 mt-2">
@@ -60,3 +100,4 @@
     <script src="{{ url_for('static', filename = 'JS/assignment_list_script.js') }}"></script>
 </body>
 {% endblock %}
+

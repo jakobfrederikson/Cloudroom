@@ -1,6 +1,6 @@
+// Set the dates to be the NZ date format dd/mm/yyyy
 let cDates = document.getElementsByClassName("cDate");
 let dDates = document.getElementsByClassName("dDate");
-
 
 for (let i = 0; i < cDates.length; i++) {
     test = cDates[i].innerHTML;

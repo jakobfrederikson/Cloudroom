@@ -1,9 +1,9 @@
 from msilib.schema import Class
-from sqlalchemy import null
+from sqlalchemy import delete, null
 from CloudMain import app, flash, url_for, redirect, db, functions, mail, session
 from flask import render_template, request, send_file
 from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
-from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
+from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, Delete_Assignment, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
         Create_Assignment, PostForm, RequestResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
@@ -298,14 +298,14 @@ def classroom_main_page(class_id, paper_id):
                            postform=postform,posts=posts,del_post=del_post)
 
 # Classroom Assignments - Displays all assignments
-@app.route('/classroom/<class_id>/<paper_id>/assignments')
+@app.route('/classroom/<class_id>/<paper_id>/assignments', methods=['GET','POST'])
+@login_required
 def classroom_assignments_list(class_id, paper_id):
 
     # Only get assignments apart of this paper
     assignments = []
     for entry in Assignment.query.all():
         if str(entry.paper_id) == str(paper_id):
-            print(f"\n\n{entry.name}\n\n")
             assignments.append(entry)
 
     # Get the paper and classroom using the url
@@ -313,14 +313,21 @@ def classroom_assignments_list(class_id, paper_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
     member_list = functions.get_all_members(paper_id)
 
+    delete_assignments = []
+    for entry in assignments:
+        delete_assignments.append(Delete_Assignment(assignment_id = entry.id))
+
     return render_template('classroom_assignments_list.html', classroom=classroom,
                                                             paper=paper,
                                                             assignments=assignments,
                                                             class_id = class_id,
-                                                            paper_id = paper_id,members=member_list)
+                                                            paper_id = paper_id,
+                                                            members=member_list,
+                                                            delete_assignments = delete_assignments)
 
 # Create Assignment - Teacher can create an assignment here for a paper here
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])
+@login_required
 def create_assignment(class_id, paper_id):
     classrooms = Classroom.query.all()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
@@ -344,7 +351,6 @@ def create_assignment(class_id, paper_id):
                                     request.form.get("dueDate"),
                                     '%Y-%m-%d').date() 
 
-        assignment_id = 0
         if students_of_paper:
             for student in students_of_paper:
                 assignment_to_create = Assignment(name = request.form.get("name"),
@@ -352,11 +358,12 @@ def create_assignment(class_id, paper_id):
                                                 creationDate = cDate,
                                                 dueDate = dDate,
                                                 isCompleted = False,
-                                                weight = int(request.form.get("weight")),
+                                                weight = int(request.form.get("weight")),                                                
                                                 picture = assignment_form.picture.data,
+                                                isPublished = assignment_form.isPublished.data,
                                                 teacher_id = int(current_user.id),
                                                 paper_id = int(selected_paper),
-                                                owner = int(student.id))
+                                                owner = int(student.id))                         
                 db.session.add(assignment_to_create)
                 db.session.commit()
         else: # If there are no students in the paper yet
@@ -365,14 +372,17 @@ def create_assignment(class_id, paper_id):
                                                 creationDate = cDate,
                                                 dueDate = dDate,
                                                 isCompleted = False,
-                                                picture = assignment_form.picture.data,
                                                 weight = int(request.form.get("weight")),
+                                                picture = assignment_form.picture.data,    
+                                                isPublished = assignment_form.isPublished.data,                                            
                                                 teacher_id = int(current_user.id),
                                                 paper_id = int(selected_paper),
-                                                owner = current_user.id)      
+                                                owner = current_user.id)     
             db.session.add(assignment_to_create)
             db.session.commit()
 
+        assignment_id = 0
+        # Get the last entry into the assignment table
         assignment_id = Assignment.query.order_by(-Assignment.id).first()
         return redirect(url_for('create_classroom_questions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id.id))
 
@@ -386,6 +396,7 @@ def create_assignment(class_id, paper_id):
 
 # Create the questions for the assignment
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment/<assignment_id>/', methods=['POST', 'GET'])
+@login_required
 def create_classroom_questions(class_id, paper_id, assignment_id):
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=assignment_id).first()
@@ -445,6 +456,7 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
 
 # Assignment Begin - This is when the student has started the assignment.
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
+@login_required
 def classroom_assignment_content(class_id, paper_id, assignment_id):
     classroom = Classroom.query.filter_by(id=int(class_id)).first()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
@@ -458,6 +470,77 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
                                                                 assignment=assignment,
                                                                 questions=questions)
 
+# Edit an assignment
+@app.route('/classroom/<class_id>/<paper_id>/assignments/edit/<assignment_id>', methods=['POST', 'GET'])
+@login_required
+def edit_assignment(class_id, paper_id, assignment_id):
+    classroom = Assignment.query.filter_by(id=class_id).first()
+    paper = Paper.query.filter_by(id=paper_id).first()
+    assignment = Assignment.query.filter_by(id=assignment_id).first()
+    edit_form = Create_Assignment()
+
+    if edit_form.validate_on_submit():
+        selected_paper = int(paper_id)
+        students_of_paper = []
+        if paper_members.query.all():
+            for entry in paper_members.query.all():
+                if entry.id_paper == selected_paper:
+                    if entry.account_type == "Student":
+                        students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
+
+        # Reformatting the dates.
+        # Flask only takes Y-m-d format for dates
+        dDate = datetime.strptime(request.form.get("dueDate"), '%Y-%m-%d').date() 
+
+        if students_of_paper:
+            for student in students_of_paper:
+                assignment.name = edit_form.name.data
+                assignment.description = edit_form.description.data
+                assignment.dueDate = dDate
+                assignment.weight = edit_form.weight.data
+                assignment.picture = edit_form.picture.data
+                assignment.isPublished = edit_form.isPublished.data
+                db.session.add(assignment)
+                
+        else:
+            assignment.name = edit_form.name.data
+            assignment.description = edit_form.description.data
+            assignment.dueDate = dDate
+            assignment.weight = edit_form.weight.data
+            assignment.picture = edit_form.picture.data
+            assignment.isPublished = edit_form.isPublished.data
+            db.session.add(assignment)
+
+        db.session.commit()
+        flash(f'Successfully updated {assignment.name}')
+        return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
+
+    edit_form.name.data = assignment.name
+    edit_form.description.data = assignment.description
+    # edit_form.dueDate.data = assignment.dueDate
+    edit_form.weight.data = assignment.weight
+    edit_form.picture.data = assignment.picture
+    return render_template('edit_assignment.html', assignment = assignment, edit_form = edit_form, classroom = classroom, paper = paper)
+
+# Delete an assignment
+@app.route('/classroom/<class_id>/<paper_id>/assignments/delete/<assignment_id>', methods=['POST', 'GET'])
+def delete_assignment(class_id, paper_id, assignment_id):
+    classroom = Classroom.query.filter_by(id=int(class_id)).first()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+    delete_form = Delete_Assignment()
+
+    if request.method == "POST":
+        assignment_to_delete = Assignment.query.filter_by(id = assignment_id).first()
+        print("\n\nhi\n\n")
+        if assignment_to_delete:
+            Assignment.query.filter_by(id=assignment_to_delete.id).delete()
+
+            flash(f'{assignment_to_delete.name} has been successfully delted.')
+            db.session.commit()
+            return redirect(url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id))
+
+    return render_template('delete_assignment.html', assignment = assignment, delete_form = delete_form,classroom = classroom, paper = paper)
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
@@ -518,6 +601,7 @@ def user_profile(user):
 
 # Student Grades - View the average grades of all their courses so far
 @app.route('/profile/<user>/grades', methods=['GET'])
+@login_required
 def student_grades(user):
 
     # Getting every paper the student is enrolled in.
