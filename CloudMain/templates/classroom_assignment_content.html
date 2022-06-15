@@ -9,7 +9,7 @@ Create Assignment | Cloudroom
 <link rel="stylesheet" href="{{ url_for('static', filename='JS/AssignmentsJS/codemirror-5.65.3/theme/yonce.css') }}">
 {% endblock %}
 {% block content %}
-{% include 'base_sidenav.html' %}<!-- This page is not in development yet  -->
+{% include 'base_sidenav.html' %}
 <body>
     <!-- Load CKEditor -->
     {{ ckeditor.load() }}
@@ -25,8 +25,10 @@ Create Assignment | Cloudroom
                 <section class="description">
                     <h1>{{ assignment.name }}</h1>
                     <p class="text-break">{{ assignment.description }} </p>
-                    <p class="text-break lh-sm">Assignment started on <strong>{{ assignment.creationDate }}</strong>. <br>
-                                                Assignment due on <strong>{{ assignment.dueDate }}</strong>.
+                    <p class="text-break lh-sm">
+                        Assignment started on <strong><span id="cDate">{{ assignment.creationDate }}</span></strong>. 
+                        <br>
+                        Assignment due on <strong><span id="dDate">{{ assignment.dueDate }}</span></strong>.
                     </p>
                 </section>
             </div>
@@ -65,7 +67,9 @@ Create Assignment | Cloudroom
                         </div>
                     {% endfor %}
                 </div>
+                {% if current_user.account_type == "Student" %}
                 <button type="button" class="btn btn-outline-success mt-3">Submit Assignment</button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -85,5 +89,7 @@ Create Assignment | Cloudroom
             theme: "yonce"
         });
     </script>
+
+    <script src="{{ url_for('static', filename = 'JS/assignment_content_script.js') }}"></script>
 </body>
 {% endblock %}

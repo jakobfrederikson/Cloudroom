@@ -1,7 +1,9 @@
+from ast import Delete
 from xmlrpc.client import DateTime
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField
+from sqlalchemy import delete
+from wtforms import StringField, IntegerField, PasswordField, SubmitField, EmailField, SelectField,RadioField, TextAreaField, BooleanField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from CloudMain.models import Account
 from flask_ckeditor import CKEditorField
@@ -38,11 +40,13 @@ class LoginForm(FlaskForm):
     password = PasswordField(label="Password:", validators=[DataRequired()])
     submit = SubmitField(label='Sign in')
 
+
 # Create_Classroom - Jakob
 # This is the form used by a teacher/admin to create a classroom.
 class Create_Classroom(FlaskForm):
     classroom_name = StringField(label="Classroom Name", validators=[Length(max=40), DataRequired()])
     submit_classroom = SubmitField('Create Classroom')
+
 
 # Create_Paper - Jakob
 # This is the form used by a teacher/admin to create a paper.
@@ -54,12 +58,14 @@ class Create_Paper(FlaskForm):
         ('images/laptops.jpg','Laptop image'),('images/home4.jpg','Phone image')],validators=[DataRequired()])
     submit_paper = SubmitField('Create Paper')
 
+
 # Jakob
 # Add a user to a paper through admin page
 class Student_To_Paper(FlaskForm):
     paper_id = IntegerField(label="Paper ID")
     student_id = IntegerField(label="Student ID")
     submit = SubmitField('Add Student To Paper')
+
 
 # Jakob
 # Create an assignment for a paper
@@ -70,7 +76,9 @@ class Create_Assignment(FlaskForm):
     picture = RadioField(label="Assignment Picture",
         choices=[('images/classroom_pic1.png','Computer Screen'),('images/python_201_image.jpg','Double Monitor'),
         ('images/laptops.jpg','Laptops'),('images/tech.jpg','Old Tech')],validators=[DataRequired()])
-    submit = SubmitField("Create Assignment")
+    isPublished = BooleanField("Publish assignment on submit?", default="checked")
+    submit = SubmitField()
+
 
 # Jakob
 # Assignment questions
@@ -80,6 +88,12 @@ class Create_Assignment_Questions(FlaskForm):
     description = CKEditorField('Question Description')
     placeholder_text = TextAreaField('Placeholder Content')
     submit = SubmitField()
+
+
+# Jakob
+# Delete an assignment
+class Delete_Assignment(FlaskForm):
+    submit = SubmitField('Delete')
 
 
 # Update user details forms
