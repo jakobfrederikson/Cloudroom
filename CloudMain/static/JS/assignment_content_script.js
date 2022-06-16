@@ -32,6 +32,7 @@ code_questions.forEach(function(editor) {
     });
 
     // Let user press tab in textArea
+    // https://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
     textArea.addEventListener('keydown', function(e) {
         if (e.key == 'Tab') {
             e.preventDefault();
