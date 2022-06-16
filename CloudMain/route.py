@@ -396,7 +396,8 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
 
     if questions_form.validate_on_submit():
         if request.form['submit'] == "Submit":
-            if questions_list:
+            # Check if the creator is submitting an empty question
+            if session['questions'] != []: # if user is creating multiple questions
                 for q in questions_list:
                     question = AssignmentQuestions(title = q['title'],
                                                     owner = int(q['owner']),
@@ -404,15 +405,19 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
                                                     description = q['description'],
                                                     placeholder_text = q['placeholder_text'])
                     db.session.add(question)
-            else:
+                print("\n\nCommiting multiple questions\n\n")
+                db.session.commit()
+            elif questions_form.type.data and questions_form.title.data \
+                and questions_form.submit.data: # if user is only creating one question
                 question = AssignmentQuestions(title = request.form.get("title"),
                                                     owner = int(assignment_id),
                                                     type = request.form.get("type"),
                                                     description= questions_form.description.data,
                                                     placeholder_text = questions_form.placeholder_text.data)
-                db.session.add(question)
-
-            db.session.commit()
+                print("\n\nCommiting ONE questions\n\n")
+                db.session.commit()
+            else: # if user is creating no questions
+                print(f"\n\n {current_user.first_name} is creating NO QUESTIONS\n\n")            
 
             # clear the session cache of our questions
             session.pop('questions')
@@ -465,7 +470,6 @@ def edit_assignment(class_id, paper_id, assignment_id):
     assignment = Assignment.query.filter_by(id=assignment_id).first()
     edit_form = Create_Assignment()
 
-    print(f"\n\n{assignment.dueDate} \n {assignment.creationDate}\n\n")
     if edit_form.validate_on_submit():
         selected_paper = int(paper_id)
         students_of_paper = []
