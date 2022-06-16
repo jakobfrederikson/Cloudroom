@@ -72,7 +72,7 @@ class Create_Assignment(FlaskForm):
     name = StringField(label="Assignment name", validators=[Length(max=80), DataRequired()])
     description = TextAreaField(label="Assignment description")
     creationDate = DateField('Current Date', render_kw={'readonly': True}, validators=[DataRequired()], default=date.today)
-    dueDate = DateField('Due Date', validators=[DataRequired()])
+    dueDate = DateField('Due Date', render_kw={'max': '2024-06-16'}, validators=[DataRequired()])
     weight = IntegerField(label="Assignment weight", validators=[DataRequired()])
     picture = RadioField(label="Assignment Picture",
         choices=[('images/classroom_pic1.png','Computer Screen'),('images/python_201_image.jpg','Double Monitor'),
@@ -92,7 +92,7 @@ class Create_Assignment_Questions(FlaskForm):
 
 
 # Jakob
-# Delete an assignment
+# Delete an assignment, publish an assignment
 class GeneralSubmitForm(FlaskForm):
     submit = SubmitField('Delete')
 
