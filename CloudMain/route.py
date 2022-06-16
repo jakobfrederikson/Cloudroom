@@ -8,7 +8,6 @@ from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAcc
         Create_Assignment, PostForm, RequestResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
-from datetime import datetime
 
 #homepage
 @app.route('/')
@@ -322,7 +321,7 @@ def classroom_assignments_list(class_id, paper_id):
 
 # Create Assignment - Teacher can create an assignment here for a paper here
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])
-@login_required
+@functions.teacher_account_required
 def create_assignment(class_id, paper_id):
     classrooms = Classroom.query.all()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
@@ -382,7 +381,7 @@ def create_assignment(class_id, paper_id):
 
 # Create the questions for the assignment
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment/<assignment_id>/', methods=['POST', 'GET'])
-@login_required
+@functions.teacher_account_required
 def create_classroom_questions(class_id, paper_id, assignment_id):
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=assignment_id).first()
@@ -463,7 +462,7 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
 
 # Edit an assignment
 @app.route('/classroom/<class_id>/<paper_id>/assignments/edit/<assignment_id>', methods=['POST', 'GET'])
-@login_required
+@functions.teacher_account_required
 def edit_assignment(class_id, paper_id, assignment_id):
     classroom = Assignment.query.filter_by(id=class_id).first()
     paper = Paper.query.filter_by(id=paper_id).first()
@@ -514,6 +513,7 @@ def edit_assignment(class_id, paper_id, assignment_id):
 
 # Delete an assignment
 @app.route('/classroom/<class_id>/<paper_id>/assignments/delete/<assignment_id>', methods=['POST', 'GET'])
+@functions.teacher_account_required
 def delete_assignment(class_id, paper_id, assignment_id):
     classroom = Classroom.query.filter_by(id=int(class_id)).first()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
@@ -539,6 +539,7 @@ def delete_assignment(class_id, paper_id, assignment_id):
 
 # Publish an assignment
 @app.route('/classroom/<class_id>/<paper_id>/assignments/publish/<assignment_id>', methods=['POST', 'GET'])
+@functions.teacher_account_required
 def publish_assignment(class_id, paper_id, assignment_id):
     classroom = Classroom.query.filter_by(id=int(class_id)).first()
     paper = Paper.query.filter_by(id=int(paper_id)).first()

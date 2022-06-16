@@ -75,12 +75,14 @@
               {% endif %}
             </div>
           </div>
+          {% if current_user.account_type == "Teacher" %}
           <div class="col-sm-1 mt-2">
             <a class="text-decoration-none btn btn-primary" role="button" 
             href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">
             Create an assignment
-          </a>
+            </a>
           </div>
+          {% endif %}
         </div>
       </div>
 
