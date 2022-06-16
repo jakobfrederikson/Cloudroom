@@ -1,6 +1,10 @@
+from flask import flash
+from flask_login import current_user
 from CloudMain.models import Account, paper_members
 from flask_mail import Message
-from CloudMain import mail,url_for
+from CloudMain import mail, url_for, redirect, session
+from flask_login import current_user
+from functools import wraps
 
 def get_all_members(paper_id):
     # Gathering all members in this paper.
@@ -23,3 +27,13 @@ def send_reset_email(user):
 If you didn't make this request ignore this email
 '''
     mail.send(msg)
+
+# Redirect users and guests that aren't teachers from specific pages
+def teacher_account_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.account_type != "Teacher":
+            flash(f"This page is for staff only.")
+            return redirect(url_for('dashboard_page', user = current_user.first_name) )
+        return f(*args, **kwargs)
+    return decorated_function
