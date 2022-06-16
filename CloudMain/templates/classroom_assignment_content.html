@@ -5,8 +5,9 @@ Create Assignment | Cloudroom
 {% block style %}
 <script src="{{ url_for('static',filename='JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.js') }}"></script>
 <script src="{{ url_for('static',filename='JS/AssignmentsJS/codemirror-5.65.3/mode/python/python.js') }}"></script>
+<script src="{{ url_for('static',filename='JS/AssignmentsJS/codemirror-5.65.3/addon/display/autorefresh.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='JS/AssignmentsJS/codemirror-5.65.3/theme/yonce.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='JS/AssignmentsJS/codemirror-5.65.3/theme/lucario.css') }}">
 {% endblock %}
 {% block content %}
 {% include 'base_sidenav.html' %}

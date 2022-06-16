@@ -25,11 +25,16 @@ code_questions.forEach(function(editor) {
             version: 5,
             singleLineStringErrors: false
         },
+        autoRefresh: true,
         lineNumbers: true,
         indentUnit: 4,
         matchBrackets: true,
-        theme: "yonce"
+        theme: "lucario"
     });
+
+    setTimeout(function() {
+        test.refresh();
+    })
 
     // Let user press tab in textArea
     // https://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
@@ -46,4 +51,8 @@ code_questions.forEach(function(editor) {
             this.selectionStart = this.selectionEnd = start + 1;
         }
     });
+
+    // We can potentially run python code with these links here.
+    // https://www.geeksforgeeks.org/build-python-code-editor-using-codemirror-and-pyodide/
+    // https://pyodide.org/en/stable/
 });
