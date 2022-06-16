@@ -45,6 +45,9 @@
                {{ paper_form.paper_room_number.label() }}
                {{ paper_form.paper_room_number(class="form-control", placeholder="Paper Room Number") }}
                <br>
+               {{ paper_form.paper_description.label() }}
+               {{ paper_form.paper_description(class="form-control", placeholder="Description") }}
+               <br>
                <div class="row">
                   {% for subfield in paper_form.paper_picture %}
                   <div class="columns">

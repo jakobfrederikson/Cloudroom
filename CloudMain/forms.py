@@ -55,7 +55,9 @@ class Create_Paper(FlaskForm):
     paper_picture = RadioField(label="Profile Picture",
         choices=[('images/tech.jpg','Tech image'),('images/python_201_image.jpg','Python image'),
         ('images/laptops.jpg','Laptop image'),('images/home4.jpg','Phone image')],validators=[DataRequired()])
+    paper_description = TextAreaField(label="Description")
     submit_paper = SubmitField('Create Paper')
+    edit_submit = SubmitField("Save Changes")
 
 
 # Jakob
