@@ -8,62 +8,71 @@
 {{ ckeditor.load() }}
 {% include 'base_sidenav.html' %}
 <body>
-  <!-- CONTENT -->
-  {%if current_user.account_type == "Teacher" %}
-  <div class="d-flex flex-row-reverse create_post_btn">
-    <a href="#" class="text-reset text-decoration-none">
-      <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
-        <a href="{{url_for('create_post', class_id=classroom.id,paper_id=paper.id)}}"
-          class="text-reset text-decoration-none">
-          <img src="{{url_for('static',filename = 'images/add_icon2.png')}}" alt="">Create Post
-        </a>
-      </h1>
-    </a>
-  </div>
-  {% endif %}
-  <div class="container cloudroom-container">
-    <div class="row h-100">
-      <div class="col-sm-10" style="text-align: justify;">
-        <div class="display-4">
-          {{ classroom.classroom_name }}
-        </div>
-        <div class="all-classroom-posts">
-          <div class="class-post">
-            {% for post in posts %}
-            <div class="col border-top mt-4" style="">
-              <br>
-              <p class="text-md-end lead mt-1" style="font-size:.9rem; margin-top:10px;">{{post.date_posted.strftime('%d-%m-%Y')}}
-              </p>
-              <h3 class="text-center mb-1">
-                {{post.title}}
-              </h3>
-              <div class="row row-cols-1 row-cols-2">
-                <div class="col-md">
-                  <p class="text-md-start mb-1 mt-3" style="margin-top:30px;">{{post.content|safe}}
-                  </p>
-                </div>
-              </div>
+   <!-- CONTENT -->
+   <div class="container cloudroom-container">
+      <div class="row h-100">
+         <div class="col-sm-10" style="text-align: justify;">
+            <div class="d-flex row  create_post_btn">
+               <div class="col-10">
+                  <h2 style="color:#05396B;">{{ classroom.classroom_name }}</h2>
+                  <h2 style="color:#05396B;">{{ paper.paper_name }}</h2>
+               </div>
+               <div class="col-2 mt-3" >
+                  {%if current_user.account_type == "Teacher" %}
+                  <a href="{{url_for('create_post', class_id=classroom.id,paper_id=paper.id)}}"
+                     class="text-reset text-decoration-none">
+                     <div class="row">
+                        <div class="col-2">
+                           <img src="{{url_for('static',filename = 'images/add_icon2.png')}}" alt="">
+                        </div>
+                        <div class="col">
+                           <h6 class="fs-6" style="margin-left:3px; margin-top:2px; color:#05396B;">Create post</h6>
+                        </div>
+                     </div>
+                  </a>
+                  {% endif %}
+               </div>
             </div>
-            {%if post.owner == current_user.id %}
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-              <form method="POST">
-                <input id="remove_item" name="remove_item" type="hidden" value="{{post.title}}">
-                {{ del_post.submit(class="btn btn-danger") }}
-              </form>
-              <a href="{{url_for('update_post', class_id=classroom.id,paper_id=paper.id,post_id=post.id)}}">
-                <button class="btn btn-primary">Edit
-                </button>
-              </a>
+            <div class="all-classroom-posts">
+               <div class="class-post">
+                  {% for post in posts %}
+                  <div class="col border-top mt-4" style="">
+                     <br>
+                     <p class="text-md-end lead mt-0">
+                       Posted by: {{ post.poster.first_name }} {{ post.poster.last_name }}
+                     </p>
+                     <p class="text-md-end lead mt-0" style="font-size:.9rem; margin-top:10px;">
+                       {{post.date_posted.strftime('%d-%m-%Y')}}
+                     </p>
+                     <h3 class="text-center mb-1">
+                        {{post.title}}
+                     </h3>
+                     <div class="row row-cols-1 row-cols-2">
+                        <div class="col-md">
+                           <p class="text-md-start mb-1 mt-3" style="margin-top:30px;">{{post.content|safe}}
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+                  {%if post.owner == current_user.id %}
+                  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                     <form method="POST">
+                        <input id="remove_item" name="remove_item" type="hidden" value="{{post.title}}">
+                        {{ del_post.submit(class="btn btn-danger") }}
+                     </form>
+                     <a href="{{url_for('update_post', class_id=classroom.id,paper_id=paper.id,post_id=post.id)}}">
+                     <button class="btn btn-primary">Edit
+                     </button>
+                     </a>
+                  </div>
+                  {% endif %}
+                  {% endfor %}
+               </div>
             </div>
-            {% endif %}
-            {% endfor %}
-          </div>
-        </div>
+         </div>
       </div>
-    </div>
-  </div>
-  <!-- JavaScript Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
-  </script>
+   </div>
+   <!-- JavaScript Bundle with Popper -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 {% endblock %}

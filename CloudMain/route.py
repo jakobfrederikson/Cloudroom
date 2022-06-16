@@ -16,6 +16,21 @@ from datetime import datetime
 def home_page():
     return render_template('index.html')
 
+#login page
+@app.route('/login', methods=['POST', 'GET'])
+def login_page():
+    form = LoginForm()
+    if form.validate_on_submit():
+        attempted_user = Account.query.filter_by(email=form.email.data).first()
+        if attempted_user and attempted_user.check_password_correction(
+                attempted_password=form.password.data):
+            login_user(attempted_user)
+            # flash(f'Success! You are logged in as: {attempted_user.first_name} {attempted_user.last_name}',category='success')
+            return redirect(url_for('dashboard_page', user = attempted_user.first_name))
+        else:
+            flash('Username and password are not match! Please try again',category='danger')
+    return render_template("login.html", form=form)
+
 #request for reset password
 @app.route('/reset_password_request', methods=['POST', 'GET'])
 def forgot_password():
@@ -54,24 +69,30 @@ def reset_password(token):
         return redirect(url_for('login_page'))
     return render_template('reset_password.html',form_password=form_password)
 
-#login page
-@app.route('/login', methods=['POST', 'GET'])
-def login_page():
-    form = LoginForm()
-    if form.validate_on_submit():
-        attempted_user = Account.query.filter_by(email=form.email.data).first()
-        if attempted_user and attempted_user.check_password_correction(
-                attempted_password=form.password.data):
-            login_user(attempted_user)
-            # flash(f'Success! You are logged in as: {attempted_user.first_name} {attempted_user.last_name}',category='success')
-            return redirect(url_for('dashboard_page', user = attempted_user.first_name))
-        else:
-            flash('Username and password are not match! Please try again',category='danger')
-    return render_template("login.html", form=form)
-
 @app.route('/about')
 def about_page():
     return render_template("about.html")
+
+@app.route('/edit_paper/<paper_id>', methods=['POST', 'GET'])
+def edit_paper(paper_id):
+    paper_form = Create_Paper()
+    paper = Paper.query.filter_by(id=paper_id).first()
+
+    if paper_form.validate_on_submit():
+        paper.paper_name = paper_form.paper_name.data
+        paper.paper_room_number=paper_form.paper_room_number.data
+        paper.paper_picture=paper_form.paper_picture.data
+        paper.paper_description=paper_form.paper_description.data
+
+        db.session.commit()
+        return redirect(url_for('dashboard_page',user=current_user.first_name))
+
+    paper_form.paper_name.data = paper.paper_name
+    paper_form.paper_room_number.data = paper.paper_room_number
+    paper_form.paper_picture.data = paper.paper_picture
+    paper_form.paper_description.data = paper.paper_description
+
+    return render_template("edit_paper.html",paper_form=paper_form)
 
 #sign up page
 @app.route('/signup', methods=['POST', 'GET'])
@@ -116,6 +137,7 @@ def dashboard_page(user):
     classroom_form = Create_Classroom()
     paper_form = Create_Paper()
     classrooms = Classroom.query.all()
+    delete_form = Delete_File()
 
     # Join Cloudroom
     if join_room.validate_on_submit():
@@ -147,23 +169,28 @@ def dashboard_page(user):
 
     # CREATE PAPER
     if paper_form.submit_paper.data and paper_form.validate():
-        paper_to_create = Paper(paper_name=paper_form.paper_name.data,
-                                paper_room_number=paper_form.paper_room_number.data,
-                                paper_picture=paper_form.paper_picture.data,
-                                id_classroom=request.form.get('classroom_select'))
+        class_id = request.form.get('classroom_select')
+        #check if user has selected a classroom
+        if class_id == 'Select a classroom':
+            flash(f'Invalid classroom, Please choose a classroom or create one',category='warning')
+        else:
+            paper_to_create = Paper(paper_name=paper_form.paper_name.data,
+                                    paper_room_number=paper_form.paper_room_number.data,
+                                    paper_picture=paper_form.paper_picture.data,
+                                    id_classroom= class_id,
+                                    paper_description=paper_form.paper_description.data,
+                                    account_id=current_user.id)
+            db.session.add(paper_to_create)
+            db.session.commit()
 
-        db.session.add(paper_to_create)
-        db.session.commit()
+            paper_teacher_to_create = paper_members(id_paper=paper_to_create.id,
+                                                    id_user=current_user.id,
+                                                    account_type=current_user.account_type)
+            db.session.add(paper_teacher_to_create)
+            db.session.commit()
 
-        paper_teacher_to_create = paper_members(id_paper=paper_to_create.id,
-                                                id_user=current_user.id,
-                                                account_type=current_user.account_type)
-
-        db.session.add(paper_teacher_to_create)
-        db.session.commit()
-
-        flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
-        return redirect(url_for('dashboard_page',user=current_user))
+            flash(f'Paper created successfully! Paper "{paper_to_create.paper_name}" has been created.', category='success')
+            return redirect(url_for('dashboard_page',user=current_user))
 
     # CREATE CLASSROOM
     if classroom_form.validate():
@@ -174,6 +201,29 @@ def dashboard_page(user):
               category='success')
         return redirect(url_for('dashboard_page',user=current_user))
 
+    # Delete Paper
+    if request.method == "POST":
+        print("hello from Jay")
+        delete_item = request.form.get('remove_item')
+        d_file_obj = Paper().query.filter_by(id=delete_item).first()
+        print(d_file_obj,"hello again")
+        #handles delete paper
+        if d_file_obj:
+            #Delete paper
+            Paper.query.filter_by(id=d_file_obj.id).delete()
+            #Delete paper members
+            paper_members.query.filter_by(id_paper=d_file_obj.id).delete()
+            #Delete assignment questions
+            delete_items = Assignment.query.filter_by(paper_id=d_file_obj.id).first()
+            AssignmentQuestions.query.filter_by(owner=delete_items.id).delete()
+            #Delete Assignments
+            Assignment.query.filter_by(paper_id=d_file_obj.id).delete()
+            #Delete Posts in papers
+            Post.query.filter_by(paper_id=d_file_obj.id).delete()
+
+            db.session.commit()
+            flash("Paper has been deleted",category='info')
+            return redirect(url_for('dashboard_page', user=current_user))
 
     user_papers = []
     for entry in paper_members.query.all():
@@ -183,7 +233,8 @@ def dashboard_page(user):
     # papers = Paper.query.all()
     classroom = Classroom.query.all()
     return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room,
-                           classroom_form=classroom_form,paper_form=paper_form,classrooms=classrooms)
+                           classroom_form=classroom_form,paper_form=paper_form,
+                           classrooms=classrooms,delete_form=delete_form)
 
 # This will update the post of the user
 @app.route('/classroom/update_post/<class_id>/<paper_id>/<post_id>', methods=['POST', 'GET'])
@@ -193,7 +244,6 @@ def update_post(class_id, paper_id,post_id):
     classroom = Classroom.query.filter_by(id=class_id).first()
     edit_post = PostForm()
     post_form = PostForm()
-    posts = Post.query.filter_by(paper_id=paper_id)
     del_post = Delete_File()
 
     if edit_post.validate_on_submit():
@@ -210,15 +260,14 @@ def update_post(class_id, paper_id,post_id):
                 post_file_obj.content = "No Description"
             db.session.add(post_file_obj)
             db.session.commit()
-            return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=post_form,
-                                   posts=posts, del_post=del_post, edit_post=edit_post))
+            return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id))
 
     member_list = functions.get_all_members(paper_id)
     to_update = Post().query.filter_by(id=post_id).first()
     edit_post.title.data = to_update.title
     edit_post.content.data = to_update.content
     return render_template('edit_post.html', edit_post=edit_post,postform=post_form,classroom=classroom,paper=paper,
-                           members=member_list)
+                           members=member_list, del_post=del_post)
 
 # This will update the post of the user
 @app.route('/classroom/create_post/<class_id>/<paper_id>', methods=['POST', 'GET'])
@@ -226,9 +275,7 @@ def update_post(class_id, paper_id,post_id):
 def create_post(class_id, paper_id):
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
-    edit_post = PostForm()
     post_form = PostForm()
-    posts = Post.query.filter_by(paper_id=paper_id)
     del_post = Delete_File()
 
     # create a post
@@ -241,12 +288,11 @@ def create_post(class_id, paper_id):
         db.session.add(post)
         db.session.commit()
 
-        return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id, postform=post_form,
-                               posts=posts, del_post=del_post, edit_post=edit_post))
+        return redirect(url_for('classroom_main_page', class_id=class_id, paper_id=paper_id))
 
     member_list = functions.get_all_members(paper_id)
     return render_template('create_post.html',postform=post_form,classroom=classroom,paper=paper,
-                           members=member_list)
+                           members=member_list,del_post=del_post)
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>', methods=['POST', 'GET'])
@@ -267,8 +313,7 @@ def classroom_main_page(class_id, paper_id):
             Post().query.filter_by(id = d_file_obj.id).delete()
             flash(f'{d_file_obj.title} has been deleted')
             db.session.commit()
-            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
-                                    posts=posts, del_post=del_post))
+            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id))
 
         #handles remove student
         remove_student = request.form.get('remove_student')
@@ -277,8 +322,7 @@ def classroom_main_page(class_id, paper_id):
         if std_file_obj:
             paper_members().query.filter_by(id = std_file_obj.id).delete()
             db.session.commit()
-            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id, postform=postform,
-                                    posts=posts, del_post=del_post))
+            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id))
 
     #create a post
     if postform.validate_on_submit():
@@ -289,8 +333,7 @@ def classroom_main_page(class_id, paper_id):
 
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('classroom_main_page',class_id=classroom.id,paper_id=paper.id,postform=postform,
-                                posts=posts,del_post=del_post))
+        return redirect(url_for('classroom_main_page',class_id=classroom.id,paper_id=paper.id))
 
     # Gathering all members in this paper.
     member_list = functions.get_all_members(paper_id)
@@ -548,7 +591,6 @@ def user_drive(user, id):
         if request.files['file'].filename == '':
             flash(f'Error you must select a file',category='danger')
             delete_file = request.form.get('delete_file')
-
 
         else:
             file = request.files['file']

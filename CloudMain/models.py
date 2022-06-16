@@ -23,6 +23,7 @@ class Account(db.Model, UserMixin):
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
     assignments = db.relationship('Assignment', backref='owned_student', lazy=True)
     poster = db.relationship('Post', backref='poster', lazy=True)  # Lazy gets all items from Upload_file
+    papers = db.relationship('Paper', backref='tutor', lazy=True)
 
     #returns the password
     @property
@@ -38,10 +39,12 @@ class Account(db.Model, UserMixin):
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
+    #generate token for reseting password
     def get_reset_token(self):
         s = Serializer(app.config['SECRET_KEY'], )
         return s.dumps({'user_id': self.id})
 
+    #verify the token
     @staticmethod
     def verify_reset_token(token, expires_sec=1800):
         s = Serializer(app.config['SECRET_KEY'])
@@ -50,21 +53,6 @@ class Account(db.Model, UserMixin):
         except:
             return None
         return Account.query.get(user_id)
-
-    # #generate a token
-    # def get_reset_token(self,expires_sec=1800):
-    #     s = Serializer(app.config['SECRET_KEY'], expires_sec)
-    #     return s.dumps({'user_id': self.id}).decode('utf-8')
-    #
-    # #verify token
-    # @staticmethod
-    # def verify_reset_token(token):
-    #     s = Serializer(app.config['SECRET_KEY'])
-    #     try:
-    #         user_id = s.loads(token)['user_id']
-    #     except:
-    #         return None
-    #     return Account.query.get(user_id)
 
 # Jakob
 # Classroom model - holds papers (e.g. Classroom: Software Engineering, Paper: Python 203, Paper: C++ 101)
@@ -83,7 +71,9 @@ class Paper(db.Model):
     paper_name = db.Column(db.String(length=30), nullable=False)
     paper_picture = db.Column(db.String(length=20), nullable=False)
     paper_room_number = db.Column(db.String(length=20), nullable=False)
+    paper_description = db.Column(db.Text,nullable=False)
     id_classroom = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable=False)
+    account_id = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable=False)
     owner = db.relationship('Post', backref='post_owner', lazy=True)
 
 # Jakob

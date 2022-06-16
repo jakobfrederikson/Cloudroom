@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}
+Edit Post
+{% endblock %}
+{% block style %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/register_style.css') }}">
+{% endblock %}
+{% block content %}
+<body>
+<div class="container mt-5">
+  <a href="{{ url_for('dashboard_page', user = current_user.first_name) }}">
+    <img src="{{url_for('static',filename = 'images/backarrow.png')}}" alt="Your dashboard icon">
+  </a>
+</div>
+<div class="container w-50 mt-5 bd-highlight justify-content-center edit_form_container">
+  <h1 class="mb-1">Edit Paper</h1>
+    <form method="POST" id="form-create_paper">
+       {{ paper_form.hidden_tag() }}
+       {{ paper_form.paper_name.label() }}
+       {{ paper_form.paper_name(class="form-control", placeholder="Paper Name") }}
+       <br>
+       {{ paper_form.paper_room_number.label() }}
+       {{ paper_form.paper_room_number(class="form-control", placeholder="Paper Room Number") }}
+       <br>
+       {{ paper_form.paper_description.label() }}
+       {{ paper_form.paper_description(class="form-control", placeholder="Description") }}
+       <br>
+       <div class="row">
+          {% for subfield in paper_form.paper_picture %}
+          <div class="columns">
+             <label class="custom_radio ">
+             <img class="img-fluid img-thumbnail d-flex justify-content-center"
+                src="{{url_for('static',filename = subfield.data )}}">
+             {{ subfield }}{{ subfield.label }}</label>
+          </div>
+          {% endfor %}
+       </div>
+       <br><br>
+       <div class="d-grid gap-2 col-6 mx-auto">
+          {{ paper_form.edit_submit(class="btn btn-outline-primary btn-lg") }}\
+       </div>
+    </form>
+</div>
+</body>
+{% endblock %}
