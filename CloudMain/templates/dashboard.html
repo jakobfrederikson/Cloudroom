@@ -13,13 +13,11 @@ Dashboard | Cloudroom
   <!--content title and join button-->
   <div class="container-fluid dashboard_header_content">
     <div class="row justify-content-between">
-      <div class="col-4">
-        <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms
-        </h1>
+      <div class="col">
+        <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms</h1>
       </div>
-      <div class="col-4">
-        <a href="#" class="text-reset text-decoration-none">
-          <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
+      <div class="col">
+          <h1 class="fs-6 text-center" style="color:#05396B;">
             {%if current_user.account_type == "Student" %}
             <a href="#" data-bs-toggle="modal" data-bs-target="#Join_Cloudroom_Modal"
                class="text-reset text-decoration-none">
@@ -31,17 +29,17 @@ Dashboard | Cloudroom
             </a>
             {% endif %}
           </h1>
-        </a>
       </div>
     </div>
   </div>
   <!--main content-->
-  <div class="container-fluid dashboard_main_content">
+  <div class="mb-5 container-fluid dashboard_main_content">
     <div class="row row-cols-sm-2 row-cols-md-4">
       <!--Displays all paper that the student is currently taking-->
       {% for paper in user_papers %}
       {% for class in classroom %}
       {%if class.id == paper.id_classroom %}
+      {% include 'includes/delete_paper.html' %}
       <div class="col cloudroom_classnum" style="">
         <br>
         <h5 class="text-start" style="color:#05396B">
@@ -55,9 +53,9 @@ Dashboard | Cloudroom
           <div class="col-md">
             <h6 class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
             </h6>
-            <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling
+            <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: {{paper.tutor.first_name}} {{paper.tutor.last_name}}
             </p>
-            <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
+            <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">{{paper.paper_description}}
             </p>
             <div class="d-grid gap-2 mx-auto">
               <a href="{{url_for('classroom_main_page', class_id =class.id,paper_id=paper.id)}}"
@@ -69,6 +67,14 @@ Dashboard | Cloudroom
             </div>
           </div>
         </div>
+        {%if paper.account_id == current_user.id %}
+        <div class="text-end">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#Modal-Delete-Cloudroom-{{paper.id}}"
+             class="me-2 text-decoration-none" style="color:red;">Delete</a>
+          <a href="{{url_for('edit_paper',paper_id=paper.id)}}"
+               class="bw text-decoration-none" style="color:#05396B;">Edit</a>
+        </div>
+        {% endif %}
       </div>
       {% endif %}
       {% endfor %}
