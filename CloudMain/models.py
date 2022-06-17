@@ -3,6 +3,7 @@ from CloudMain import bcrypt
 from flask_login import UserMixin
 from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer as Serializer
+from datetime import datetime, date
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -21,9 +22,10 @@ class Account(db.Model, UserMixin):
     profile_pic = db.Column(db.String(length=20), nullable=False)
     account_type = db.Column(db.String(length=20), nullable=False)
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
-    assignments = db.relationship('Assignment', backref='owned_student', lazy=True)
     poster = db.relationship('Post', backref='poster', lazy=True)  # Lazy gets all items from Upload_file
     papers = db.relationship('Paper', backref='tutor', lazy=True)
+    assignment_submissions = db.relationship('StudentAssignmentSubmission', backref='assignment', lazy=True)
+    question_submissions = db.relationship('StudentQuestionSubmission', backref='question', lazy=True)
 
     #returns the password
     @property
@@ -102,18 +104,15 @@ class Assignment(db.Model):
     __tablename__ = 'assignment'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False)
-    owner = db.Column(db.String(length=30), nullable=False)
     description = db.Column(db.String(), nullable = True)
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())
-    isCompleted = db.Column(db.Boolean())
     weight = db.Column(db.Integer())
     picture = db.Column(db.String(length=20), nullable=False)
     isPublished = db.Column(db.Boolean())
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
-    owner = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = True)
-    questions = db.relationship('AssignmentQuestions', backref='owned_assignment', lazy=True) 
+    questions = db.relationship('Question', backref='owned_assignment', lazy=True) 
 
     def serialize(self):
         return {"id" : self.id,
@@ -126,20 +125,20 @@ class Assignment(db.Model):
                 "picture": self.picture,
                 "isPublished": self.isPublished,
                 "teacher_id": self.teacher_id,
-                "paper_id": self.paper_id,
-                "owner": self.owner}
+                "paper_id": self.paper_id}
 
 
 # Jakob
-# AssignmentQuestions Model - this is for the questions allocated to the assignment
-class AssignmentQuestions(db.Model):
-    __tablename__ = 'assignment_questions'
+# Question Model - this is for the questions allocated to the assignment
+class Question(db.Model):
+    __tablename__ = 'question'
     id = db.Column(db.Integer(), primary_key=True)
     owner = db.Column(db.Integer(), db.ForeignKey('assignment.id'), nullable = False)
     type = db.Column(db.String(), nullable = False)
     title = db.Column(db.String(), nullable = False)
     description = db.Column(db.String(), nullable = True)
     placeholder_text = db.Column(db.String(), nullable = True)
+    student_question_submission = db.relationship('StudentQuestionSubmission', backref='owned_question', lazy = True)
 
     def serialize(self):
         return {"id" : self.id,
@@ -148,6 +147,29 @@ class AssignmentQuestions(db.Model):
                 "title": self.title,
                 "description": self.description,
                 "placeholder_text": self.placeholder_text}
+
+
+# Jakob
+# StudentAssignmentSubmission - this table shows general information about a students assignment submission
+class StudentAssignmentSubmission(db.Model):
+    __tablename__ = 'student_assignment_submission'
+    id = db.Column(db.Integer(), primary_key = True)
+    assignment_id = db.Column(db.Integer(), db.ForeignKey('assignment.id'), nullable = False)
+    student_id = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)    
+    has_submitted = db.Column(db.Boolean(), nullable = False)
+    submission_date = db.Column(db.Date(), default = date.today(), nullable = False)
+    grade = db.Column(db.Float(), nullable = True) # the grade can be set later on when the teacher comes to mark it
+
+
+# Jakob
+# StudentQuestionSubmission - this table shows the content of the assignment submission
+class StudentQuestionSubmission(db.Model):
+    __tablename__ = 'student_question_submission'
+    id = db.Column(db.Integer(), primary_key = True)
+    question_id = db.Column(db.Integer(), db.ForeignKey('question.id'), nullable = False)
+    student_id = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)    
+    question_content = db.Column(db.String(), nullable = True) # Incase student wants to submit empty question
+    grade = db.Column(db.Float(), nullable = True) # the grade can be set later on when the teacher comes to mark it
 
 
 #This creates a model in the database for Uploaded files

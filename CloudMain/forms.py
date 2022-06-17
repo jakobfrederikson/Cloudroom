@@ -85,13 +85,20 @@ class Create_Assignment(FlaskForm):
 
 # Jakob
 # Assignment questions
-class Create_Assignment_Questions(FlaskForm):
+class Create_Question(FlaskForm):
     title = StringField('Title')
     type = SelectField(u'Question Type', choices=[('code', 'Python'), ('text', 'Plain Text')], validators=[DataRequired()])
     description = CKEditorField('Question Description')
     placeholder_text = TextAreaField('Placeholder Content')
     submit = SubmitField()
 
+
+# Jakob
+# Get students content
+class GetQuestionContent(FlaskForm):
+    code_content = TextAreaField()
+    text_content = CKEditorField()
+    submit = SubmitField('Submit Assignment')
 
 # Jakob
 # Delete an assignment, publish an assignment
