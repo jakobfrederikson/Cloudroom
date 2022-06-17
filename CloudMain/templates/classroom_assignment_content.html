@@ -36,15 +36,24 @@ Create Assignment | Cloudroom
 
             <!-- Assignment Questions -->
             <div class="col-sm-5 assignment-questions p-3">
-                <div class="accordion" id="questionsAccordion">
+                <div class="accordion" id="questionsAccordion">  
+                    <form method="POST">
                     {% for question in questions %}
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading{{ question.id }}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ question.id }}" aria-expanded="false" aria-controls="collapse{{ question.id }}">
+                                <button class="accordion-button collapsed" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#collapse{{ question.id }}" 
+                                aria-expanded="false" 
+                                aria-controls="collapse{{ question.id }}">
                                     {{ question.title }}
                                 </button>
                             </h2>
-                            <div id="collapse{{ question.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ question.id }}" data-bs-parent="#questionsAccordion">
+                            <div id="collapse{{ question.id }}" 
+                            class="accordion-collapse collapse" 
+                            aria-labelledby="heading{{ question.id }}" 
+                            data-bs-parent="#questionsAccordion">
                                 <p>
                                     <small>
                                         <strong>Question Description</strong>
@@ -56,23 +65,23 @@ Create Assignment | Cloudroom
                                         {% endif %}
                                     </small>
                                 </p>
+                                {{ question_content_forms[loop.index - 1].hidden_tag() }}
                                 {% if question.type == "code" %}
-                                <div class="code-box">
-                                    <textarea id="editor">
-    {{ question.placeholder_text|safe }}
-                                    </textarea>
-                                </div>
+                                    <div class="code-box">
+                                        {{ question_content_forms[loop.index - 1].code_content(id = "editor") }}
+                                    </div>
                                 {% endif %}
                                 {% if question.type == "text" %}
-                                {{ ckeditor.create() }}
-                                {% endif %}                                
+                                    {{ question_content_forms[loop.index - 1].text_content|safe }}
+                                {% endif %}                             
                             </div>
                         </div>
                     {% endfor %}
-                </div>
-                {% if current_user.account_type == "Student" %}
-                <button type="button" class="btn btn-outline-success mt-3">Submit Assignment</button>
-                {% endif %}
+                    {% if current_user.account_type == "Student" %}
+                        {{ submit_button.submit(class="btn btn-outline-success mt-3", value="Submit Assignment")}}
+                    {% endif %}
+                    </form>
+                </div>                
             </div>
         </div>
     </div>

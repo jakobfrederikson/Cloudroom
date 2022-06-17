@@ -1,9 +1,10 @@
+from datetime import datetime, date
 from msilib.schema import Class
 from sqlalchemy import delete, null
 from CloudMain import app, flash, url_for, redirect, db, functions, mail, session
 from flask import render_template, request, send_file
-from CloudMain.models import Account, AssignmentQuestions,Classroom, Paper, paper_members, Upload_File, Assignment,Post
-from CloudMain.forms import Create_Assignment_Questions, Create_Paper, CreateAccount, GeneralSubmitForm, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
+from CloudMain.models import Account, Question, Classroom, Paper, StudentAssignmentSubmission, StudentQuestionSubmission, paper_members, Upload_File, Assignment,Post
+from CloudMain.forms import Create_Question, Create_Paper, CreateAccount, GeneralSubmitForm, GetQuestionContent, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
         Create_Assignment, PostForm, RequestResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
@@ -214,7 +215,7 @@ def dashboard_page(user):
             paper_members.query.filter_by(id_paper=d_file_obj.id).delete()
             #Delete assignment questions
             delete_items = Assignment.query.filter_by(paper_id=d_file_obj.id).first()
-            AssignmentQuestions.query.filter_by(owner=delete_items.id).delete()
+            Question.query.filter_by(owner=delete_items.id).delete()
             #Delete Assignments
             Assignment.query.filter_by(paper_id=d_file_obj.id).delete()
             #Delete Posts in papers
@@ -371,48 +372,22 @@ def create_assignment(class_id, paper_id):
     assignment_form = Create_Assignment()
 
     if assignment_form.validate_on_submit():
-        selected_paper = int(paper_id)
-        students_of_paper = []
-        if paper_members.query.all():
-            for entry in paper_members.query.all():
-                if entry.id_paper == selected_paper:
-                    if entry.account_type == "Student":
-                        students_of_paper.append(Account.query.filter_by(id=entry.id_user).first())
-
-        if students_of_paper:
-            for student in students_of_paper:
-                assignment_to_create = Assignment(name = request.form.get("name"),
-                                                description = request.form.get("description"),
-                                                creationDate = assignment_form.creationDate.data,
-                                                dueDate = assignment_form.dueDate.data,
-                                                isCompleted = False,
-                                                weight = int(request.form.get("weight")),                                                
-                                                picture = assignment_form.picture.data,
-                                                isPublished = assignment_form.isPublished.data,
-                                                teacher_id = int(current_user.id),
-                                                paper_id = int(selected_paper),
-                                                owner = int(student.id))                         
-                db.session.add(assignment_to_create)
-                db.session.commit()
-        else: # If there are no students in the paper yet
-            assignment_to_create = Assignment(name = request.form.get("name"),
-                                                description = request.form.get("description"),
-                                                creationDate = assignment_form.creationDate.data,
-                                                dueDate = assignment_form.dueDate.data,
-                                                isCompleted = False,
-                                                weight = int(request.form.get("weight")),
-                                                picture = assignment_form.picture.data,    
-                                                isPublished = assignment_form.isPublished.data,                                            
-                                                teacher_id = int(current_user.id),
-                                                paper_id = int(selected_paper),
-                                                owner = current_user.id)     
-            db.session.add(assignment_to_create)
-            db.session.commit()
+        assignment_to_create = Assignment(name = request.form.get("name"),
+                                            description = request.form.get("description"),
+                                            creationDate = assignment_form.creationDate.data,
+                                            dueDate = assignment_form.dueDate.data,
+                                            weight = int(request.form.get("weight")),
+                                            picture = assignment_form.picture.data,    
+                                            isPublished = assignment_form.isPublished.data,                                            
+                                            teacher_id = int(current_user.id),
+                                            paper_id = int(paper_id))     
+        db.session.add(assignment_to_create)
+        db.session.commit()
 
         assignment_id = 0
         # Get the last entry into the assignment table
         assignment_id = Assignment.query.order_by(-Assignment.id).first()
-        return redirect(url_for('create_classroom_questions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id.id))
+        return redirect(url_for('create_assignment_questions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id.id))
 
     if assignment_form.errors != {}:
         for err_msg in assignment_form.errors.values():     
@@ -425,10 +400,10 @@ def create_assignment(class_id, paper_id):
 # Create the questions for the assignment
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment/<assignment_id>/', methods=['POST', 'GET'])
 @functions.teacher_account_required
-def create_classroom_questions(class_id, paper_id, assignment_id):
+def create_assignment_questions(class_id, paper_id, assignment_id):
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=assignment_id).first()
-    questions_form = Create_Assignment_Questions()
+    questions_form = Create_Question()
 
     # Start the user session to store multiple questions for an assignment
     questions_list = []    
@@ -441,7 +416,7 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
             # Check if the creator is submitting an empty question
             if session['questions'] != []: # if user is creating multiple questions
                 for q in questions_list:
-                    question = AssignmentQuestions(title = q['title'],
+                    question = Question(title = q['title'],
                                                     owner = int(q['owner']),
                                                     type = q['type'],
                                                     description = q['description'],
@@ -451,7 +426,7 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
                 db.session.commit()
             elif questions_form.type.data and questions_form.title.data \
                 and questions_form.submit.data: # if user is only creating one question
-                question = AssignmentQuestions(title = request.form.get("title"),
+                question = Question(title = request.form.get("title"),
                                                     owner = int(assignment_id),
                                                     type = request.form.get("type"),
                                                     description= questions_form.description.data,
@@ -468,7 +443,7 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
         
         # Append the created question to the questions list
         if request.form['submit'] == "Create another question":
-            question = AssignmentQuestions(title = request.form.get("title"),
+            question = Question(title = request.form.get("title"),
                                         owner = int(assignment_id),
                                         type = request.form.get("type"),
                                         description= questions_form.description.data,
@@ -488,20 +463,60 @@ def create_classroom_questions(class_id, paper_id, assignment_id):
                                                                 assignment = assignment)
 
 # Assignment Begin - This is when the student has started the assignment.
-@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>')
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>', methods=['POST', 'GET'])
 @login_required
 def classroom_assignment_content(class_id, paper_id, assignment_id):
+    submit_button = GeneralSubmitForm()
     classroom = Classroom.query.filter_by(id=int(class_id)).first()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+
     questions = []
-    for question in AssignmentQuestions.query.all():
+    question_content_forms = []
+    for question in Question.query.all():
         if int(question.owner) == int(assignment_id):
             questions.append(question)
+
+    question_content_forms = [GetQuestionContent() for item in range(0, len(questions) + 1)]
+
+    if request.method == "POST" and submit_button.data:
+        code_content = request.form.to_dict(flat=False)['code_content']
+        text_content = request.form.to_dict(flat=False)['text_content']
+        code_content_index = 0
+        text_content_index = 0
+        for question in questions:
+            question_to_submit = StudentQuestionSubmission(question_id = int(question.id),
+                                                           student_id = int(current_user.id))
+            if question.type == "code":
+                question_to_submit.question_content = code_content[code_content_index]
+                code_content_index += 1
+            elif question.type == "text":
+                question_to_submit.question_content = text_content[text_content_index]
+                text_content_index += 1
+
+            print(f"\n\n{ question_to_submit.question_content } \n\n")
+            db.session.add(question_to_submit)
+
+        assignment_to_submit = StudentAssignmentSubmission(assignment_id = int(assignment_id),
+                                                            student_id = int(current_user.id),
+                                                            has_submitted = True,                                                    
+                                                            submission_date = date.today())
+        db.session.add(assignment_to_submit)
+        db.session.commit()
+
+        flash(f"'{assignment.name}' has been succesfully submitted.")
+        return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
+
+    if submit_button.errors != {}:
+        for err_msg in submit_button.errors.values():     
+            flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
+    
     return render_template('classroom_assignment_content.html', classroom=classroom,
                                                                 paper=paper,
                                                                 assignment=assignment,
-                                                                questions=questions)
+                                                                questions=questions,
+                                                                question_content_forms = question_content_forms,
+                                                                submit_button = submit_button)
 
 # Edit an assignment
 @app.route('/classroom/<class_id>/<paper_id>/assignments/edit/<assignment_id>', methods=['POST', 'GET'])
@@ -570,9 +585,9 @@ def delete_assignment(class_id, paper_id, assignment_id):
             Assignment.query.filter_by(id=assignment_to_delete.id).delete()
 
             # Delete all questions related to the assignment
-            for question in AssignmentQuestions.query.all():
+            for question in Question.query.all():
                 if question.owner == assignment_to_delete.id:
-                    AssignmentQuestions.query.filter_by(id = question.id).delete()
+                    Question.query.filter_by(id = question.id).delete()
             
             flash(f'{assignment_to_delete.name} has been successfully deleted.')
             db.session.commit()
