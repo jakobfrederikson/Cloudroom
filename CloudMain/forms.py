@@ -152,6 +152,12 @@ class PostForm(FlaskForm):
     content = CKEditorField('Content', validators=[DataRequired()])
     submit = SubmitField(label='Post')
 
+#Requesting for reset password
 class RequestResetPasswordForm(FlaskForm):
     email = StringField('Email',validators=[DataRequired(),Email()])
     submit = SubmitField(label='Reset Password')
+
+#Comment content in Classroom page
+class CommentForm(FlaskForm):
+    comment = TextAreaField('Comment', validators=[DataRequired()])
+    submit = SubmitField(label='Send')

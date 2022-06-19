@@ -34,15 +34,15 @@
                </div>
             </div>
             <div class="all-classroom-posts">
-               <div class="class-post">
+               <div class="card-body class-post">
                   {% for post in posts %}
                   <div class="col border-top mt-4" style="">
                      <br>
                      <p class="text-md-end lead mt-0">
-                       Posted by: {{ post.poster.first_name }} {{ post.poster.last_name }}
+                        Posted by: {{ post.poster.first_name }} {{ post.poster.last_name }}
                      </p>
                      <p class="text-md-end lead mt-0" style="font-size:.9rem; margin-top:10px;">
-                       {{post.date_posted.strftime('%d-%m-%Y')}}
+                        {{post.date_posted.strftime('%d-%m-%Y')}}
                      </p>
                      <h3 class="text-center mb-1">
                         {{post.title}}
@@ -53,7 +53,45 @@
                            </p>
                         </div>
                      </div>
+                     {% set count = namespace(value=0) %}
+                     {% for comment in comments%}
+                     <div class="collapse" id="comments-{{post.id}}">
+                        {% if comment.post_id == post.id %}
+                        <div class="card card-body" id="comment-expand-{{post.id}}">
+                           <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                 <div>
+                                    <img class="pic" src="{{url_for('static',filename = comment.commenter.profile_pic)}}"
+                                       alt="Profile picture">{{comment.commenter.first_name}} {{comment.commenter.last_name}}
+                                 </div>
+                                 <br>
+                                 <span class="ms-5">{{comment.comment}}</span>
+                              </div>
+                              <div>
+                                 <small class="text-muted">{{comment.date_posted.strftime('%d-%m-%Y')}}</small>
+                              </div>
+                           </div>
+                        </div>
+                        {% set count.value = count.value + 1 %}
+                        {% endif %}
+                     </div>
+                     {% endfor %}
+                     <p class="card-text mb-3">
+                        {% if count.value > 0 %}
+                        <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
+                        View {{count.value}} Comments
+                        </a>
+                        {% else %}
+                        <small class="text-muted">No comments</small>
+                        {% endif %}
+                     </p>
                   </div>
+                  <!--Comment section-->
+                  <form class="input-group w-50 mb-3" method="POST" action="/classroom/post_comment/{{classroom.id}}/{{paper.id}}/{{post.id}}">
+                     <input type="text" name="text" class="form-control" placeholder="Write you comment">
+                     <button type="submit" class="btn btn-sm ms-2 btn-primary">Comment</button>
+                  </form>
+                  <!--if user is the poster show delete and edit button-->
                   {%if post.owner == current_user.id %}
                   <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                      <form method="POST">
@@ -72,7 +110,5 @@
          </div>
       </div>
    </div>
-   <!-- JavaScript Bundle with Popper -->
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 {% endblock %}

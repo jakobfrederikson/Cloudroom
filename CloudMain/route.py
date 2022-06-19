@@ -3,10 +3,12 @@ from msilib.schema import Class
 from sqlalchemy import delete, null
 from CloudMain import app, flash, url_for, redirect, db, functions, mail, session
 from flask import render_template, request, send_file
-from CloudMain.models import Account, Question, Classroom, Paper, StudentAssignmentSubmission, StudentQuestionSubmission, paper_members, Upload_File, Assignment,Post
-from CloudMain.forms import Create_Question, Create_Paper, CreateAccount, GeneralSubmitForm, GetQuestionContent, LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
+from CloudMain.models import Account, Question, Classroom, Paper, StudentAssignmentSubmission, StudentQuestionSubmission\
+    , paper_members, Upload_File, Assignment,Post,Comments
+from CloudMain.forms import Create_Question, Create_Paper, CreateAccount, GeneralSubmitForm, GetQuestionContent, \
+    LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
-        Create_Assignment, PostForm, RequestResetPasswordForm
+        Create_Assignment, PostForm, RequestResetPasswordForm,CommentForm
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 
@@ -294,6 +296,20 @@ def create_post(class_id, paper_id):
     return render_template('create_post.html',postform=post_form,classroom=classroom,paper=paper,
                            members=member_list,del_post=del_post)
 
+#This handles the commenting
+@app.route('/classroom/post_comment/<class_id>/<paper_id>/<post_id>', methods=['POST'])
+def post_comment(class_id,paper_id,post_id):
+    if request.method == "POST":
+        comment = request.form.get('text')
+        commenter = Comments(comment=comment,
+                             post_id=post_id,
+                             owner=current_user.id)
+
+        db.session.add(commenter)
+        db.session.commit()
+        flash('Comment Posted',category='info')
+        return redirect(url_for("classroom_main_page", class_id=class_id, paper_id=paper_id))
+
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
 @app.route('/classroom/<class_id>/<paper_id>', methods=['POST', 'GET'])
 @login_required
@@ -302,6 +318,9 @@ def classroom_main_page(class_id, paper_id):
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
     posts = Post.query.filter_by(paper_id=paper.id)
+    comments = Comments.query.all()
+    accounts = Account.query.all()
+    comment_form = CommentForm()
     del_post = Delete_File()
     postform = PostForm()
 
@@ -318,27 +337,16 @@ def classroom_main_page(class_id, paper_id):
         #handles remove student
         remove_student = request.form.get('remove_student')
         std_file_obj = paper_members().query.filter_by(id_user=remove_student).first()
-        print(remove_student,"hellos")
         if std_file_obj:
             paper_members().query.filter_by(id = std_file_obj.id).delete()
             db.session.commit()
             return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id))
 
-    #create a post
-    if postform.validate_on_submit():
-        post = Post(title=postform.title.data,
-                    paper_id=paper.id,
-                    content=postform.content.data,
-                    owner=current_user.id)
-
-        db.session.add(post)
-        db.session.commit()
-        return redirect(url_for('classroom_main_page',class_id=classroom.id,paper_id=paper.id))
-
     # Gathering all members in this paper.
     member_list = functions.get_all_members(paper_id)
     return render_template('classroom_main_page.html', classroom=classroom,paper=paper,members=member_list,
-                           postform=postform,posts=posts,del_post=del_post)
+                           postform=postform,posts=posts,del_post=del_post,comment_form=comment_form,comments=comments,
+                           accounts=accounts)
 
 # Classroom Assignments - Displays all assignments
 @app.route('/classroom/<class_id>/<paper_id>/assignments', methods=['GET','POST'])
