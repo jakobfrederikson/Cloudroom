@@ -24,6 +24,7 @@ class Account(db.Model, UserMixin):
     items = db.relationship('Upload_File', backref='owned_user', lazy=True)#Lazy gets all items from Upload_file
     poster = db.relationship('Post', backref='poster', lazy=True)  # Lazy gets all items from Upload_file
     papers = db.relationship('Paper', backref='tutor', lazy=True)
+    comment = db.relationship('Comments', backref='commenter', lazy=True)
     assignment_submissions = db.relationship('StudentAssignmentSubmission', backref='assignment', lazy=True)
     question_submissions = db.relationship('StudentQuestionSubmission', backref='question', lazy=True)
 
@@ -179,11 +180,20 @@ class Upload_File(db.Model):
     data = db.Column(db.LargeBinary(length=(2 ** 32) - 1), nullable=False)
     timestamp = db.Column(db.DateTime, default=db.func.now())
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
-
+#This creates the model for Post details
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'))
     title = db.Column(db.String, nullable=False)
     content = db.Column(db.Text,nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    owner = db.Column(db.Integer(), db.ForeignKey('account.id'))
+    comment = db.relationship('Comments', backref='poster', lazy=True)
+
+# This creates the model for Comments details
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer(), db.ForeignKey('post.id'))
+    comment = db.Column(db.Text(),nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     owner = db.Column(db.Integer(), db.ForeignKey('account.id'))

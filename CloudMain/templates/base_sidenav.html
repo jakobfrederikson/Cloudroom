@@ -93,16 +93,12 @@
                      <td>
                         {% if current_user.account_type == "Teacher" %}
                         {% if member.account_type == "Student" %}
-                        {% if "assignments" not in request.path %}
-                        {% if "create_assignment" not in request.path %}
                         <form method="POST">
                            <input id="remove_student" name="remove_student" type="hidden" value="{{member.id}}">
                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                              {{ del_post.submit(class="btn btn-danger") }}
+                              <button type="submit" class="btn btn-sm ms-2 btn-danger">Remove</button>
                            </div>
                         </form>
-                        {% endif %}
-                        {% endif %}
                         {% endif %}
                         {% endif %}
                      </td>
