@@ -25,8 +25,8 @@ class Account(db.Model, UserMixin):
     poster = db.relationship('Post', backref='poster', lazy=True)  # Lazy gets all items from Upload_file
     papers = db.relationship('Paper', backref='tutor', lazy=True)
     comment = db.relationship('Comments', backref='commenter', lazy=True)
-    assignment_submissions = db.relationship('StudentAssignmentSubmission', backref='assignment', lazy=True)
-    question_submissions = db.relationship('StudentQuestionSubmission', backref='question', lazy=True)
+    assignment_submissions = db.relationship('StudentAssignmentSubmission', backref='student', lazy=True)
+    question_submissions = db.relationship('StudentQuestionSubmission', backref='student', lazy=True)
 
     #returns the password
     @property
@@ -157,8 +157,8 @@ class StudentAssignmentSubmission(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     assignment_id = db.Column(db.Integer(), db.ForeignKey('assignment.id'), nullable = False)
     student_id = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)    
-    has_submitted = db.Column(db.Boolean(), nullable = False)
-    submission_date = db.Column(db.Date(), default = date.today(), nullable = False)
+    has_submitted = db.Column(db.Boolean(), nullable = True)
+    submission_date = db.Column(db.Date(), default = date.today(), nullable = True)
     grade = db.Column(db.Float(), nullable = True) # the grade can be set later on when the teacher comes to mark it
 
 
@@ -167,6 +167,7 @@ class StudentAssignmentSubmission(db.Model):
 class StudentQuestionSubmission(db.Model):
     __tablename__ = 'student_question_submission'
     id = db.Column(db.Integer(), primary_key = True)
+    assignment_id = db.Column(db.Integer(), db.ForeignKey('assignment.id'), nullable = False)
     question_id = db.Column(db.Integer(), db.ForeignKey('question.id'), nullable = False)
     student_id = db.Column(db.Integer(), db.ForeignKey('account.id'), nullable = False)    
     question_content = db.Column(db.String(), nullable = True) # Incase student wants to submit empty question

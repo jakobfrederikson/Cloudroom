@@ -39,9 +39,10 @@
                             {% endif %}
                           </li>
                         </ul>
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                           <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
                           {% if current_user.account_type == "Teacher" %}
+                          <a href="{{ url_for('assignment_submissions', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-success">View submissions</a>
                           <a href="{{ url_for('edit_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-dark">Edit</a>
                           <a href="{{ url_for('delete_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-danger">Delete</a>
                           {% if entry.isPublished == False %}

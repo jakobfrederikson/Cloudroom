@@ -379,6 +379,8 @@ def create_assignment(class_id, paper_id):
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment_form = Create_Assignment()
 
+    students = functions.get_all_members(paper_id)
+
     if assignment_form.validate_on_submit():
         assignment_to_create = Assignment(name = request.form.get("name"),
                                             description = request.form.get("description"),
@@ -395,6 +397,14 @@ def create_assignment(class_id, paper_id):
         assignment_id = 0
         # Get the last entry into the assignment table
         assignment_id = Assignment.query.order_by(-Assignment.id).first()
+
+        # Populate StudentAssignmentSubmission with student data
+        for s in students:
+            if s.account_type == "Student":
+                new_entry = StudentAssignmentSubmission(assignment_id = int(assignment_id.id),
+                                                        student_id = int(s.id))
+                db.session.add(new_entry)
+        db.session.commit()
         return redirect(url_for('create_assignment_questions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id.id))
 
     if assignment_form.errors != {}:
@@ -488,12 +498,16 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
     question_content_forms = [GetQuestionContent() for item in range(0, len(questions) + 1)]
 
     if request.method == "POST" and submit_button.data:
-        code_content = request.form.to_dict(flat=False)['code_content']
-        text_content = request.form.to_dict(flat=False)['text_content']
+        print(request.form.to_dict(flat=False))
+        if 'code_content' in request.form.to_dict(flat=False):
+            code_content = request.form.to_dict(flat=False)['code_content']
+        if 'text_content' in request.form.to_dict(flat=False):
+            text_content = request.form.to_dict(flat=False)['text_content']
         code_content_index = 0
         text_content_index = 0
         for question in questions:
-            question_to_submit = StudentQuestionSubmission(question_id = int(question.id),
+            question_to_submit = StudentQuestionSubmission(assignment_id = int(assignment_id),
+                                                            question_id = int(question.id),
                                                            student_id = int(current_user.id))
             if question.type == "code":
                 question_to_submit.question_content = code_content[code_content_index]
@@ -505,11 +519,12 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
             print(f"\n\n{ question_to_submit.question_content } \n\n")
             db.session.add(question_to_submit)
 
-        assignment_to_submit = StudentAssignmentSubmission(assignment_id = int(assignment_id),
-                                                            student_id = int(current_user.id),
-                                                            has_submitted = True,                                                    
-                                                            submission_date = date.today())
-        db.session.add(assignment_to_submit)
+        assignment_submission = StudentAssignmentSubmission.query.filter_by(student_id=int(current_user.id)).first()
+        print(f"\n\n{assignment_submission}\n\n")
+        assignment_submission.assignment_id = assignment_id
+        assignment_submission.has_submitted = True
+        assignment_submission.submission_date = date.today()
+        db.session.add(assignment_submission)
         db.session.commit()
 
         flash(f"'{assignment.name}' has been succesfully submitted.")
@@ -604,7 +619,7 @@ def delete_assignment(class_id, paper_id, assignment_id):
     return render_template('delete_assignment.html', assignment = assignment, delete_form = delete_form, classroom = classroom, paper = paper)
 
 # Publish an assignment
-@app.route('/classroom/<class_id>/<paper_id>/assignments/publish/<assignment_id>', methods=['POST', 'GET'])
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/publish', methods=['POST', 'GET'])
 @functions.teacher_account_required
 def publish_assignment(class_id, paper_id, assignment_id):
     classroom = Classroom.query.filter_by(id=int(class_id)).first()
@@ -623,6 +638,48 @@ def publish_assignment(class_id, paper_id, assignment_id):
             return redirect(url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id))
 
     return render_template('publish_assignment.html', assignment = assignment, publish_form = publish_form, classroom = classroom, paper = paper)
+
+# View assignment submissions
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/submissions', methods=['POST', 'GET'])
+@functions.teacher_account_required
+def assignment_submissions(class_id, paper_id, assignment_id):
+    classroom = Classroom.query.filter_by(id=int(class_id)).first()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+
+    # Get list of students in paper
+    student_list = functions.get_all_members(paper_id)
+    submissions = []
+    if StudentAssignmentSubmission.query.all():
+        for entry in StudentAssignmentSubmission.query.all():
+            if int(entry.assignment_id) == int(assignment_id):
+                submissions.append(entry)
+
+    # Get list of student assignment submissions
+    assignment_submission_list = []
+    for entry in StudentAssignmentSubmission.query.all():
+        for student in student_list:
+            if int(entry.student_id) == int(student.id):
+                assignment_submission_list.append(entry)
+
+    # Get list of student questions submissions
+    questions_submission_list = []
+    for entry in StudentQuestionSubmission.query.all():
+        if int(entry.assignment_id) == int(assignment_id):
+            questions_submission_list.append(entry)
+
+    return render_template('assignment_submissions.html', assignment = assignment,
+                                                        classroom = classroom, 
+                                                        paper = paper,
+                                                        assignment_list = assignment_submission_list,
+                                                        question_list = questions_submission_list,
+                                                        submissions = submissions)
+
+# View assignment submissions
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/submissions/<submission_id>', methods=['POST', 'GET'])
+@functions.teacher_account_required
+def view_submission(class_id, paper_id, assignment_id, submission_id):
+    return render_template('view_submission.html')
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
