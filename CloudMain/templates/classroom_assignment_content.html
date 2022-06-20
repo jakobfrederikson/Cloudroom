@@ -38,6 +38,8 @@ Create Assignment | Cloudroom
             <div class="col-sm-5 assignment-questions p-3">
                 <div class="accordion" id="questionsAccordion">  
                     <form method="POST">
+                        {{ form.hidden_tag() }}
+
                     {% for question in questions %}
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading{{ question.id }}">
@@ -65,20 +67,19 @@ Create Assignment | Cloudroom
                                         {% endif %}
                                     </small>
                                 </p>
-                                {{ question_content_forms[loop.index - 1].hidden_tag() }}
+                                {% set field = form|attr('q-{}'.format(question.id)) -%}
                                 {% if question.type == "code" %}
-                                    <div class="code-box">
-                                        {{ question_content_forms[loop.index - 1].code_content(id = "editor") }}
-                                    </div>
+                                <div class="code-box">
+                                {% else %}
+                                <div>
                                 {% endif %}
-                                {% if question.type == "text" %}
-                                    {{ question_content_forms[loop.index - 1].text_content|safe }}
-                                {% endif %}                             
+                                    {{ field(class_='form-control', id='q-{} '.format(question.id) + ('', 'editor')[question.type=='code']) }}
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
                     {% if current_user.account_type == "Student" %}
-                        {{ submit_button.submit(class="btn btn-outline-success mt-3", value="Submit Assignment")}}
+                        {{ form.submit(class_="btn btn-outline-success mt-3") }}
                     {% endif %}
                     </form>
                 </div>                

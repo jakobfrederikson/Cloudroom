@@ -100,6 +100,28 @@ class GetQuestionContent(FlaskForm):
     text_content = CKEditorField()
     submit = SubmitField('Submit Assignment')
 
+def dynamic_question_submission(qs):
+    class F(FlaskForm):
+        submit = SubmitField('Submit Assignment')
+    for q in qs:
+        if q.type == "code":
+            field = TextAreaField()
+        if q.type == "text":
+            field = CKEditorField()
+        setattr(F, f'q-{q.id}', field)
+    return F
+
+
+# Jakob
+# Mark a students assignment
+def dynamic_marking_form(qs):
+    class F(FlaskForm):
+        submit = SubmitField('Finish grading assignment')
+    for q in qs:
+        grade = RadioField(choices=[('1', 'Correct'),('0', 'Incorrect')],validators=[DataRequired()])
+        setattr(F, f'q-{q.id}', grade)
+    return F
+
 # Jakob
 # Delete an assignment, publish an assignment
 class GeneralSubmitForm(FlaskForm):

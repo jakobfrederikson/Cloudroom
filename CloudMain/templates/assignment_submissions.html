@@ -35,7 +35,7 @@
                         {% if sub.has_submitted %}
                         <td>Yes</td>
                         <td>{{ sub.submission_date}}</td>
-                        <td><a href="{{ url_for('view_submission', ) }}" class="btn btn-primary" role="button">View Submission</a></td>
+                        <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-primary" role="button">View Submission</a></td>
                         {% else %}
                         <td>No</td>
                         <td>--</td>

@@ -17,8 +17,8 @@ dDate.innerHTML = dd + '-' + mm + '-' + yyyy;
 let code_questions = document.querySelectorAll(".code-box");
 
 code_questions.forEach(function(editor) {
-    textArea = editor.querySelector("#editor");
-    console.log(textArea.nodeName)
+    textArea = editor.querySelector('[id*="editor"]'); // IF '#editor' exists in the elements ID list
+    console.log(textArea.nodeName + " LOADED SUCCESSFULLY.")
     test = CodeMirror.fromTextArea(textArea, {
         mode: {
             name: "python",

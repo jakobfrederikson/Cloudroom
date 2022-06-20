@@ -8,7 +8,7 @@ from CloudMain.models import Account, Question, Classroom, Paper, StudentAssignm
 from CloudMain.forms import Create_Question, Create_Paper, CreateAccount, GeneralSubmitForm, GetQuestionContent, \
     LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
-        Create_Assignment, PostForm, RequestResetPasswordForm,CommentForm
+        Create_Assignment, PostForm, RequestResetPasswordForm,CommentForm, dynamic_marking_form, dynamic_question_submission
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 
@@ -490,33 +490,22 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
     assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
 
     questions = []
-    question_content_forms = []
     for question in Question.query.all():
         if int(question.owner) == int(assignment_id):
             questions.append(question)
 
-    question_content_forms = [GetQuestionContent() for item in range(0, len(questions) + 1)]
+    form = dynamic_question_submission(questions)(request.form)
 
-    if request.method == "POST" and submit_button.data:
-        print(request.form.to_dict(flat=False))
-        if 'code_content' in request.form.to_dict(flat=False):
-            code_content = request.form.to_dict(flat=False)['code_content']
-        if 'text_content' in request.form.to_dict(flat=False):
-            text_content = request.form.to_dict(flat=False)['text_content']
-        code_content_index = 0
-        text_content_index = 0
+    if form.validate_on_submit():
+        print("\nTEST\n")
+        print(f"\nLength of questions {len(questions)}\n")
         for question in questions:
+            field = getattr(form, f'q-{question.id}')
             question_to_submit = StudentQuestionSubmission(assignment_id = int(assignment_id),
                                                             question_id = int(question.id),
-                                                           student_id = int(current_user.id))
-            if question.type == "code":
-                question_to_submit.question_content = code_content[code_content_index]
-                code_content_index += 1
-            elif question.type == "text":
-                question_to_submit.question_content = text_content[text_content_index]
-                text_content_index += 1
-
-            print(f"\n\n{ question_to_submit.question_content } \n\n")
+                                                           student_id = int(current_user.id),
+                                                           question_content = field.data)
+            print(f"\nQuestion content = {question_to_submit.question_content}\n")
             db.session.add(question_to_submit)
 
         assignment_submission = StudentAssignmentSubmission.query.filter_by(student_id=int(current_user.id)).first()
@@ -530,15 +519,15 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
         flash(f"'{assignment.name}' has been succesfully submitted.")
         return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
 
-    if submit_button.errors != {}:
-        for err_msg in submit_button.errors.values():     
+    if form.errors != {}:
+        for err_msg in form.errors.values():     
             flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
     
     return render_template('classroom_assignment_content.html', classroom=classroom,
                                                                 paper=paper,
                                                                 assignment=assignment,
                                                                 questions=questions,
-                                                                question_content_forms = question_content_forms,
+                                                                form = form,
                                                                 submit_button = submit_button)
 
 # Edit an assignment
@@ -679,7 +668,43 @@ def assignment_submissions(class_id, paper_id, assignment_id):
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/submissions/<submission_id>', methods=['POST', 'GET'])
 @functions.teacher_account_required
 def view_submission(class_id, paper_id, assignment_id, submission_id):
-    return render_template('view_submission.html')
+    classroom = Classroom.query.filter_by(id=int(class_id)).first()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+    submission = StudentAssignmentSubmission.query.filter_by(id = int(submission_id)).first()
+    questions = Question.query.filter_by(owner = int(assignment_id)).all()
+    answers = StudentQuestionSubmission.query.filter_by(assignment_id = int(assignment_id),
+                                                        student_id = int(submission.student_id)).all()
+
+    form = dynamic_marking_form(questions)(request.form)
+    if form.validate_on_submit():
+        assignment_grade = []
+        for a in answers:
+            grade = getattr(form, f'q-{a.question_id}')
+            a.grade = grade.data
+            assignment_grade.append(a.grade)            
+            db.session.add(a)
+        
+        # assignment grade = mean of question grades
+        mean = 0
+        for n in assignment_grade:
+            if int(n) == 1:
+                mean = mean + 1
+        mean = mean/len(assignment_grade)
+        submission.grade = mean
+        db.session.add(submission)
+        db.session.commit()
+
+        flash(f"{submission.student.first_name}'s assignment has been successfully graded.")
+        return render_template('assignment_submissions.html', assignment = assignment, class_id = class_id, paper_id = paper_id, paper = paper, classroom=classroom)       
+      
+    return render_template('view_submission.html', classroom = classroom,
+                                                paper = paper,
+                                                assignment = assignment,
+                                                submission = submission,
+                                                answers = answers,
+                                                questions = questions,
+                                                form = form)                                                
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])
