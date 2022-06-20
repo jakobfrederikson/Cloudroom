@@ -342,6 +342,14 @@ def classroom_main_page(class_id, paper_id):
             db.session.commit()
             return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id))
 
+        # handles remove comment
+        remove_comment = request.form.get('remove_comment')
+        # std_file_obj = Comments().query.filter_by(id=remove_comment).first()
+        if remove_comment:
+            Comments().query.filter_by(id=remove_comment).delete()
+            db.session.commit()
+            return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id))
+
     # Gathering all members in this paper.
     member_list = functions.get_all_members(paper_id)
     return render_template('classroom_main_page.html', classroom=classroom,paper=paper,members=member_list,
