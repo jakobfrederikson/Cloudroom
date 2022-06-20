@@ -8,107 +8,123 @@
 {{ ckeditor.load() }}
 {% include 'base_sidenav.html' %}
 <body>
-   <!-- CONTENT -->
-   <div class="container cloudroom-container">
-      <div class="row h-100">
-         <div class="col-sm-10" style="text-align: justify;">
-            <div class="d-flex row  create_post_btn">
-               <div class="col-10">
-                  <h2 style="color:#05396B;">{{ classroom.classroom_name }}</h2>
-                  <h2 style="color:#05396B;">{{ paper.paper_name }}</h2>
-               </div>
-               <div class="col-2 mt-3" >
-                  {%if current_user.account_type == "Teacher" %}
-                  <a href="{{url_for('create_post', class_id=classroom.id,paper_id=paper.id)}}"
-                     class="text-reset text-decoration-none">
-                     <div class="row">
-                        <div class="col-2">
-                           <img src="{{url_for('static',filename = 'images/add_icon2.png')}}" alt="">
-                        </div>
-                        <div class="col">
-                           <h6 class="fs-6" style="margin-left:3px; margin-top:2px; color:#05396B;">Create post</h6>
-                        </div>
-                     </div>
-                  </a>
-                  {% endif %}
-               </div>
-            </div>
-            <div class="all-classroom-posts">
-               <div class="card-body class-post">
-                  {% for post in posts %}
-                  <div class="col border-top mt-4" style="">
-                     <br>
-                     <p class="text-md-end lead mt-0">
-                        Posted by: {{ post.poster.first_name }} {{ post.poster.last_name }}
-                     </p>
-                     <p class="text-md-end lead mt-0" style="font-size:.9rem; margin-top:10px;">
-                        {{post.date_posted.strftime('%d-%m-%Y')}}
-                     </p>
-                     <h3 class="text-center mb-1">
-                        {{post.title}}
-                     </h3>
-                     <div class="row row-cols-1 row-cols-2">
-                        <div class="col-md">
-                           <p class="text-md-start mb-1 mt-3" style="margin-top:30px;">{{post.content|safe}}
-                           </p>
-                        </div>
-                     </div>
-                     {% set count = namespace(value=0) %}
-                     {% for comment in comments%}
-                     <div class="collapse" id="comments-{{post.id}}">
-                        {% if comment.post_id == post.id %}
-                        <div class="card card-body" id="comment-expand-{{post.id}}">
-                           <div class="d-flex justify-content-between align-items-center">
-                              <div>
-                                 <div>
-                                    <img class="pic" src="{{url_for('static',filename = comment.commenter.profile_pic)}}"
-                                       alt="Profile picture">{{comment.commenter.first_name}} {{comment.commenter.last_name}}
-                                 </div>
-                                 <br>
-                                 <span class="ms-5">{{comment.comment}}</span>
-                              </div>
-                              <div>
-                                 <small class="text-muted">{{comment.date_posted.strftime('%d-%m-%Y')}}</small>
-                              </div>
-                           </div>
-                        </div>
-                        {% set count.value = count.value + 1 %}
-                        {% endif %}
-                     </div>
-                     {% endfor %}
-                     <p class="card-text mb-3">
-                        {% if count.value > 0 %}
-                        <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
-                        View {{count.value}} Comments
-                        </a>
-                        {% else %}
-                        <small class="text-muted">No comments</small>
-                        {% endif %}
-                     </p>
+  <!-- CONTENT -->
+  <div class="container cloudroom-container">
+    <div class="row h-100">
+      <div class="col-sm-10" style="text-align: justify;">
+        <div class="d-flex row  create_post_btn">
+          <div class="col-10">
+            <h2 style="color:#05396B;">{{ classroom.classroom_name }}
+            </h2>
+            <h2 style="color:#05396B;">{{ paper.paper_name }}
+            </h2>
+          </div>
+          <div class="col-2 mt-3" >
+            {%if current_user.account_type == "Teacher" %}
+            <a href="{{url_for('create_post', class_id=classroom.id,paper_id=paper.id)}}"
+               class="text-reset text-decoration-none">
+              <div class="row">
+                <div class="col-2">
+                  <img src="{{url_for('static',filename = 'images/add_icon2.png')}}" alt="">
+                </div>
+                <div class="col">
+                  <h6 class="fs-6" style="margin-left:3px; margin-top:2px; color:#05396B;">Create post
+                  </h6>
+                </div>
+              </div>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="all-classroom-posts">
+          <div class="card-body class-post">
+            {% for post in posts %}
+            <div class="col border-top mt-4" style="">
+              <br>
+              <p class="text-md-end lead mt-0">
+                Posted by: {{ post.poster.first_name }} {{ post.poster.last_name }}
+              </p>
+              <p class="text-md-end lead mt-0" style="font-size:.9rem; margin-top:10px;">
+                {{post.date_posted.strftime('%d-%m-%Y')}}
+              </p>
+              <h3 class="text-center mb-1">
+                {{post.title}}
+              </h3>
+              <div class="row row-cols-1 row-cols-2">
+                <div class="col-md">
+                  <p class="text-md-start mb-1 mt-3" style="margin-top:30px;">{{post.content|safe}}
+                  </p>
+                </div>
+              </div>
+              <!--if user is the poster show delete and edit button-->
+              {%if post.owner == current_user.id %}
+              <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-3">
+                <form method="POST">
+                  <input id="remove_item" name="remove_item" type="hidden" value="{{post.title}}">
+                  {{ del_post.submit(class="btn btn-danger") }}
+                </form>
+                <a href="{{url_for('update_post', class_id=classroom.id,paper_id=paper.id,post_id=post.id)}}">
+                  <button class="btn btn-primary">Edit
+                  </button>
+                </a>
+              </div>
+              {% endif %}
+              <!--comment section-->
+              {% set count = namespace(value=0) %}
+              {% for comment in comments%}
+              <div class="collapse mt-3" id="comments-{{post.id}}">
+                {% if comment.post_id == post.id %}
+                <div class="card card-body" id="comment-expand-{{post.id}}">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <img class="pic" src="{{url_for('static',filename = comment.commenter.profile_pic)}}"
+                           alt="Profile picture">
+                      {{comment.commenter.first_name}} {{comment.commenter.last_name}}
+                    </div>
+                    <div>
+                      <small class="text-muted">{{comment.date_posted.strftime('%d-%m-%Y')}}
+                      </small>
+                    </div>
                   </div>
-                  <!--Comment section-->
-                  <form class="input-group w-50 mb-3" method="POST" action="/classroom/post_comment/{{classroom.id}}/{{paper.id}}/{{post.id}}">
-                     <input type="text" name="text" class="form-control" placeholder="Write you comment">
-                     <button type="submit" class="btn btn-sm ms-2 btn-primary">Comment</button>
+                  <span class="mt-3">{{comment.comment}}
+                  </span>
+                  <!--delete comments-->
+                  {% if comment.commenter.id == current_user.id or post.owner == current_user.id %}
+                  <form method="POST">
+                    <input id="remove_comment" name="remove_comment" type="hidden" value="{{comment.id}}">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                      <button type="submit" class="btn btn-sm mt-2 btn-danger">Delete
+                      </button>
+                    </div>
                   </form>
-                  <!--if user is the poster show delete and edit button-->
-                  {%if post.owner == current_user.id %}
-                  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                     <form method="POST">
-                        <input id="remove_item" name="remove_item" type="hidden" value="{{post.title}}">
-                        {{ del_post.submit(class="btn btn-danger") }}
-                     </form>
-                     <a href="{{url_for('update_post', class_id=classroom.id,paper_id=paper.id,post_id=post.id)}}">
-                     <button class="btn btn-primary">Edit
-                     </button>
-                     </a>
-                  </div>
                   {% endif %}
-                  {% endfor %}
-               </div>
+                </div>
+                {% set count.value = count.value + 1 %}
+                {% endif %}
+              </div>
+              {% endfor %}
+              <p class="card-text mb-3">
+                {% if count.value > 0 %}
+                <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
+                  View {{count.value}} Comments
+                </a>
+                {% else %}
+                <small class="text-muted">No comments
+                </small>
+                {% endif %}
+              </p>
             </div>
-         </div>
+            <!--Comment section-->
+            <form class="input-group w-50 mb-3" method="POST" action="/classroom/post_comment/{{classroom.id}}/{{paper.id}}/{{post.id}}">
+              <input type="text" name="text" class="form-control" placeholder="Write you comment" required>
+              <button type="submit" class="btn btn-sm ms-2 btn-primary">Comment
+              </button>
+            </form>
+            {% endfor %}
+          </div>
+        </div>
       </div>
-   </div>
+    </div>
+  </div>
 </body>
 {% endblock %}
