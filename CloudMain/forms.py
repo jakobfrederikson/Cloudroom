@@ -75,7 +75,6 @@ class Create_Assignment(FlaskForm):
     description = TextAreaField(label="Assignment description")
     creationDate = DateField('Current Date', render_kw={'readonly': True}, validators=[DataRequired()], default=date.today)
     dueDate = DateField('Due Date', render_kw={'max': '2024-06-16'}, validators=[DataRequired()])
-    weight = IntegerField(label="Assignment weight", validators=[DataRequired()])
     picture = RadioField(label="Assignment Picture",
         choices=[('images/classroom_pic1.png','Computer Screen'),('images/python_201_image.jpg','Double Monitor'),
         ('images/laptops.jpg','Laptops'),('images/tech.jpg','Old Tech')],validators=[DataRequired()])
