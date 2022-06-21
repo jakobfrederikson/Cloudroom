@@ -92,7 +92,7 @@
           {% for a in student_assignments %}
           {% if a.assignment.isPublished and a.has_submitted %}      
             <div class="col">          
-              {% if a.grade %}
+              {% if a.grade != None %}
               <div class="card h-100 border-success" name="assignment-box">
               {% else %}
               <div class="card h-100" name="assignment-box">

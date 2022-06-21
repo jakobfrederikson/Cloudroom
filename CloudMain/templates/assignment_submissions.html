@@ -26,7 +26,7 @@
                 </thead>
                 <tbody>
                     {% for sub in submissions %}
-                    {% if sub.grade %}
+                    {% if sub.grade != None %}
                     <tr class="table-success">
                     {% else %}
                     <tr>
