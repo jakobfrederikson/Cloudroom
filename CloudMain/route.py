@@ -367,6 +367,13 @@ def classroom_assignments_list(class_id, paper_id):
         if str(entry.paper_id) == str(paper_id):
             assignments.append(entry)
 
+    student_assignments = []
+    # Get students completed assignments
+    if current_user.account_type == "Student":  
+        for entry in StudentAssignmentSubmission.query.all():
+            if int(entry.student_id) == int(current_user.id):
+                student_assignments.append(entry)
+
     # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
     classroom = Classroom.query.filter_by(id=class_id).first()
@@ -377,7 +384,8 @@ def classroom_assignments_list(class_id, paper_id):
                                                             assignments=assignments,
                                                             class_id = class_id,
                                                             paper_id = paper_id,
-                                                            members=member_list)
+                                                            members=member_list,
+                                                            student_assignments = student_assignments)
 
 # Create Assignment - Teacher can create an assignment here for a paper here
 @app.route('/classroom/<class_id>/<paper_id>/create_assignment', methods=['POST', 'GET'])
@@ -394,7 +402,6 @@ def create_assignment(class_id, paper_id):
                                             description = request.form.get("description"),
                                             creationDate = assignment_form.creationDate.data,
                                             dueDate = assignment_form.dueDate.data,
-                                            weight = int(request.form.get("weight")),
                                             picture = assignment_form.picture.data,    
                                             isPublished = assignment_form.isPublished.data,                                            
                                             teacher_id = int(current_user.id),
@@ -468,7 +475,7 @@ def create_assignment_questions(class_id, paper_id, assignment_id):
             return redirect(url_for('classroom_assignments_list', class_id = class_id, paper_id = paper_id))
         
         # Append the created question to the questions list
-        if request.form['submit'] == "Create another question":
+        if request.form['submit'] == "Create question":
             question = Question(title = request.form.get("title"),
                                         owner = int(assignment_id),
                                         type = request.form.get("type"),
@@ -505,8 +512,6 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
     form = dynamic_question_submission(questions)(request.form)
 
     if form.validate_on_submit():
-        print("\nTEST\n")
-        print(f"\nLength of questions {len(questions)}\n")
         for question in questions:
             field = getattr(form, f'q-{question.id}')
             question_to_submit = StudentQuestionSubmission(assignment_id = int(assignment_id),
@@ -516,7 +521,8 @@ def classroom_assignment_content(class_id, paper_id, assignment_id):
             print(f"\nQuestion content = {question_to_submit.question_content}\n")
             db.session.add(question_to_submit)
 
-        assignment_submission = StudentAssignmentSubmission.query.filter_by(student_id=int(current_user.id)).first()
+        assignment_submission = StudentAssignmentSubmission.query.filter_by(student_id=int(current_user.id),
+                                                                            assignment_id=int(assignment_id)).first()
         print(f"\n\n{assignment_submission}\n\n")
         assignment_submission.assignment_id = assignment_id
         assignment_submission.has_submitted = True
@@ -562,7 +568,6 @@ def edit_assignment(class_id, paper_id, assignment_id):
                 assignment.description = edit_form.description.data
                 assignment.creationDate = edit_form.creationDate.data
                 assignment.dueDate = edit_form.dueDate.data
-                assignment.weight = edit_form.weight.data
                 assignment.picture = edit_form.picture.data
                 assignment.isPublished = edit_form.isPublished.data
                 db.session.add(assignment)
@@ -572,7 +577,6 @@ def edit_assignment(class_id, paper_id, assignment_id):
             assignment.description = edit_form.description.data
             assignment.creationDate = edit_form.creationDate.data
             assignment.dueDate = edit_form.dueDate.data
-            assignment.weight = edit_form.weight.data
             assignment.picture = edit_form.picture.data
             assignment.isPublished = edit_form.isPublished.data
             db.session.add(assignment)
@@ -585,7 +589,6 @@ def edit_assignment(class_id, paper_id, assignment_id):
     edit_form.description.data = assignment.description
     edit_form.creationDate.data = assignment.creationDate
     edit_form.dueDate.data = assignment.dueDate
-    edit_form.weight.data = assignment.weight
     edit_form.picture.data = assignment.picture
     return render_template('edit_assignment.html', assignment = assignment, edit_form = edit_form, classroom = classroom, paper = paper)
 
@@ -704,7 +707,7 @@ def view_submission(class_id, paper_id, assignment_id, submission_id):
         db.session.commit()
 
         flash(f"{submission.student.first_name}'s assignment has been successfully graded.")
-        return render_template('assignment_submissions.html', assignment = assignment, class_id = class_id, paper_id = paper_id, paper = paper, classroom=classroom)       
+        return redirect(url_for('assignment_submissions', class_id = class_id, paper_id = paper_id, assignment_id = assignment_id))  
       
     return render_template('view_submission.html', classroom = classroom,
                                                 paper = paper,
@@ -712,7 +715,26 @@ def view_submission(class_id, paper_id, assignment_id, submission_id):
                                                 submission = submission,
                                                 answers = answers,
                                                 questions = questions,
-                                                form = form)                                                
+                                                form = form)  
+
+@app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/student_submission/<submission_id>', methods=['POST', 'GET'])                                              
+@login_required
+def view_submission_student(class_id, paper_id, assignment_id, submission_id):
+    classroom = Classroom.query.filter_by(id=int(class_id)).first()
+    paper = Paper.query.filter_by(id=int(paper_id)).first()
+    assignment = Assignment.query.filter_by(id=int(assignment_id)).first()
+    submission = StudentAssignmentSubmission.query.filter_by(id = int(submission_id)).first()
+    questions = Question.query.filter_by(owner = int(assignment_id)).all()
+    answers = StudentQuestionSubmission.query.filter_by(assignment_id = int(assignment_id),
+                                                        student_id = int(submission.student_id)).all()
+
+    return render_template('view_submission_student.html', classroom = classroom,
+                                                paper = paper,
+                                                assignment = assignment,
+                                                submission = submission,
+                                                answers = answers,
+                                                questions = questions,)
+
 
 # User Profile - Display the users information here
 @app.route('/profile/<user>', methods=['POST', 'GET'])

@@ -108,12 +108,12 @@ class Assignment(db.Model):
     description = db.Column(db.String(), nullable = True)
     creationDate = db.Column(db.Date())
     dueDate = db.Column(db.Date())
-    weight = db.Column(db.Integer())
     picture = db.Column(db.String(length=20), nullable=False)
     isPublished = db.Column(db.Boolean())
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
     questions = db.relationship('Question', backref='owned_assignment', lazy=True) 
+    student_assignment_submissions = db.relationship('StudentAssignmentSubmission', backref='assignment', lazy=True)
 
     def serialize(self):
         return {"id" : self.id,
