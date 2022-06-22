@@ -17,19 +17,13 @@
             </div>
          </button>
          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto" id="navbar-nav">
-               {% if current_user.is_authenticated %}
-               <li class="nav-item list_desktop">
-                  <a class="nav-link" href="{{ url_for('log_out') }}" >
-                  Log-out
-                  </a>
-               </li>
-               {% else %}
+            <ul class="navbar-nav ms-auto" id="navbar-nav"> 
+               {% if not current_user.is_authenticated %}   
                <li class="nav-item list_desktop">
                   <a class="nav-link" href="{{ url_for('login_page') }}" >
                   Sign in
                   </a>
-               </li>
+               </li>  
                {% endif %}
                <li class="nav-item list_desktop">
                   <a href="/cloudroom_tools" class="nav-link">
@@ -41,11 +35,13 @@
                   About
                   </a>
                </li>
+               {% if current_user.is_authenticated %}
                <li class="nav-item list_desktop">
-                  <a href="/admin" class="nav-link">
-                  Admin Page
+                  <a class="nav-link" href="{{ url_for('log_out') }}" >
+                  Log-out
                   </a>
                </li>
+               {% endif %}
             </ul>
             <!--mobile version dashboard       -->
             <li class="nav-item list_mobile text-center">
