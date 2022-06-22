@@ -59,6 +59,10 @@
         href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">
         Create an assignment
         </a>
+        <a class="text-decoration-none btn btn-outline-success" role="button" 
+        href="{{ url_for('view_all_submissions', class_id = class_id, paper_id = paper_id) }}">
+        View all submissions
+        </a>
       </div>
 
       {% elif current_user.account_type == "Student" %}

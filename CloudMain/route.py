@@ -4,7 +4,7 @@ from sqlalchemy import delete, null
 from CloudMain import app, flash, url_for, redirect, db, functions, mail, session
 from flask import render_template, request, send_file
 from CloudMain.models import Account, Question, Classroom, Paper, StudentAssignmentSubmission, StudentQuestionSubmission\
-    , paper_members, Upload_File, Assignment,Post,Comments
+    , paper_members, Upload_File, Assignment,Post,Comments, classroom_members
 from CloudMain.forms import Create_Question, Create_Paper, CreateAccount, GeneralSubmitForm, GetQuestionContent, \
     LoginForm, Create_Classroom, Student_To_Paper,UpdateNickname,\
     UpdateName, UpdateGender, UpdateSchool,UpdateProfilePic,UpdatePassword,Delete_File, Student_To_Paper,Join_Cloudroom,\
@@ -163,6 +163,16 @@ def dashboard_page(user):
                 flash(f'You have already joined this paper.')
                 return redirect(url_for('dashboard_page',user=current_user.id))
             else:
+                # Add new student to any existing assignments
+                if current_user.account_type == "Student":
+                    # Get every assignment of this paper
+                    assignments = Assignment.query.filter_by(paper_id=paper.id).all()
+                    if assignments:
+                        for a in assignments:
+                            new_entry = StudentAssignmentSubmission(assignment_id = a.id,
+                                                                    student_id = current_user.id)
+                            db.session.add(new_entry)
+
                 db.session.add(paper_student_to_create)
                 db.session.commit()
                 flash(f'Student added successfully! You have joined "{paper.paper_name}".',
@@ -405,7 +415,8 @@ def create_assignment(class_id, paper_id):
                                             picture = assignment_form.picture.data,    
                                             isPublished = assignment_form.isPublished.data,                                            
                                             teacher_id = int(current_user.id),
-                                            paper_id = int(paper_id))     
+                                            paper_id = int(paper_id),
+                                            class_id = int(class_id))     
         db.session.add(assignment_to_create)
         db.session.commit()
 
@@ -717,6 +728,21 @@ def view_submission(class_id, paper_id, assignment_id, submission_id):
                                                 questions = questions,
                                                 form = form)  
 
+# View assignment submissions
+@app.route('/classroom/<class_id>/<paper_id>/assignments/all_submissions', methods=['GET'])
+@functions.teacher_account_required
+def view_all_submissions(class_id, paper_id):   
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    paper = Paper.query.filter_by(id=paper_id).first()
+    assignments = Assignment.query.filter_by(paper_id = paper_id).all()
+
+    submissions = []
+    for a in assignments:
+        for s in StudentAssignmentSubmission.query.all():
+            if int(a.id) == int(s.assignment_id):
+                submissions.append(s)
+    return render_template('view_all_submissions.html', classroom = classroom, paper = paper, assignments = assignments, submissions = submissions)
+
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/student_submission/<submission_id>', methods=['POST', 'GET'])                                              
 @login_required
 def view_submission_student(class_id, paper_id, assignment_id, submission_id):
@@ -794,18 +820,98 @@ def user_profile(user):
                            form_password=form_password)
 
 # Student Grades - View the average grades of all their courses so far
-@app.route('/profile/<user>/grades', methods=['GET'])
+@app.route('/profile/<user_id>/grades', methods=['GET'])
 @login_required
-def student_grades(user):
+def student_grades(user_id):
 
-    # Getting every paper the student is enrolled in.
-    student = Account.query.filter_by(id=current_user.id).first()
-    user_papers = []
-    for entry in paper_members.query.all():
-        if entry.id_user == current_user.id:
-            user_papers.append(Paper.query.filter_by(id=entry.id_paper).first())
+    # Get every paper the student is in
+    papers = paper_members.query.filter_by(id_user = current_user.id).all()
 
-    return render_template('student_grades.html', name=user, papers=user_papers, student=student)
+    students_papers = []
+    for p in papers:
+
+        for paper in Paper.query.all():
+
+            if int(p.id_paper) == int(paper.id):
+
+                students_papers.append(paper)
+
+    # Get every class the student is in
+    students_classrooms = []
+    for p in students_papers:
+        for c in Classroom.query.all():
+            if int(p.id_classroom) == int(c.id):
+                if c not in students_classrooms:
+                    students_classrooms.append(c)
+
+
+    # Get every assignment in those papers
+    assignments = []
+
+    for paper in students_papers:
+
+        for assignment in Assignment.query.all():
+
+            if int(paper.id) == int(assignment.paper_id):
+
+                assignments.append(assignment)
+
+
+    # Get student submission for each assignment
+    submissions = []
+    for submission in StudentAssignmentSubmission.query.all():
+
+        if int(submission.student_id) == int(current_user.id):
+
+            submissions.append(submission)
+
+    grades = []
+    for s in submissions:
+        if s.grade == None:
+            l = {   
+                "id": s.assignment_id,
+                "letter": "None", 
+                "grade": "None"
+                }
+            grades.append(l)            
+        else:
+            p = s.grade * 100
+            print(f"\ngrade: {p}\n")
+            if p > 97.00:
+                letter = 'A+'
+            elif p > 93 and p < 97:
+                letter = 'A'
+            elif p > 90 and p < 93:
+                letter = 'A-'
+            elif p > 87 and p < 90:
+                letter = 'B+'
+            elif p > 83 and p < 87:
+                letter = 'B'
+            elif p > 80 and p < 83:
+                letter = 'B-'
+            elif p > 77 and p < 80:
+                letter = 'C+'
+            elif p > 73 and p < 77:
+                letter = 'C'
+            elif p > 70 and p < 73:
+                letter = 'C-'
+            elif p > 67 and p < 70:
+                letter = 'D+'
+            elif p == 65 or p == 66:
+                letter = 'D'
+            else:
+                letter = 'F'
+            grades.append({   
+                "id": s.assignment_id,
+                "letter": letter, 
+                "grade": p
+                }) # assignment_id, letter grade and percentage
+            
+    return render_template('student_grades.html', classrooms = students_classrooms,
+                                                papers = students_papers,
+                                                assignments = assignments,
+                                                submissions = submissions,
+                                                grades = grades)
 
 # Student Drive - View all their saved notes or files
 @app.route('/profile/<user>/<id>/drive', methods=['POST', 'GET'])

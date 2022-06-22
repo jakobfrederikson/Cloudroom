@@ -53,7 +53,7 @@
       {% endif %}
       {% if current_user.account_type == "Student" %}
       <div class="nav-button">
-         <a href="{{ url_for('student_grades', user = current_user.first_name) }}"
+         <a href="{{ url_for('student_grades', user_id = current_user.id) }}"
             class="text-reset text-decoration-none nav-button">
             <img src="{{url_for('static',filename = 'images/grades_icon.png')}}" alt="Your grades icon">
             <p>View Grades</p>

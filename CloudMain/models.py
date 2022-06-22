@@ -112,6 +112,7 @@ class Assignment(db.Model):
     isPublished = db.Column(db.Boolean())
     teacher_id = db.Column(db.Integer())
     paper_id = db.Column(db.Integer(), db.ForeignKey('paper.id'), nullable = False)
+    class_id = db.Column(db.Integer(), db.ForeignKey('classroom.id'), nullable = False)
     questions = db.relationship('Question', backref='owned_assignment', lazy=True) 
     student_assignment_submissions = db.relationship('StudentAssignmentSubmission', backref='assignment', lazy=True)
 
