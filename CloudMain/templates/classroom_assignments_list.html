@@ -36,7 +36,7 @@
               {% else %}
                 <div class="col">
               {% endif %}
-                  <div class="card h-100" name="assignment-box">
+                  <div class="card h-100 bg-light" name="assignment-box">
                     <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title text-truncate">{{ entry.name }}</h5>
@@ -76,7 +76,7 @@
           {% for a in student_assignments %}          
           {% if a.assignment.isPublished and a.has_submitted == None %}
             <div class="col">
-              <div class="card h-100" name="assignment-box">
+              <div class="card h-100 bg-light" name="assignment-box">
                 <img src="{{ url_for('static', filename = a.assignment.picture) }}" class="card-img-top" alt="...">
                 <div class="card-body">
                   <h5 class="card-title text-truncate">{{ a.assignment.name }}</h5>

@@ -34,9 +34,9 @@
                             {% for sub in submissions %}
                             {% if sub.assignment_id == a.id %}
                             {% if sub.grade != None %}
-                            <tr class="table-success" data-bs-toggle="tooltip" data-bs-placement="top" title="You have marked this assignment already.">
+                            <tr class="table-success" title="You have marked this assignment already.">
                             {% else %}
-                            <tr data-bs-toggle="tooltip" data-bs-placement="top" title="Unmarked assignment.">
+                            <tr title="Unmarked assignment.">
                             {% endif %}
                                 <th scope="row">{{ sub.student.id }}</th>
                                 <td><div class="assignment-thumbnail">
@@ -68,11 +68,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    });
-</script>
 {% endblock %}
