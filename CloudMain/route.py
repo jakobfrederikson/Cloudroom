@@ -728,6 +728,21 @@ def view_submission(class_id, paper_id, assignment_id, submission_id):
                                                 questions = questions,
                                                 form = form)  
 
+# View assignment submissions
+@app.route('/classroom/<class_id>/<paper_id>/assignments/all_submissions', methods=['GET'])
+@functions.teacher_account_required
+def view_all_submissions(class_id, paper_id):   
+    classroom = Classroom.query.filter_by(id=class_id).first()
+    paper = Paper.query.filter_by(id=paper_id).first()
+    assignments = Assignment.query.filter_by(paper_id = paper_id).all()
+
+    submissions = []
+    for a in assignments:
+        for s in StudentAssignmentSubmission.query.all():
+            if int(a.id) == int(s.assignment_id):
+                submissions.append(s)
+    return render_template('view_all_submissions.html', classroom = classroom, paper = paper, assignments = assignments, submissions = submissions)
+
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/student_submission/<submission_id>', methods=['POST', 'GET'])                                              
 @login_required
 def view_submission_student(class_id, paper_id, assignment_id, submission_id):
