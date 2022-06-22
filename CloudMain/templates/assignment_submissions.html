@@ -39,7 +39,7 @@
                         {% if sub.has_submitted %}
                         <td>{{ sub.submission_date}}</td>
                         <td>{{ sub.grade }}</td>
-                        {% if sub.grade %}                        
+                        {% if sub.grade != None %}                        
                         <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-success" role="button">Update Grade</a></td>
                         {% else %}
                         <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-primary" role="button">View Submission</a></td>
