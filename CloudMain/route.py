@@ -215,25 +215,31 @@ def dashboard_page(user):
 
     # Delete Paper
     if request.method == "POST":
-        print("hello from Jay")
         delete_item = request.form.get('remove_item')
         d_file_obj = Paper().query.filter_by(id=delete_item).first()
-        print(d_file_obj,"hello again")
         #handles delete paper
         if d_file_obj:
             #Delete paper
             Paper.query.filter_by(id=d_file_obj.id).delete()
             #Delete paper members
             paper_members.query.filter_by(id_paper=d_file_obj.id).delete()
-            #Delete assignment questions
-            delete_items = Assignment.query.filter_by(paper_id=d_file_obj.id).first()
-            Question.query.filter_by(owner=delete_items.id).delete()
-            #Delete Assignments
-            Assignment.query.filter_by(paper_id=d_file_obj.id).delete()
             #Delete Posts in papers
-            Post.query.filter_by(paper_id=d_file_obj.id).delete()
-
+            post_obj = Post().query.filter_by(paper_id=d_file_obj.id).first()
+            if post_obj:
+                Post.query.filter_by(paper_id=post_obj.paper_id).delete()
+                Comments().query.filter_by(post_id=post_obj.id).delete()
+            # Delete Assignments
+            delete_items = Assignment.query.filter_by(paper_id=d_file_obj.id).first()
+            if delete_items:
+                # Delete Question Submission
+                StudentQuestionSubmission.query.filter_by(assignment_id=delete_items.id).delete()
+                # Delete Submitted Assignment
+                StudentAssignmentSubmission.query.filter_by(assignment_id=delete_items.id).delete()
+                #Delete assignment questions
+                Question.query.filter_by(owner=delete_items.id).delete()
+                Assignment.query.filter_by(id=delete_items.id).delete()
             db.session.commit()
+
             flash("Paper has been deleted",category='info')
             return redirect(url_for('dashboard_page', user=current_user))
 
@@ -247,6 +253,13 @@ def dashboard_page(user):
     return render_template('dashboard.html',user_papers=user_papers,classroom=classroom,join_room=join_room,
                            classroom_form=classroom_form,paper_form=paper_form,
                            classrooms=classrooms,delete_form=delete_form)
+
+# This will update the post of the user
+@app.route('/classroom/view_profile/<class_id>/<paper_id>/<member_id>')
+@login_required
+def view_profile(class_id, paper_id,member_id):
+    member = Account.query.filter_by(id = member_id).first()
+    return render_template('view_profile.html',member=member, classroom=class_id,paper=paper_id)
 
 # This will update the post of the user
 @app.route('/classroom/update_post/<class_id>/<paper_id>/<post_id>', methods=['POST', 'GET'])
@@ -317,7 +330,6 @@ def post_comment(class_id,paper_id,post_id):
 
         db.session.add(commenter)
         db.session.commit()
-        flash('Comment Posted',category='info')
         return redirect(url_for("classroom_main_page", class_id=class_id, paper_id=paper_id))
 
 # Classroom Main Page - You are taken here after clicking on a classroom in the dashboard
@@ -340,6 +352,7 @@ def classroom_main_page(class_id, paper_id):
         #handles delete post
         if d_file_obj:
             Post().query.filter_by(id = d_file_obj.id).delete()
+            Comments().query.filter_by(post_id=d_file_obj.id).delete()
             flash(f'{d_file_obj.title} has been deleted')
             db.session.commit()
             return redirect(url_for('classroom_main_page', class_id=classroom.id, paper_id=paper.id))
@@ -741,7 +754,9 @@ def view_all_submissions(class_id, paper_id):
         for s in StudentAssignmentSubmission.query.all():
             if int(a.id) == int(s.assignment_id):
                 submissions.append(s)
-    return render_template('view_all_submissions.html', classroom = classroom, paper = paper, assignments = assignments, submissions = submissions)
+    member_list = functions.get_all_members(paper_id)
+    return render_template('view_all_submissions.html', classroom = classroom, paper = paper, assignments = assignments, submissions = submissions,
+                           members=member_list)
 
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/student_submission/<submission_id>', methods=['POST', 'GET'])                                              
 @login_required
