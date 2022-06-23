@@ -40,13 +40,15 @@ Dashboard | Cloudroom
     <div class="row row-cols-sm-2 row-cols-md-4">
       {%if user_papers == [] %}
       <div class="" style="margin-left:30%">
-        <h1 class="text-center" style="color: #05396B;">No results found...</h1>
+        <h1 class="text-center m-0" style="color: #05396B;">No results found</h1>
         {%if current_user == "Student" %}
-          <h6 class="ms-5" >Click Join Cloudroom and enter the code of room and start learning</h6>
+          <h6 class="" >Click Join Cloudroom and enter the code of room and start learning</h6>
         {% else %}
-          <h6 class="ms-5" >Click Create Cloudroom to create a paper</h6>
+          <h6 class="" >Click Create Cloudroom to create a paper</h6>
         {% endif %}
       </div>
+      <img src="{{url_for('static',filename = 'images/404_notfound.png')}}" class="mobile_icons mt-5" alt="404"
+        style="margin-left:30%">
       {% endif %}
       <!--Displays all paper that the student is currently taking-->
       {% for paper in user_papers %}
