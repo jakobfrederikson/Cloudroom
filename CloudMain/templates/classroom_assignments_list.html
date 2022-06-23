@@ -74,6 +74,8 @@
         </div>
         <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4 mt-1">
           {% for a in student_assignments %}          
+
+          <!-- If an assignment is published and a student hasn't completed it yet -->
           {% if a.assignment.isPublished and a.has_submitted == None %}
             <div class="col">
               <div class="card h-100 bg-light" name="assignment-box">
