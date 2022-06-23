@@ -1,5 +1,7 @@
-![Cloudroom Logo](Cloudroom_Logo.png)  
-_Online learning made to feel like a breeze._
+<p align="center">
+    <img src="Cloudroom_Logo.png">
+    <p align="center"><em>Online learning made to feel like a breeze.</em></p>
+</p>
 
 # Project Description
 
