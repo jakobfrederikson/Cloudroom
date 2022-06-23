@@ -372,17 +372,15 @@ def classroom_main_page(class_id, paper_id):
 def classroom_assignments_list(class_id, paper_id):
 
     # Only get assignments apart of this paper
-    assignments = []
-    for entry in Assignment.query.all():
-        if str(entry.paper_id) == str(paper_id):
-            assignments.append(entry)
+    assignments = Assignment.query.filter_by(paper_id = paper_id)
 
+    # Get students submitted assignments
     student_assignments = []
-    # Get students completed assignments
     if current_user.account_type == "Student":  
         for entry in StudentAssignmentSubmission.query.all():
             if int(entry.student_id) == int(current_user.id):
-                student_assignments.append(entry)
+                if entry.has_submitted != None and int(entry.assignment.paper_id) == int(paper_id):
+                    student_assignments.append(entry)
 
     # Get the paper and classroom using the url
     paper = Paper.query.filter_by(id=paper_id).first()
