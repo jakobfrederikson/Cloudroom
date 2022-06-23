@@ -13,45 +13,47 @@
             <div class="display-4">
                 <strong>{{ assignment.name }}</strong> Submissions
             </div>
-            <table class="table w-75">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Pic</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Submission date</th>
-                        <th scope="col">Grade</th>
-                        <th scope="col">Submission</th>                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sub in submissions %}
-                    {% if sub.grade != None %}
-                    <tr class="table-success">
-                    {% else %}
-                    <tr>
-                    {% endif %}
-                        <th scope="row">{{ sub.student.id }}</th>
-                        <td><div class="assignment-thumbnail">
-                            <img src="{{ url_for('static', filename = sub.student.profile_pic) }}" alt="Student image">
-                        </div></td>
-                        <td>{{ sub.student.first_name }} {{ sub.student.last_name }}</td>
-                        {% if sub.has_submitted %}
-                        <td>{{ sub.submission_date}}</td>
-                        <td>{{ sub.grade }}</td>
-                        {% if sub.grade != None %}                        
-                        <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-success" role="button">Update Grade</a></td>
+            <div class="table-responsive">
+                <table class="table w-75">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Pic</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Submission date</th>
+                            <th scope="col">Grade</th>
+                            <th scope="col">Submission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in submissions %}
+                        {% if sub.grade != None %}
+                        <tr class="table-success">
                         {% else %}
-                        <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-primary" role="button">View Submission</a></td>
+                        <tr>
                         {% endif %}
-                        {% else %}
-                        <td>--</td>
-                        <td>--</td>
-                        <td><a href="" class="btn btn-primary disabled" role="button" aria-disabled="true">View Submission</a></td>                        
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <th scope="row">{{ sub.student.id }}</th>
+                            <td><div class="assignment-thumbnail">
+                                <img src="{{ url_for('static', filename = sub.student.profile_pic) }}" alt="Student image">
+                            </div></td>
+                            <td>{{ sub.student.first_name }} {{ sub.student.last_name }}</td>
+                            {% if sub.has_submitted %}
+                            <td>{{ sub.submission_date}}</td>
+                            <td>{{ sub.grade }}</td>
+                            {% if sub.grade != None %}
+                            <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-success" role="button">Update Grade</a></td>
+                            {% else %}
+                            <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-primary" role="button">View Submission</a></td>
+                            {% endif %}
+                            {% else %}
+                            <td>--</td>
+                            <td>--</td>
+                            <td><a href="" class="btn btn-primary disabled" role="button" aria-disabled="true">View Submission</a></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

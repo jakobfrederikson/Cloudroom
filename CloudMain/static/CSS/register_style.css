@@ -174,21 +174,6 @@ h1{
     .dashboard_main_content{
         display:inline;
     }
-    .navbar-brand{
-        margin-left:60px;
-    }
-
-    .list_mobile{
-        display:block;
-    }
-
-    .mobile_icons{
-        display:none
-    }
-
-    .list_desktop{
-        display:none;
-    }
 
     .side-nav {
         display: none;

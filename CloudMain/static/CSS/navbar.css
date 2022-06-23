@@ -49,3 +49,17 @@
   -webkit-transform: rotate(45deg) translate(-8px, -8px);
   transform: rotate(45deg) translate(-8px, -8px);
 }
+
+/* mobile*/
+@media (max-width: 1000px)
+{
+    .list_mobile{
+        display:block;
+    }
+    .navbar-brand{
+        margin-left:60px;
+    }
+    .list_desktop{
+        display:none;
+    }
+}

@@ -29,12 +29,27 @@ Dashboard | Cloudroom
             </a>
             {% endif %}
           </h1>
+
       </div>
     </div>
   </div>
+
   <!--main content-->
   <div class="mb-5 container-fluid dashboard_main_content">
+
     <div class="row row-cols-sm-2 row-cols-md-4">
+      {%if user_papers == [] %}
+      <div class="" style="margin-left:30%">
+        <h1 class="text-center m-0" style="color: #05396B;">No results found</h1>
+        {%if current_user == "Student" %}
+          <h6 class="" >Click Join Cloudroom and enter the code of room and start learning</h6>
+        {% else %}
+          <h6 class="" >Click Create Cloudroom to create a paper</h6>
+        {% endif %}
+      </div>
+      <img src="{{url_for('static',filename = 'images/404_notfound.png')}}" class="mobile_icons mt-5" alt="404"
+        style="margin-left:30%">
+      {% endif %}
       <!--Displays all paper that the student is currently taking-->
       {% for paper in user_papers %}
       {% for class in classroom %}
@@ -53,6 +68,8 @@ Dashboard | Cloudroom
           <div class="col-md">
             <h6 class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
             </h6>
+            <p class="text-md-start mt-2" style="color:white; margin-bottom:0; margin-top:0;">Room number: {{paper.paper_room_number}}
+            </p>
             <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: {{paper.tutor.first_name}} {{paper.tutor.last_name}}
             </p>
             <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">{{paper.paper_description}}
