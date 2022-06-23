@@ -392,7 +392,7 @@ def classroom_assignments_list(class_id, paper_id):
     if current_user.account_type == "Student":  
         for entry in StudentAssignmentSubmission.query.all():
             if int(entry.student_id) == int(current_user.id):
-                if entry.has_submitted != None and int(entry.assignment.paper_id) == int(paper_id):
+                if int(entry.assignment.paper_id) == int(paper_id):
                     student_assignments.append(entry)
 
     # Get the paper and classroom using the url
@@ -415,6 +415,7 @@ def create_assignment(class_id, paper_id):
     classrooms = Classroom.query.all()
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment_form = Create_Assignment()
+    classroom = Classroom.query.filter_by(id=int(class_id))
 
     students = functions.get_all_members(paper_id)
 
@@ -449,6 +450,7 @@ def create_assignment(class_id, paper_id):
             flash(f'There was an error with creating an Assignment: {err_msg}', err_msg)
 
     return render_template('create_assignment.html', classrooms=classrooms,
+                                                    classroom=classroom,
                                                     paper=paper,
                                                     assignment_form=assignment_form)
 
@@ -459,6 +461,7 @@ def create_assignment_questions(class_id, paper_id, assignment_id):
     paper = Paper.query.filter_by(id=int(paper_id)).first()
     assignment = Assignment.query.filter_by(id=assignment_id).first()
     questions_form = Create_Question()
+    classroom = Classroom.query.filter_by(id=int(class_id))
 
     # Start the user session to store multiple questions for an assignment
     questions_list = []    
@@ -515,7 +518,8 @@ def create_assignment_questions(class_id, paper_id, assignment_id):
                                                                 paper = paper,
                                                                 questions_form = questions_form,
                                                                 questions_list = questions_list,
-                                                                assignment = assignment)
+                                                                assignment = assignment,
+                                                                classroom=classroom)
 
 # Assignment Begin - This is when the student has started the assignment.
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>', methods=['POST', 'GET'])
