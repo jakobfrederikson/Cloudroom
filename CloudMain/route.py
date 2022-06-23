@@ -946,9 +946,9 @@ def user_drive(user, id):
             db.session.commit()
             return redirect(url_for('user_drive', user=current_user.first_name, id='000'))
 
-        if request.files['file'].filename == '':
+        if request.files['file'].filename == None:
             flash(f'Error you must select a file',category='danger')
-            delete_file = request.form.get('delete_file')
+            # delete_file = request.form.get('delete_file')
 
         else:
             file = request.files['file']
