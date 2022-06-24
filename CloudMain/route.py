@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from msilib.schema import Class
 from sqlalchemy import delete, null
-from CloudMain import app, flash, url_for, redirect, db, functions, mail, session
+from CloudMain import app, flash, url_for, redirect, db, functions, mail, session, mobility
 from flask import render_template, request, send_file
 from CloudMain.models import Account, Question, Classroom, Paper, StudentAssignmentSubmission, StudentQuestionSubmission\
     , paper_members, Upload_File, Assignment,Post,Comments, classroom_members
@@ -375,6 +375,7 @@ def classroom_main_page(class_id, paper_id):
 
     # Gathering all members in this paper.
     member_list = functions.get_all_members(paper_id)
+
     return render_template('classroom_main_page.html', classroom=classroom,paper=paper,members=member_list,
                            postform=postform,posts=posts,del_post=del_post,comment_form=comment_form,comments=comments,
                            accounts=accounts)
@@ -391,8 +392,8 @@ def classroom_assignments_list(class_id, paper_id):
     student_assignments = []
     if current_user.account_type == "Student":  
         for entry in StudentAssignmentSubmission.query.all():
-            if int(entry.student_id) == int(current_user.id):
-                if int(entry.assignment.paper_id) == int(paper_id):
+            if entry.student_id == current_user.id:
+                if entry.assignment.paper_id == int(paper_id):
                     student_assignments.append(entry)
 
     # Get the paper and classroom using the url
@@ -471,6 +472,7 @@ def create_assignment_questions(class_id, paper_id, assignment_id):
 
     if questions_form.validate_on_submit():
         if request.form['submit'] == "Submit":
+
             # Check if the creator is submitting an empty question
             if session['questions'] != []: # if user is creating multiple questions
                 for q in questions_list:
@@ -480,7 +482,6 @@ def create_assignment_questions(class_id, paper_id, assignment_id):
                                                     description = q['description'],
                                                     placeholder_text = q['placeholder_text'])
                     db.session.add(question)
-                print("\n\nCommiting multiple questions\n\n")
                 db.session.commit()
             elif questions_form.type.data and questions_form.title.data \
                 and questions_form.submit.data: # if user is only creating one question
@@ -489,7 +490,6 @@ def create_assignment_questions(class_id, paper_id, assignment_id):
                                                     type = request.form.get("type"),
                                                     description= questions_form.description.data,
                                                     placeholder_text = questions_form.placeholder_text.data)
-                print("\n\nCommiting ONE questions\n\n")
                 db.session.commit()
             else: # if user is creating no questions
                 print(f"\n\n {current_user.first_name} is creating NO QUESTIONS\n\n")            
@@ -678,20 +678,20 @@ def assignment_submissions(class_id, paper_id, assignment_id):
     submissions = []
     if StudentAssignmentSubmission.query.all():
         for entry in StudentAssignmentSubmission.query.all():
-            if int(entry.assignment_id) == int(assignment_id):
+            if entry.assignment_id == int(assignment_id):
                 submissions.append(entry)
 
     # Get list of student assignment submissions
     assignment_submission_list = []
     for entry in StudentAssignmentSubmission.query.all():
         for student in student_list:
-            if int(entry.student_id) == int(student.id):
+            if entry.student_id == int(student.id):
                 assignment_submission_list.append(entry)
 
     # Get list of student questions submissions
     questions_submission_list = []
     for entry in StudentQuestionSubmission.query.all():
-        if int(entry.assignment_id) == int(assignment_id):
+        if entry.assignment_id == int(assignment_id):
             questions_submission_list.append(entry)
 
     return render_template('assignment_submissions.html', assignment = assignment,
@@ -727,6 +727,7 @@ def view_submission(class_id, paper_id, assignment_id, submission_id):
         for n in assignment_grade:
             if int(n) == 1:
                 mean = mean + 1
+
         mean = mean/len(assignment_grade)
         submission.grade = mean
         db.session.add(submission)
@@ -757,8 +758,11 @@ def view_all_submissions(class_id, paper_id):
             if int(a.id) == int(s.assignment_id):
                 submissions.append(s)
     member_list = functions.get_all_members(paper_id)
-    return render_template('view_all_submissions.html', classroom = classroom, paper = paper, assignments = assignments, submissions = submissions,
-                           members=member_list)
+    return render_template('view_all_submissions.html', classroom = classroom, 
+                                                        paper = paper, 
+                                                        assignments = assignments, 
+                                                        submissions = submissions,
+                                                        members=member_list)
 
 @app.route('/classroom/<class_id>/<paper_id>/assignments/<assignment_id>/student_submission/<submission_id>', methods=['POST', 'GET'])                                              
 @login_required
@@ -856,9 +860,13 @@ def student_grades(user_id):
     # Get every class the student is in
     students_classrooms = []
     for p in students_papers:
+
         for c in Classroom.query.all():
+
             if int(p.id_classroom) == int(c.id):
+
                 if c not in students_classrooms:
+
                     students_classrooms.append(c)
 
 
@@ -885,12 +893,12 @@ def student_grades(user_id):
     grades = []
     for s in submissions:
         if s.grade == None:
-            l = {   
+            empty_grade = {   
                 "id": s.assignment_id,
                 "letter": "None", 
                 "grade": "None"
                 }
-            grades.append(l)            
+            grades.append(empty_grade)            
         else:
             p = s.grade * 100
             print(f"\ngrade: {p}\n")
