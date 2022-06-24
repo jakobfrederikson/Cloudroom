@@ -14,7 +14,7 @@
       <div class="modal-footer">
         <form method="POST">
           {{ delete_form.hidden_tag() }}
-            <inxput id="remove_item" name="remove_item" type="hidden" value="{{file.filename}}">
+            <input id="remove_item" name="remove_item" type="hidden" value="{{file.filename}}">
               {{ delete_form.submit(class="btn btn-block btn-danger") }}
         </form>
         <a href="{{url_for('user_drive', user = current_user.first_name,id=file.id)}}">

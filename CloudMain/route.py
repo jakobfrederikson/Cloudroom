@@ -956,7 +956,7 @@ def user_drive(user, id):
 
         if request.files['file'].filename == '':
             flash(f'Error you must select a file',category='danger')
-            delete_file = request.form.get('delete_file')
+            # delete_file = request.form.get('delete_file')
 
         else:
             file = request.files['file']
