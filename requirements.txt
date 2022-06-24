@@ -10,3 +10,4 @@ Flask-Login==0.6.1
 Flask-CKEditor
 email_validator
 flask-mail
+flask_mobility==1.1.0

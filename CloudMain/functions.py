@@ -1,6 +1,6 @@
 from flask import flash
 from flask_login import current_user
-from CloudMain.models import Account, paper_members
+from CloudMain.models import Account, StudentAssignmentSubmission, paper_members
 from flask_mail import Message
 from CloudMain import mail, url_for, redirect, session
 from flask_login import current_user

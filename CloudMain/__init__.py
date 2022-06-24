@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_ckeditor import CKEditor
 from flask_mail import Mail
+from flask_mobility import Mobility
 
 ckeditor = CKEditor()
 app = Flask(__name__)
@@ -22,5 +23,6 @@ login_manager.login_view = "login_page" #redirect user to login page if they are
 login_manager.login_message_category = "info"
 ckeditor.init_app(app)
 mail = Mail(app)
+mobility = Mobility(app) # This allows us to check if the user is on mobile or not
 
 from CloudMain import route
