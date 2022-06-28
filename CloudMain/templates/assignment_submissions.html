@@ -38,7 +38,7 @@
                             </div></td>
                             <td>{{ sub.student.first_name }} {{ sub.student.last_name }}</td>
                             {% if sub.has_submitted %}
-                            <td>{{ sub.submission_date}}</td>
+                            <td><span class="dDate">{{ sub.submission_date }}</span></td>
                             <td>{{ sub.grade }}</td>
                             {% if sub.grade != None %}
                             <td><a href="{{ url_for('view_submission', class_id = classroom.id, paper_id = paper.id, assignment_id = assignment.id, submission_id = sub.id, student_id = 3) }}" class="btn btn-success" role="button">Update Grade</a></td>
@@ -57,4 +57,6 @@
         </div>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='JS/dueDate_converter.js') }}"></script>
 {% endblock %}
