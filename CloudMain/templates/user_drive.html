@@ -7,24 +7,28 @@ Dashboard | Cloudroom
 {% endblock %}
 {% block content %}
 {% include 'base_sidenav.html' %}
-<body style="background:#05396B">
-   <div class="row justify-content-between drive_header" style="color:white">
-      <div class="col-4"style="padding-top:10px; margin-left:100px;">
-         <h1 class="align-self-start">Cloud Drive</h1>
-      </div>
-      <div class="col-4 "style="padding-top:10px;">
-         <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target="#Upload_Modal">
-            <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
-               <img src="{{url_for('static',filename = 'images/upload_file_icon.png')}}" alt="">
-               <span style="color:white">Upload File</span>
-               <img src="{{url_for('static',filename = 'images/add_icon.png')}}" alt="">
-            </h1>
-         </a>
-      </div>
+<style>body{background:#05396B;}</style>
+<body>
+   <div class="container-fluid dashboard_header_content">
+       <div class="row justify-content-between" style="color:white;" >
+         <div class="col">
+           <h1 class="align-self-start ms-2">Cloud Drive</h1>
+         </div>
+         <div class="col" >
+             <h1 class="me-5 fs-6 text-center" style="color:#white;">
+               <a href="#" data-bs-toggle="modal" data-bs-target="#Upload_Modal"
+                  class=" text-reset text-decoration-none">
+                 <img src="{{url_for('static',filename = 'images/upload_file_icon.png')}}" alt="">
+                  <span>Upload File</span>
+                  <img src="{{url_for('static',filename = 'images/add_icon.png')}}" alt="">
+               </a>
+             </h1>
+         </div>
+       </div>
    </div>
-   <div class="download_page" >
-      <div class="d-flex flex-row bd-highlight mb-3" style="margin-left:20px;">
 <!--displays all files that user has in there drive-->
+   <div class="download_page mb-5" >
+      <div class="d-flex flex-row bd-highlight mb-3" style="margin-left:20px;">
          {% for file in files %}
          {% include 'includes/upload_file_modal.html' %}
          <li class="p-2 bd-highlight" style="list-style: none;">

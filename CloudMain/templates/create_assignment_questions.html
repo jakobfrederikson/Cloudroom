@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}
+Create Assignment | Cloudroom
+{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static',filename='css/create_assignment.css') }}">
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}
+<body>
+    <!-- Load the text editor -->
+    {{ ckeditor.load() }}
+
+    <!-- CONTENT -->
+    <div class="container-fluid cloudroom-container">
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col" style="text-align: justify;">
+                        <a href="javascript:history.back()">Back</a>
+                        <div class="display-4">
+                            <strong>Create questions for {{ assignment.name }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 d-flex flex-column">
+                        <div class="display-6">
+                            Question Form
+                        </div>
+                        <!-- content -->
+                        <div class="p-1 mb-3 mt-3 bg-light border rounded">
+                            <form method="POST">
+                                {{ questions_form.hidden_tag() }}
+                                <div class="mb-3">
+                                    {{ questions_form.type.label(class="form-label") }}
+                                    {{ questions_form.type(class="form-select") }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ questions_form.title.label(class="form-label") }}
+                                    {{ questions_form.title(placeholder="Enter question title", class="form-control") }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ questions_form.description.label(class="form-label") }}
+                                    {{ questions_form.description(class="form-control") }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ questions_form.placeholder_text.label(class="form-label") }}
+                                    {{ questions_form.placeholder_text(class="form-control") }}
+                                </div>
+                                {{ questions_form.submit(class="btn btn-outline-success mb-1", value="Create question") }}   
+                                <br>
+                                {{ questions_form.submit(class="btn btn-primary mb-3", value="Submit") }}          
+                            </form>                          
+                        </div>
+                        
+                    </div>
+
+                    <!-- Show current questions for the assignment -->
+                    <div class="col-sm-6">
+                        <div class="display-6 mb-3">
+                            Current Questions
+                        </div>
+                        <div class="accordion" id="questionsAccordion">                     
+                            {% for question in questions_list %}
+                            {% if question.owner == assignment.id %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                                            {{ question.title }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#questionsAccordion">
+                                        <div class="bg-light rounded">
+                                            <p><strong>Question Description:</strong> {{ question.description|safe }}</p>
+                                        </div>
+                                        {% if question.type == "code" %}
+                                            <p><strong>Question Type:</strong> code</p>
+                                        {% endif %}
+                                        {% if question.type == "text" %}
+                                            <p><strong>Question Type:</strong> plain text</p>
+                                        {% endif %}                                
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>        
+        </div>
+    </div>
+
+    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+    <script src="{{ url_for('static',filename='js/create_assignment_questions.js') }}"></script>
+</body>
+{% endblock %}

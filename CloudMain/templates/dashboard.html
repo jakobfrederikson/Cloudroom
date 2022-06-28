@@ -8,48 +8,71 @@ Dashboard | Cloudroom
 {% block content %}
 {% include 'base_sidenav.html' %}
 <body class="text-center">
+  {% include 'includes/create_cloudroom.html' %}
+  {% include 'includes/join_cloudroom.html' %}
   <!--content title and join button-->
   <div class="container-fluid dashboard_header_content">
     <div class="row justify-content-between">
-      <div class="col-4">
-        <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms
-        </h1>
+      <div class="col">
+        <h1 class="h2_title text-sm-start fw-bold" style="color:#05396B">Virtual Classrooms</h1>
       </div>
-      <div class="col-4">
-        <a href="#" class="text-reset text-decoration-none">
-          <h1 class="fs-6 text-center" style="padding-top:10px; margin-right:400px; color:#05396B;">
+      <div class="col">
+          <h1 class="fs-6 text-center" style="color:#05396B;">
+            {%if current_user.account_type == "Student" %}
             <a href="#" data-bs-toggle="modal" data-bs-target="#Join_Cloudroom_Modal"
                class="text-reset text-decoration-none">
               <img src="../static/images/Add Classroom.png" alt="">Join Cloudroom
             </a>
+            {%else%}
+            <a href="#" data-bs-toggle="modal" data-bs-target="#Modal-Create-Cloudroom" class="text-reset text-decoration-none">
+               <img src="../static/images/Add Classroom.png" alt="">Create Cloudroom
+            </a>
+            {% endif %}
           </h1>
-        </a>
+
       </div>
     </div>
   </div>
+
   <!--main content-->
-  <div class="container-fluid dashboard_main_content">
+  <div class="mb-5 container-fluid dashboard_main_content">
+
     <div class="row row-cols-sm-2 row-cols-md-4">
+      {%if user_papers == [] %}
+      <div class="" style="margin-left:30%">
+        <h1 class="text-center m-0" style="color: #05396B;">No results found</h1>
+        {%if current_user == "Student" %}
+          <h6 class="" >Click Join Cloudroom and enter the code of room and start learning</h6>
+        {% else %}
+          <h6 class="" >Click Create Cloudroom to create a paper</h6>
+        {% endif %}
+      </div>
+      <img src="{{url_for('static',filename = 'images/404_notfound.png')}}" class="mobile_icons mt-5" alt="404"
+        style="margin-left:30%">
+      {% endif %}
       <!--Displays all paper that the student is currently taking-->
       {% for paper in user_papers %}
       {% for class in classroom %}
       {%if class.id == paper.id_classroom %}
+      {% include 'includes/delete_paper.html' %}
       <div class="col cloudroom_classnum" style="">
         <br>
-        <p class="text-start" style="color:#05396B">
+        <h5 class="text-start" style="color:#05396B">
           {{class.classroom_name}}
-        </p>
+        </h5>
         <div class="row row-cols-1 row-cols-2" style=" background:#05396B">
           <div class="col-md-auto">
             <br>
             <img class="img-fluid" src="{{url_for('static', filename = paper.paper_picture )}}"style="width:270px; padding-bottom:30px;" >
           </div>
           <div class="col-md">
-            <p class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
+            <h6 class="text-md-start" style="color:white; margin-top:30px;">{{paper.paper_name}}
+            </h6>
+            <p class="text-md-start mt-2" style="color:white; margin-bottom:0; margin-top:0;">Room number: {{paper.paper_room_number}}
             </p>
-            <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: Jasper Rowling
+            <p class="text-md-start" style="color:white; margin-top:30px;">Teacher: {{paper.tutor.first_name}} {{paper.tutor.last_name}}
             </p>
-            <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">Lets learn how to code
+            <p class="text-md-start" style="color:white; margin-bottom:0; margin-top:0;">{{paper.paper_description}}
             </p>
             <div class="d-grid gap-2 mx-auto">
               <a href="{{url_for('classroom_main_page', class_id =class.id,paper_id=paper.id)}}"
@@ -61,32 +84,18 @@ Dashboard | Cloudroom
             </div>
           </div>
         </div>
+        {%if paper.account_id == current_user.id %}
+        <div class="text-end">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#Modal-Delete-Cloudroom-{{paper.id}}"
+             class="me-2 text-decoration-none" style="color:red;">Delete</a>
+          <a href="{{url_for('edit_paper',paper_id=paper.id)}}"
+               class="bw text-decoration-none" style="color:#05396B;">Edit</a>
+        </div>
+        {% endif %}
       </div>
       {% endif %}
       {% endfor %}
       {% endfor %}
-    </div>
-  </div>
-  <!-- Modal -->
-  <!--This will let user to join a classroom-->
-  <div class="modal fade" id="Join_Cloudroom_Modal" tabindex="-1" aria-labelledby="Upload File" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="Join_id">Enter Cloudroom Code
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-          </button>
-        </div>
-        <div class="modal-body">
-          <form method="POST" class="form-signin" style="color:white">
-            {{ join_room.hidden_tag() }}
-            {{ join_room.code.label() }}
-            {{ join_room.code(class="form-control", placeholder="Enter Code") }}
-            {{ join_room.submit(class="d-grid gap-2 col-6 mx-auto signin_btn btn btn-block btn-primary") }}
-          </form>
-        </div>
-      </div>
     </div>
   </div>
 </body>

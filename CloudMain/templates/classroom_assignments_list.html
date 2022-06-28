@@ -1,67 +1,139 @@
-<!-- This page is not in development yet  -->
+{% extends 'base.html' %}
+{% block title %}
+{{ paper.paper_name }} Assignments | Cloudroom
+{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static',filename='css/assignment_list.css') }}">
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}
+  <!-- CONTENT -->
+  <div class="container-sm cloudroom-container">
+    <div class="row">
 
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/CSS/styles.css">
-    <link rel="icon" type="image/icon" href="../static/images/favicon.png">
-    <title>Coding Assignment | Cloudroom</title> 
+      {% if current_user.account_type == "Teacher" %}
+      {% if request.MOBILE %}
+      <div class="col-sm-12 mb-lg-5">
+      {% else %}
+      <div class="col-sm-10 mb-lg-5">
+      {% endif %}
+            <div class="display-4 d-flex justify-content-around">
+              <strong>{{ paper.paper_name }} Assignments</strong>
+              <div class="item ">
+                <a class="text-decoration-none btn btn-primary" role="button"
+                href="{{ url_for('create_assignment', class_id = class_id, paper_id = paper_id) }}">
+                Create an assignment
+                </a>
+              </div>
+              <div class="item">
+                <a class="text-decoration-none btn btn-success" role="button"
+                href="{{ url_for('view_all_submissions', class_id = class_id, paper_id = paper_id) }}">
+                View all submissions
+                </a>
+              </div>
+            </div>              
+        <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4 mt-1">
+            {% for entry in assignments %}
+              {% if entry.isPublished == False %}
+                <div class="col not-published">
+              {% else %}
+                <div class="col">
+              {% endif %}
+                  <div class="card h-100 bg-light" name="assignment-box">
+                    <img src="{{ url_for('static', filename = entry.picture) }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title text-truncate">{{ entry.name }}</h5>
+                      <p class="card-text text-truncate">{{ entry.description }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{entry.dueDate}}</div></li>
+                      <li class="list-group-item"><span class="text-muted">Published: </span>
+                        {% if entry.isPublished == False %}
+                        No 
+                        {% else %} 
+                        Yes 
+                        {% endif %}
+                      </li>
+                    </ul>
+                    <div class="card-body d-flex flex-column">
+                      <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-primary">View assignment</a>
+                      <a href="{{ url_for('assignment_submissions', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-success">View submissions</a>
+                      <a href="{{ url_for('edit_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-dark">Edit</a>
+                      <a href="{{ url_for('delete_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-danger">Delete</a>
+                      {% if entry.isPublished == False %}
+                      <a href="{{ url_for('publish_assignment', class_id = class_id, paper_id = paper_id, assignment_id = entry.id) }}" class="btn btn-outline-success">Publish</a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+      </div>
 
-    <!-- Codemirror links/scripts -->
-    <!-- <script src="../static/JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.js"></script>
-    <link rel="stylesheet" href="../static/JS/AssignmentsJS/codemirror-5.65.3/lib/codemirror.css">
-    <script src="../static/JS/AssignmentsJS/codemirror-5.65.3/mode/python/python.js"></script>
-    <link rel="stylesheet" href="../static/JS/AssignmentsJS/codemirror-5.65.3/theme/yonce.css">
-</head>
-<body>
-    <div class="page-container">
-            <div class="nav-bar">
-                <h1>Cloudroom</h1> -->
-                <!-- NAV BAR -->
-                <!-- Some list items are temporary, such as User Profile showing up on the home page. -->
-                <!-- <ul>
-                    <li><a href="./index.html">Home</a></li>
-                    <li><a href="./login.html">Login</a></li>
-                    <li><a href="./signup.html">Sign up</a></li>
-                    <li><a href="./dashboard.html">Dashboard</a></li>
-                    <li>Assignments</li>
-                    <li><a href="./user-profile.html">User Profile</a></li>
-                    <li><a href="./user-drive.html">User Drive</a></li>
+      {% elif current_user.account_type == "Student" %}
+      {% if request.MOBILE %}
+      <div class="col-sm-12 mb-lg-5 d-flex flex-column align-items-center">
+      {% else %}
+      <div class="col-sm-10 mb-lg-5">
+      {% endif %}
+        <div class="display-4">
+          <strong>{{ paper.paper_name }} Assignments</strong>
+        </div>
+        <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4 mt-1">
+          {% for a in student_assignments %}          
+
+          <!-- If an assignment is published and a student hasn't completed it yet -->
+          {% if a.assignment.isPublished and a.has_submitted == None %}
+            <div class="col">
+              <div class="card h-100 bg-light" name="assignment-box">
+                <img src="{{ url_for('static', filename = a.assignment.picture) }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title text-truncate">{{ a.assignment.name }}</h5>
+                  <p class="card-text text-truncate">{{ a.assignment.description }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{ a.assignment.dueDate }}</div></li>
                 </ul>
-            </div>
-            <div class="assignment-container">
-                <div class="assignment-details">
-                    <h2>Python Assignment</h2>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore deleniti doloremque at aperiam, numquam laudantium et ut repellat dolorum quam. Officiis voluptatibus placeat sed asperiores cum maxime beatae ullam libero!</p>
+                <div class="card-body d-flex flex-column">
+                  <a href="{{ url_for('classroom_assignment_content', class_id = class_id, paper_id = paper_id, assignment_id = a.assignment.id) }}" class="btn btn-primary">View assignment</a>
                 </div>
-                <div class="code-area">
-                    <textarea id="editor">
-def HelloWorld(): 
-    print("Hello World")
-                    </textarea>
-                <button id="submit-assignment">Submit</button>
-                </div>
+              </div>
             </div>
-            
-    </div> -->
-
-    <!-- CodeMirror Integration -->
-    <!-- <script>
-        var editor = CodeMirror.fromTextArea
-        (document.getElementById('editor'), {
-            mode: {
-                name: "python",
-                version: 5,
-                singleLineStringErrors: false
-            },
-            lineNumbers: true,
-            indentUnit: 4,
-            matchBrackets: true,
-            theme: "yonce"
-        });
-    </script>
-</body>
-</html> -->
+          {% endif %}
+          {% endfor %}
+        </div>
+        <hr>
+        <div class="row w-75 row-cols-1 row-cols-sm-1 row-cols-md-3 g-4">
+          {% for a in student_assignments %}
+          {% if a.assignment.isPublished and a.has_submitted %}      
+            <div class="col">          
+              {% if a.grade != None %}
+              <div class="card h-100 border-success" name="assignment-box">
+              {% else %}
+              <div class="card h-100" name="assignment-box">
+              {% endif %}
+                <img src="{{ url_for('static', filename = a.assignment.picture) }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title text-truncate">{{ a.assignment.name }}</h5>
+                  <p class="card-text text-truncate">{{ a.assignment.description }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><span class="text-muted">Grade: </span>{{ a.grade|safe }}</li>
+                  <li class="list-group-item"><span class="text-muted">Date submitted: </span><div class="dDate">{{ a.submission_date }}</div></li>
+                  <li class="list-group-item"><span class="text-muted">Due: </span><div class="dDate">{{ a.assignment.dueDate }}</div></li>                  
+                </ul>
+                <div class="card-body d-flex flex-column">
+                  <a href="{{ url_for('view_submission_student', class_id = class_id, paper_id = paper_id, assignment_id = a.assignment.id, submission_id = a.id) }}" class="btn btn-primary">View Submission</a>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}
+{{ paper.paper_name }} Assignments | Cloudroom
+{% endblock %}
+{% block style %}
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <div class="col-sm-10 d-flex flex-column align-items-center justify-content-center">
+            <div class="display-4">
+                Publish <strong>{{ assignment.name }}</strong>?
+            </div>
+            <p class="mt-3">Students will be able to start working on the assignment once it has been published. This can be changed in the edit menu.</p>
+            <form method="POST">
+                {{ publish_form.submit(class="btn btn-success", value="Publish") }}
+                <a href="{{ url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id) }}" class="btn btn-secondary"> Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

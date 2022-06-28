@@ -1,66 +1,16 @@
 body{
-    background-color:white;
+    background:white;
 }
+
 #content2{
     display:none
-}
-
-#navbar{
-    background-color: #0FA958;
-}
-
-.list_mobile{
-    display:none;
-}
-
-.list_mobile p{
-    margin:0;
-}
-
-.nav-link{
-    color: white;
-}
-
-.navbar-brand{
-    font-weight: bold;
-    font-size: 36px;
-    margin-left: 40px;
-    color: white;
-    margin-left:90px;
-}
-
-#navbar-nav{
-    margin-right: 8%
-}
-
-#dropMenu{
-    color: #0FA958;
-}
-
-.bar1, .bar2, .bar3 {
-  width: 35px;
-  height: 5px;
-  background-color: white;
-  margin: 6px 0;
-  transition: 0.4s;
-}
-
-.change .bar1 {
-  -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-  transform: rotate(-45deg) translate(-9px, 6px);
-}
-
-.change .bar2 {opacity: 0;}
-
-.change .bar3 {
-  -webkit-transform: rotate(45deg) translate(-8px, -8px);
-  transform: rotate(45deg) translate(-8px, -8px);
 }
 
 .register_form_container{
     padding: 60px;
     background: #05396B;
     margin-top:170px;
+    width:60%
 }
 
 .rows {
@@ -76,7 +26,6 @@ body{
 }
 
 .columns img {
-
   margin-top: 8px;
   max-width: 70%;
 }
@@ -128,11 +77,11 @@ h1{
 
 /*Dashboard CSS */
 .cloudroom_classnum{
-    margin-left:120px;
+    margin-left:90px;
 }
 
 .dashboard_header_content{
-    margin-left:90px;
+    padding-left:90px;
 }
 
 /* Sign in CSS */
@@ -159,71 +108,6 @@ h1{
     margin-top:30px;
 }
 
-@media (max-width: 1200px)
-{
-    .download_page{
-        margin:0;
-        width:100%;
-        height:100%;
-    }
-    .file_icons{
-        margin:0;
-    }
-}
-/* mobile*/
-@media (max-width: 1000px)
-{
-    .cloudroom_classnum {
-     margin-left:60px;
-
-    }
-    .dashboard_header_content{
-        margin-left:60px;
-    }
-
-    .dashboard_main_content{
-        display:inline;
-    }
-    .navbar-brand{
-        margin-left:60px;
-    }
-
-    .list_mobile{
-        display:block;
-    }
-
-    .mobile_icons{
-        display:none
-    }
-
-    .list_desktop{
-        display:none;
-    }
-
-    .side-nav {
-        display: none;
-    }
-}
-
-@media (max-width: 990px){
-    .mobile_icons{
-        display:inline;
-    }
-}
-
-@media (max-width: 620px){
-    .cloudroom_classnum {
-     display:block;
-     margin-left:10px;
-
-    }
-
-    .dashboard_header_content{
-
-        margin-left:10px;
-    }
-}
-
 /*Profile CSS*/
 .profile_form{
     padding-top: 90px;
@@ -246,7 +130,30 @@ h1{
     display: none;
 }
 
-/* tablet*/
+.post_content{
+    height: 500px;
+}
+
+.edit_form_container{
+    padding-right:110px
+}
+
+.save_changes_btn{
+    width: 20%
+}
+
+@media (max-width: 1200px)
+{
+    .download_page{
+        margin:0;
+        width:100%;
+        height:100%;
+    }
+    .file_icons{
+        margin:0;
+    }
+}
+/* mobile*/
 @media (max-width: 1000px)
 {
     .profile_form{
@@ -255,11 +162,42 @@ h1{
     .edit_profile_form{
         width:100%;
     }
+
+    .cloudroom_classnum {
+     margin-left:60px;
+
+    }
+    .dashboard_header_content{
+        padding-left:60px;
+    }
+
+    .dashboard_main_content{
+        display:inline;
+    }
+
+    .side-nav {
+        display: none;
+    }
+    .register_form_container{
+        width:80%
+    }
+}
+
+@media (max-width: 990px){
+    .mobile_icons{
+        display:inline;
+    }
+    .edit_form_container{
+        padding-right:0;
+    }
 }
 
 /* mobile*/
 @media (max-width: 760px)
 {
+    .signin_form_container{
+        width: 90%;
+    }
     .profile_form{
         width: 100%;
     }
@@ -267,4 +205,27 @@ h1{
 
 .drive_header{
     color: red;
+}
+
+@media (max-width: 620px){
+    .cloudroom_classnum {
+     display:block;
+     margin-left:10px;
+
+    }
+
+    .register_form_container{
+        width:100%
+    }
+
+    .dashboard_header_content{
+        padding-left:10px;
+    }
+}
+
+@media (max-width: 320px)
+{
+    .signin_form_container{
+        width: 100%;
+    }
 }

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}
+Edit Assignment | Cloudroom
+{% endblock %}
+{% block style %}
+{% endblock %}
+{% block content %}
+{% include 'base_sidenav.html' %}
+<body>
+    <div class="container-fluid">
+        <div class="row min-vh-100">
+            <!-- Assignment Details Edit -->
+            <div class="col-sm-10 d-flex flex-column align-items-center bg-light">
+                <div class="display-4">
+                    <strong>Edit assignment</strong>
+                </div>
+                <div class="form-section w-50">
+                    <form method="POST">
+                        {{ edit_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ edit_form.name.label(class="form-label") }}
+                            {{ edit_form.name(placeholder="Assignment Name", class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ edit_form.description.label(class="form-label") }}
+                            {{ edit_form.description(placeholder="Assignment description", class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ edit_form.creationDate.label(class="form-label") }}
+                            {{ edit_form.creationDate(class="form-label", id="cDate")}}
+                        </div>
+                        <div class="mb-3">
+                            {{ edit_form.dueDate.label(class="form-label") }}
+                            {{ edit_form.dueDate(class="form-label", id="dDate")}}
+                        </div>
+                        <div class="mb-3 d-flex flex-column justify-content-center align-content-center">
+                            <p class="form-label">Select an assignment picture</p>
+                            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3 g-4">
+                            {% for subfield in edit_form.picture %}
+                                <div class="col">
+                                    <img class="img-thumbnail" src="{{ url_for('static', filename = subfield.data) }}">
+                                    <div class="form-check">
+                                        {{ subfield(class="form-check-input") }}
+                                        {{ subfield.label(class="form-check-label") }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            {{ edit_form.isPublished.label}}
+                            {{ edit_form.isPublished }}
+                            <p><small><em class="text-muted">Your students will not see the assignment until it is published.</em></small></p>
+                        </div>
+                        {{ edit_form.submit(class="btn btn-primary mb-3", type="submit", id="submitBtn", value="Confirm changes") }}
+                    </form>
+                </div>                
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename = 'JS/edit_assignment_script.js') }}"></script>
+</body>
+{% endblock %}

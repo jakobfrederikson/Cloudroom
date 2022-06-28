@@ -1,0 +1,11 @@
+.cloudroom-container {
+    margin-bottom: 20px;
+}
+
+.not-published {
+    opacity: 75%;
+}
+
+.not-published:hover {
+    opacity: 100%;
+}

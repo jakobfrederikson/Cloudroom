@@ -1,0 +1,134 @@
+<!-- Download File Modal -->
+<div class="modal fade" id="Modal-Create-Cloudroom" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered modal-dialog modal-dialog-scrollable">
+      <div class="modal-content" style="background: #05396B; color:white">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+               Create Cloudroom
+            </h5>
+         </div>
+         <div class="modal-body">
+            <div class="d-grid gap-2 col-6 mx-auto">
+               <br>
+               <button class="btn btn-primary choice_btn" id="create_classroom" type="button">Create Classroom</button>
+               <button class="btn btn-primary choice_btn" id="create_paper" type="button">Create Paper</button>
+               <button type="button" class="btn btn-secondary choice_btn" id="exit_creation" onClick="window.location.reload(true)"
+                     data-bs-dismiss="modal">Close</button>
+               <br>
+            </div>
+            <!--Creating classroom-->
+            <form method="POST" id="form-create_classroom">
+               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <button class="btn btn-primary back_btn" id="back_btn" type="button">Go back</button>
+               </div>
+               <br>
+               {{ classroom_form.hidden_tag() }}
+               {{ classroom_form.classroom_name.label() }}
+               {{ classroom_form.classroom_name(class="form-control", placeholder="Classroom Name") }}
+               <br><br>
+               <div class="modal-footer" id="footer_create_class">
+                  <button type="button" class="btn btn-secondary" onClick="window.location.reload(true)"
+                     data-bs-dismiss="modal">Close</button>
+                  {{ classroom_form.submit_classroom(class="btn btn-primary") }}
+               </div>
+            </form>
+            <!--Creating Papers-->
+            <form method="POST" id="form-create_paper">
+               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <button class="btn btn-primary back_btn" id="back_btn2" type="button">Go back</button>
+               </div>
+               {{ paper_form.hidden_tag() }}
+               {{ paper_form.paper_name.label() }}
+               {{ paper_form.paper_name(class="form-control", placeholder="Paper Name") }}
+               <br>
+               {{ paper_form.paper_room_number.label() }}
+               {{ paper_form.paper_room_number(class="form-control", placeholder="Paper Room Number") }}
+               <br>
+               {{ paper_form.paper_description.label() }}
+               {{ paper_form.paper_description(class="form-control", placeholder="Description") }}
+               <br>
+               <div class="row">
+                  {% for subfield in paper_form.paper_picture %}
+                  <div class="columns">
+                     <label class="custom_radio ">
+                     <img class="img-fluid img-thumbnail d-flex justify-content-center"
+                        src="{{url_for('static',filename = subfield.data )}}">
+                     {{ subfield }}{{ subfield.label }}</label>
+                  </div>
+                  {% endfor %}
+               </div>
+               <br><br>
+               <select name="classroom_select" class="form-select"
+                  aria-label="Default select example">
+                  <option selected>Select a classroom</option>
+                  {% for class in classrooms %}
+                  <option value="{{ class.id }}">{{ class.classroom_name }}</option>
+                  {% endfor %}
+               </select>
+               <br><br>
+               <div class="modal-footer" id="footer_create_paper">
+                  <button type="button" class="btn btn-secondary" onClick="window.location.reload(true)"
+                     data-bs-dismiss="modal">Close</button>
+                  {{ paper_form.submit_paper(class="btn btn-primary") }}
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+<script>
+   document.getElementById("create_paper").addEventListener("click", function() {
+      document.getElementById("create_paper").style.display = "none";
+      document.getElementById("create_classroom").style.display = "none";
+      document.getElementById("exit_creation").style.display = "none";
+      document.getElementById("form-create_paper").style.display = "inline";
+      document.getElementById("footer_create_paper").style.display = "inline";
+   });
+   document.getElementById("create_classroom").addEventListener("click", function() {
+      document.getElementById("create_paper").style.display = "none";
+      document.getElementById("create_classroom").style.display = "none";
+      document.getElementById("exit_creation").style.display = "none";
+      document.getElementById("form-create_classroom").style.display = "inline";
+      document.getElementById("footer_create_class").style.display = "inline";
+   });
+
+   document.getElementById('back_btn').addEventListener("click", function(){
+      document.getElementById("create_paper").style.display = "inline";
+      document.getElementById("create_classroom").style.display = "inline";
+      document.getElementById("exit_creation").style.display = "inline";
+      document.getElementById("form-create_classroom").style.display = "none";
+      document.getElementById("form-create_paper").style.display = "none";
+      document.getElementById("footer_create_class").style.display = "none";
+   });
+
+   document.getElementById('back_btn2').addEventListener("click", function(){
+      document.getElementById("create_paper").style.display = "inline";
+      document.getElementById("create_classroom").style.display = "inline";
+      document.getElementById("exit_creation").style.display = "inline";
+      document.getElementById("form-create_classroom").style.display = "none";
+      document.getElementById("form-create_paper").style.display = "none";
+      document.getElementById("footer_create_paper").style.display = "none";
+   });
+</script>
+<style>
+   .choice_btn{
+   margin-top: 30px;
+   margin-bottom: 30px;
+   }
+   #form-create_classroom,#form-create_paper,#footer_create_class,#footer_create_paper{
+   display:none;
+   }
+   #back_btn, #back_btn2{
+   margin-top: -30px;
+   margin-bottom: 10px;
+   }
+   #footer_create_paper .btn{
+   margin-top: 30px;
+   margin-bottom: 30px;
+   }
+   #footer_create_class .btn{
+   margin-top: 30px;
+   margin-bottom: 30px;
+   }
+</style>

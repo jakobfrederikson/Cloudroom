@@ -1,0 +1,136 @@
+<link rel="icon" type="image/icon" href="{{ url_for('static',filename='images/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/navbar.css') }}">
+<!--   Nav bar   -->
+<nav class="navbar fixed-top navbar-expand-lg" id="navbar">
+   <a class="navbar-brand" href="{{ url_for('home_page') }}" style="">
+   <i class="fa fa-cloud" style="font-size:50px; color:white" id="logo"></i>Cloudroom
+   </a>
+   <button type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" class="navbar-toggler"
+      aria-controls="navbarNav" aria-expanded="false"
+      aria-label="Toggle navigation"
+      id="dropMenu">
+      <div class="container" onclick="myFunction(this)">
+         <div class="bar1"></div>
+         <div class="bar2"></div>
+         <div class="bar3"></div>
+      </div>
+   </button>
+   <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto" id="navbar-nav">
+         {% if not current_user.is_authenticated %}
+         <li class="nav-item list_desktop">
+            <a class="nav-link" href="{{ url_for('login_page') }}" >
+            Sign in
+            </a>
+         </li>
+         {% endif %}
+         <li class="nav-item list_desktop">
+            <a href="/cloudroom_tools" class="nav-link">
+            Cloudroom Tools
+            </a>
+         </li>
+         <li class="nav-item list_desktop">
+            <a href="{{url_for('about_page')}}" class="nav-link">
+            About
+            </a>
+         </li>
+         {% if current_user.is_authenticated %}
+         <li class="nav-item list_desktop text-center">
+            <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="nav-link">
+               <p>Dashboard</p>
+            </a>
+         </li>
+         <li class="nav-item list_desktop">
+            <a class="nav-link" href="{{ url_for('log_out') }}" >
+            Log-out
+            </a>
+         </li>
+         {% endif %}
+      </ul>
+
+      <!--mobile version dashboard       -->
+      <!--checks if user is logged in or not -->
+      {% if current_user.is_authenticated %}
+      <li class="nav-item list_mobile text-center">
+         <a href="{{url_for('dashboard_page', user = current_user.first_name)}}" class="nav-link">
+            <img src="{{url_for('static',filename = 'images/dashboard_icon.png')}}" class="mobile_icons" alt="">
+            <p>Dashboard</p>
+         </a>
+      </li>
+      <li class="nav-item list_mobile text-center">
+         <a href="{{url_for('user_drive', user = current_user.first_name ,id='000')}}" class="nav-link" >
+            <img src="{{url_for('static',filename = 'images/ph_hard-drives-fill.png')}}" class="mobile_icons" alt="">
+            <p>Drive</p>
+         </a>
+      </li>
+      {% if current_user.account_type == "Student"%}
+      <li class="nav-item list_mobile text-center">
+         <a href="{{ url_for('student_grades', user_id = current_user.id) }}" class="nav-link">
+            <img src="{{url_for('static',filename = 'images/grades_icon.png')}}" class="mobile_icons">
+            <p>Grades</p>
+         </a>
+      </li>
+      {% endif %}
+      {% if "classroom" in request.path %}
+      {% if "view_profile" not in request.path %}
+      <li class="nav-item list_mobile text-center">
+         <a href="{{ url_for('classroom_assignments_list', class_id = classroom.id, paper_id = paper.id) }}"
+         class=" text-decoration-none nav-button">
+         <img src="{{url_for('static',filename = 'images/assignments_icon.png')}}" alt="Your storage drive icon">
+         <p>View assignments</p>
+         </a>
+      </li>
+      {% endif %}
+      {% endif %}
+      <li class="nav-item list_mobile text-center">
+         <a href="{{ url_for('user_profile', user = current_user.first_name) }}" class="nav-link">
+            <img src="{{ url_for('static',filename = 'images/Your profile.png') }}" class="mobile_icons" alt="">
+            <p>View</p>
+         </a>
+      </li>
+      <li class="nav-item list_mobile text-center">
+         <a class="nav-link" href="{{ url_for('log_out') }}" >
+            <p>Log-out</p>
+         </a>
+      </li>
+      {% else %}
+      <li class="nav-item list_mobile text-center">
+         <a class="nav-link" href="{{ url_for('login_page') }}" >
+            <p>Sign in</p>
+         </a>
+      </li>
+      <li class="nav-item list_mobile text-center">
+            <a href="/cloudroom_tools" class="nav-link">
+            Cloudroom Tools
+            </a>
+         </li>
+         <li class="nav-item list_mobile text-center">
+            <a href="{{url_for('about_page')}}" class="nav-link">
+            About
+            </a>
+      </li>
+      {% endif %}
+   </div>
+   </div>
+</nav>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+   <div class="container-fluid">
+      <div class="row">
+         {% if "index" in request.path %}
+         <div class="col-sm-12 d-flex justify-content-center">
+         {% else %}
+         <div class="col-sm-10 d-flex justify-content-center">
+         {% endif %}
+            <div class="alert alert-warning alert-dismissible fade show position-absolute" role="alert">
+               <strong>{{ message }}</strong>
+               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+         </div>
+      </div>
+   </div>
+{% endfor %}
+{% endif %}
+{% endwith %}
