@@ -3,7 +3,9 @@
     <p align="center"><em>Online learning made to feel like a breeze.</em></p>
 </p>
 
+<p align="center">
 ![Gif showing the different screens and options within the Argo app](optimised_cloudroom_gif.gif)
+</p>
 
 # Project Description
 
