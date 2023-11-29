@@ -3,6 +3,10 @@
     <p align="center"><em>Online learning made to feel like a breeze.</em></p>
 </p>
 
+<p align="center">
+  <img src="optimised_cloudroom_gif.gif" alt="Gif showing the different screens and options within the Argo app" />
+</p>
+
 # Project Description
 
 Cloudroom is being developed by two second year students, Jay and Jakob, from the Bachelor of Software Engineering class at Yoobee Colleges, Wellington.
