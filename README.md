@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <img src="optimised_cloudroom_gif.gif" alt="Gif showing the different screens and options within the Argo app" />
+  <img src="optimised_cloudroom_gif.gif" alt="Gif showing the different screens and options within the Cloudroom app" />
 </p>
 
 # Project Description
